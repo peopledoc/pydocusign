@@ -1,26 +1,66 @@
-.PHONY: all help translate test clean update compass collect rebuild
+# Reference card for usual actions in development environment.
+#
+# For standard installation of pydocusign, see INSTALL.
+# For details about pydocusign's development environment, see CONTRIBUTING.rst.
+#
+PIP = pip
+TOX = tox
+PROJECT = $(shell python -c "import setup; print setup.NAME")
 
-all:
-	@echo "Hello $(LOGNAME), nothing to do by default"
-	@echo "Try 'make help'"
+
+.PHONY: help develop clean distclean maintainer-clean test documentation sphinx readme release
 
 
 #: help - Display callable targets.
 help:
-	@egrep "^#: " [Mm]akefile
+	@echo "Reference card for usual actions in development environment."
+	@echo "Here are available targets:"
+	@egrep -o "^#: (.+)" [Mm]akefile  | sed 's/#: /* /'
 
 
-#: develop - Develop the Python project
+#: develop - Install minimal development utilities.
 develop:
-	python setup.py develop
+	$(PIP) install tox
+	$(PIP) install -e .
 
 
-#: install - Install current project
-install:
-	python setup.py install
+#: clean - Basic cleanup, mostly temporary files.
+clean: clean-build clean-pyc
+	find . -name '*.pyc' -delete
+	find . -name '*.pyo' -delete
 
 
-#: release - release the project on pypi
+#: distclean - Remove local builds, such as *.egg-info.
+distclean: clean
+	rm -rf *.egg
+	rm -rf *.egg-info
+
+
+#: maintainer-clean - Remove almost everything that can be re-generated.
+maintainer-clean: distclean
+	rm -rf build/
+	rm -rf dist/
+	rm -rf .tox/
+
+
+#: test - Run test suites.
+test:
+	$(TOX)
+
+
+#: documentation - Build documentation (Sphinx, README, ...)
+documentation: sphinx readme
+
+
+sphinx:
+	$(TOX) -e sphinx
+
+
+#: readme - Build standalone documentation files (README, CONTRIBUTING...).
+readme:
+	$(TOX) -e readme
+
+
+#: release - Tag and push to PyPI.
 release:
-	pip install zest.releaser
-	fullrelease
+	$(TOX) -e release

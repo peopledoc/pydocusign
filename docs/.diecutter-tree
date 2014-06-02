@@ -1,0 +1,55 @@
+[
+  
+
+  
+  {
+    "template": "Makefile",
+    "filename": "Makefile"
+  },
+  {
+    "template": "conf.py",
+    "filename": "conf.py"
+  },
+  {
+    "template": "make.bat",
+    "filename": "make.bat"
+  },
+
+  
+  {
+    "template": "index.txt",
+    "filename": "index.txt"
+  },
+  {
+    "template": "install.txt",
+    "filename": "install.txt"
+  },
+  {
+    "template": "about/alternatives.txt",
+    "filename": "about/alternatives.txt"
+  },
+  {
+    "template": "about/authors.txt",
+    "filename": "about/authors.txt"
+  },
+  {
+    "template": "about/changelog.txt",
+    "filename": "about/changelog.txt"
+  },
+  {
+    "template": "about/index.txt",
+    "filename": "about/index.txt"
+  },
+  {
+    "template": "about/license.txt",
+    "filename": "about/license.txt"
+  },
+  {
+    "template": "about/vision.txt",
+    "filename": "about/vision.txt"
+  },
+  {
+    "template": "contributing.txt",
+    "filename": "contributing.txt"
+  }
+]

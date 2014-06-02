@@ -1,0 +1,13 @@
+################
+About pydocusign
+################
+
+This section is about the `pydocusign` project itself.
+
+.. toctree::
+
+   vision
+   alternatives
+   license
+   authors
+   changelog

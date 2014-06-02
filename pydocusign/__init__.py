@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Python client for DocuSign signature SAAS platform."""
 import pkg_resources
 
 

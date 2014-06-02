@@ -14,7 +14,7 @@ IS_PYTHON2 = sys.version_info[0] == 2
 
 
 NAME = 'pydocusign'
-DESCRIPTION = ''
+DESCRIPTION = 'Python client for DocuSign signature SAAS platform.'
 README = open(os.path.join(here, 'README.rst')).read()
 VERSION = open(os.path.join(here, 'VERSION')).read().strip()
 AUTHOR = u'Benoît Bryon'
@@ -45,6 +45,7 @@ SETUP_REQUIREMENTS = [
 
 # Tox integration.
 from setuptools.command.test import test as TestCommand
+
 
 class Tox(TestCommand):
     """Test command that runs tox."""
