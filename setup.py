@@ -33,6 +33,8 @@ KEYWORDS = [
 ]
 PACKAGES = [NAME.replace('-', '_')]
 REQUIREMENTS = [
+    'pycurl',
+    'requests',
     'setuptools',
 ]
 ENTRY_POINTS = {}
