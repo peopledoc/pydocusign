@@ -6,8 +6,6 @@ import json
 import pycurl
 import requests
 
-from pydocusign import models
-
 
 Response = namedtuple('Response', ['status_code', 'text'])
 
