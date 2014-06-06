@@ -6,6 +6,8 @@ import json
 import pycurl
 import requests
 
+from pydocusign import models
+
 
 Response = namedtuple('Response', ['status_code', 'text'])
 
@@ -63,51 +65,22 @@ class DocuSignClient(object):
             account=self.account_id)
         return data
 
-    def _create_envelope_from_document_request(
-            self,
-            email_subject='',
-            email_blurb='',
-            document=None,
-            signers=[],
-            status='sent'):
+    def _create_envelope_from_document_request(self, envelope):
         """Return parts of the POST request for /envelopes.
 
         This is encapsultated in a method for test purposes: we do not want to
-        post a real request on DocuSign API for each test.
+        post a real request on DocuSign API for each test, whereas we want to
+        check that the HTTP request's parts meet the DocuSign specification.
+
+        .. warning::
+
+           Only one document is supported at the moment. This is a limitation
+           of `pydocusign`, not of `DocuSign`.
 
         """
         url = '{account}/envelopes'.format(account=self.account_url)
-        data = {
-            'status': status,
-            'emailBlurb': email_blurb,
-            'emailSubject': email_subject,
-            'documents': [
-                {
-                    'name': 'document.pdf',
-                    'documentId': '1',
-                    'order': '1',
-                },
-            ],
-            'recipients': {
-                'signers': [
-                    {
-                        'email': signers[0]['email'],
-                        'name': signers[0]['name'],
-                        'recipientId': '1',
-                        'tabs': {
-                            'signHereTabs': [
-                                {
-                                    'documentId': '1',
-                                    'pageNumber': '1',
-                                    'yPosition': '100',
-                                    'xPosition': '100',
-                                },
-                            ],
-                        }
-                    }
-                ],
-            },
-        }
+        data = envelope.to_dict()
+        document = envelope.documents[0].data
         document.seek(0)
         file_content = document.read()
         body = str(
@@ -136,20 +109,9 @@ class DocuSignClient(object):
             'body': body,
         }
 
-    def create_envelope_from_document(
-            self,
-            email_subject='',
-            email_blurb='',
-            document=None,
-            signers=[],
-            status='sent'):
+    def create_envelope_from_document(self, envelope):
         """Return dictionary response from /envelopes."""
-        parts = self._create_envelope_from_document_request(
-            email_subject=email_subject,
-            email_blurb=email_blurb,
-            document=document,
-            signers=signers,
-            status=status)
+        parts = self._create_envelope_from_document_request(envelope)
         c = pycurl.Curl()
         c.setopt(pycurl.URL, parts['url'])
         c.setopt(

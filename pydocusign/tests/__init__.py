@@ -86,13 +86,33 @@ class TestDocuSignClient(unittest.TestCase):
         """Request for creating envelope for document has expected format."""
         docusign = docusign_client_factory()
         docusign.login_information()
-        signers = [{'email': 'signer@example.com', 'name': 'Zorro'}]
-        pdf_file = open(os.path.join(fixtures_dir(), 'test.pdf'), 'rb')
-        parts = docusign._create_envelope_from_document_request(
-            email_subject='This is the subject',
-            email_blurb='This is the body',
-            document=pdf_file,
-            signers=signers)
+        with open(os.path.join(fixtures_dir(), 'test.pdf'), 'rb') as pdf_file:
+            envelope = pydocusign.Envelope(
+                emailSubject='This is the subject',
+                emailBlurb='This is the body',
+                status=pydocusign.Envelope.STATUS_SENT,
+                documents=[
+                    pydocusign.Document(
+                        name='document.pdf',
+                        documentId=1,
+                        data=pdf_file,
+                    ),
+                ],
+                recipients=[
+                    pydocusign.Signer(
+                        email='signer@example.com',
+                        name='Zorro',
+                        tabs=[
+                            pydocusign.SignHereTab(
+                                documentId=1,
+                                pageNumber=1,
+                                xPosition=100,
+                                yPosition=100,
+                            ),
+                        ],
+                    ),
+                ])
+            parts = docusign._create_envelope_from_document_request(envelope)
         self.assertTrue(parts['url'].startswith(docusign.account_url))
         self.assertTrue(parts['url'].endswith('/envelopes'))
         self.assertEqual(
