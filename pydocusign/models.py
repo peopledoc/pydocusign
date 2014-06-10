@@ -93,7 +93,7 @@ class Signer(Recipient):
     attributes = ['clientUserId', 'email', 'name', 'recipientId', 'tabs']
 
     def __init__(self, clientUserId=None, email='', name='', recipientId=None,
-                 tabs=[]):
+                 tabs=[], userId=None):
         """Setup."""
         #: If ``None`` then the recipient is remote (email sent) else embedded.
         self.clientUserId = clientUserId
@@ -115,6 +115,9 @@ class Signer(Recipient):
         #: Optional element only used with recipient types
         #: :class:`InPersonSigner` and :class:`Signer`.
         self.tabs = tabs
+
+        #: User ID on DocuSign side. It is an UUID.
+        self.userId = userId
 
     def to_dict(self):
         """Return dict representation of model.
@@ -204,6 +207,9 @@ class Envelope(DocuSignObject):
         self.recipients = recipients
         self.status = status
 
+        #: ID in DocuSign database.
+        self.envelopeId = None
+
     def to_dict(self):
         """Return dict representation of model.
 
@@ -251,3 +257,37 @@ class Envelope(DocuSignObject):
             if isinstance(recipient, Signer):
                 data['recipients']['signers'].append(recipient.to_dict())
         return data
+
+    def get_recipients(self, client):
+        """Use client to fetch and update info about recipients.
+
+        .. warning::
+
+           This is currently a partial update. It supports only some recipient
+           types (signers) and some fields (userId). At the moment, it updates
+           the list of recipients, it does not replace the current list with
+           data from DocuSign, i.e. if another thread updates the envelope,
+           this method will fail.
+
+           This partial implementation is enough to cover current `pydocusign`
+           features. Feel free to pull request if you need something better ;)
+
+        """
+        data = client.get_envelope_recipients(self.envelopeId)
+        for recipient_type, recipients in data.items():
+            if recipient_type == 'signers':
+                for recipient_data in recipients:
+                    index = int(recipient_data['routingOrder']) - 1
+                    self.recipients[index].userId = recipient_data['userId']
+
+    def post_recipient_view(self, client, routingOrder, returnUrl):
+        """Use ``client`` to fetch embedded signing URL for recipient."""
+        recipient = self.recipients[routingOrder]
+        response_data = client.post_recipient_view(
+            envelopeId=self.envelopeId,
+            clientUserId=recipient.clientUserId,
+            email=recipient.email,
+            userId=recipient.userId,
+            returnUrl=returnUrl,
+        )
+        return response_data['url']

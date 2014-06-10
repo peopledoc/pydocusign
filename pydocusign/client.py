@@ -6,6 +6,8 @@ import json
 import pycurl
 import requests
 
+from pydocusign import exceptions
+
 
 Response = namedtuple('Response', ['status_code', 'text'])
 
@@ -108,7 +110,7 @@ class DocuSignClient(object):
         }
 
     def create_envelope_from_document(self, envelope):
-        """Return dictionary response from /envelopes."""
+        """POST to /envelopes and return created envelope ID."""
         parts = self._create_envelope_from_document_request(envelope)
         c = pycurl.Curl()
         c.setopt(pycurl.URL, parts['url'])
@@ -127,4 +129,45 @@ class DocuSignClient(object):
             status_code=c.getinfo(pycurl.HTTP_CODE),
             text=response_body.read())
         c.close()
-        return response
+        if response.status_code != 201:
+            raise exceptions.DocuSignException(response)
+        response_data = json.loads(response.text)
+        return response_data['envelopeId']
+
+    def get_envelope_recipients(self, envelopeId):
+        """GET {account}/envelopes/{envelopeId}/recipients and return JSON."""
+        url = '{account}/envelopes/{envelopeId}/recipients' \
+              .format(account=self.account_url,
+                      envelopeId=envelopeId)
+        headers = self.base_headers()
+        headers['Content-Type'] = 'application/json'
+        response = requests.get(url, headers=headers)
+        return response.json()
+
+    def post_recipient_view(self, authenticationMethod=None,
+                            clientUserId='', email='', envelopeId='',
+                            returnUrl='', userId=''):
+        """POST to {account}/envelopes/{envelopeId}/views/recipient.
+
+        This is the method to start embedded signing for recipient.
+
+        Return JSON from DocuSign response.
+
+        """
+        url = '{account}/envelopes/{envelopeId}/views/recipient' \
+              .format(account=self.account_url,
+                      envelopeId=envelopeId)
+        if authenticationMethod is None:
+            authenticationMethod = 'none'
+        data = {
+            'authenticationMethod': authenticationMethod,
+            'clientUserId': clientUserId,
+            'email': email,
+            'envelopeId': envelopeId,
+            'returnUrl': returnUrl,
+            'userId': userId,
+        }
+        headers = self.base_headers()
+        headers['Content-Type'] = 'application/json'
+        response = requests.post(url, headers=headers, data=json.dumps(data))
+        return response.json()
