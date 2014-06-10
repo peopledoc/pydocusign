@@ -102,6 +102,7 @@ class TestDocuSignClient(unittest.TestCase):
                     pydocusign.Signer(
                         email='signer@example.com',
                         name='Zorro',
+                        recipientId=1,
                         tabs=[
                             pydocusign.SignHereTab(
                                 documentId=1,

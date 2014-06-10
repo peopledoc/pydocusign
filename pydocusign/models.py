@@ -90,10 +90,14 @@ class Signer(Recipient):
     https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Recipients/Signers%20Recipient.htm
 
     """
-    attributes = ['email', 'name', 'recipientId', 'tabs']
+    attributes = ['clientUserId', 'email', 'name', 'recipientId', 'tabs']
 
-    def __init__(self, email='', name='', recipientId=None, tabs=[]):
+    def __init__(self, clientUserId=None, email='', name='', recipientId=None,
+                 tabs=[]):
         """Setup."""
+        #: If ``None`` then the recipient is remote (email sent) else embedded.
+        self.clientUserId = clientUserId
+
         #: Email of the recipient. Notification will be sent to this email id.
         #: This can be a maximum of 100 characters.
         self.email = email
@@ -121,11 +125,13 @@ class Signer(Recipient):
         ...     xPosition=100,
         ...     yPosition=200)
         >>> signer = Signer(
+        ...     clientUserId='some ID in your DB',
         ...     email='signer@example.com',
         ...     name='My Name',
         ...     recipientId=1,
         ...     tabs=[tab])
         >>> signer.to_dict() == {
+        ...     'clientUserId': 'some ID in your DB',
         ...     'email': 'signer@example.com',
         ...     'name': 'My Name',
         ...     'recipientId': 1,
@@ -137,6 +143,7 @@ class Signer(Recipient):
 
         """
         data = {
+            'clientUserId': self.clientUserId,
             'email': self.email,
             'name': self.name,
             'recipientId': self.recipientId,
