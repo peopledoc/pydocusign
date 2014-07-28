@@ -37,7 +37,7 @@ requirements. Typically in :file:`setup.py`:
    )
 
 Then when you install your main project with your favorite package manager
-(like `pip`_), `piecutter` will automatically installed.
+(like `pip`_), `pydocusign` will automatically be installed.
 
 
 **********

@@ -17,4 +17,4 @@ Resources
 * Code repository: https://github.com/novapost/pydocusign
 * Continuous integration: https://travis-ci.org/novapost/pydocusign
 
-.. _`DocuSign`: http://docusign.com
+.. _`DocuSign`: https://www.docusign.com

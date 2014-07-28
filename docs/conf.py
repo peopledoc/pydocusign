@@ -50,8 +50,8 @@ master_doc = 'index'
 # General information about the project.
 project = u'pydocusign'
 project_slug = re.sub(r'([\w_.-]+)', u'-', project)
-copyright = u'2014 - Benoit Bryon'
-author = u'Benoit Bryon'
+copyright = u'2014 - Benoît Bryon'
+author = u'Benoît Bryon'
 author_slug = re.sub(r'([\w_.-]+)', u'-', author)
 
 # The version info for the project you're documenting, acts as replacement for

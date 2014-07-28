@@ -7,6 +7,26 @@ functionalities. It focuses on differences or relationships with
 `pydocusign`.
 
 
+***************************
+DocuSign's helper libraries
+***************************
+
+There are other libraries related to `DocuSign`_ service. Check
+https://www.docusign.com/developer-center/quick-start/api-explorer/helper-library
+
+
+***************
+django-docusign
+***************
+
+`django-docusign`_ integrates `pydocusign` in `Django`. It is built on top of
+`django-anysign`_ generic API.
+
+
 .. rubric:: References
 
 .. target-notes::
+
+.. _`DocuSign`: https://www.docusign.com/
+.. _`django-anysign`: https://github.com/novapost/django-anysign/
+.. _`django-docusign`: https://github.com/novapost/django-docusign/
