@@ -33,6 +33,7 @@ KEYWORDS = [
 ]
 PACKAGES = [NAME.replace('-', '_')]
 REQUIREMENTS = [
+    'certifi',
     'pycurl',
     'requests',
     'setuptools',

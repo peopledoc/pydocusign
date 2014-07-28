@@ -199,7 +199,7 @@ class Envelope(DocuSignObject):
     STATUS_DRAFT = 'draft'
 
     def __init__(self, documents=[], emailBlurb='', emailSubject='',
-                 recipients={}, status=STATUS_SENT):
+                 recipients={}, status=STATUS_SENT, envelopeId=None):
         """Setup."""
         self.documents = documents
         self.emailBlurb = emailBlurb
@@ -208,7 +208,7 @@ class Envelope(DocuSignObject):
         self.status = status
 
         #: ID in DocuSign database.
-        self.envelopeId = None
+        self.envelopeId = envelopeId
 
     def to_dict(self):
         """Return dict representation of model.
@@ -282,12 +282,13 @@ class Envelope(DocuSignObject):
 
     def post_recipient_view(self, client, routingOrder, returnUrl):
         """Use ``client`` to fetch embedded signing URL for recipient."""
-        recipient = self.recipients[routingOrder]
+        recipient = self.recipients[routingOrder - 1]
         response_data = client.post_recipient_view(
             envelopeId=self.envelopeId,
             clientUserId=recipient.clientUserId,
             email=recipient.email,
             userId=recipient.userId,
+            userName=recipient.name,
             returnUrl=returnUrl,
         )
         return response_data['url']

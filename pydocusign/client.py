@@ -3,6 +3,7 @@ from collections import namedtuple
 from io import BytesIO
 import json
 
+import certifi
 import pycurl
 import requests
 
@@ -36,6 +37,10 @@ class DocuSignClient(object):
         #: User's URL, i.e. the one mentioning :attr:`account_id`.
         #: This attribute can be guessed via :meth:`login_information`.
         self.account_url = account_url
+        if self.root_url and self.account_id and not self.account_url:
+            self.account_url = '{root}/accounts/{account}'.format(
+                root=self.root_url,
+                account=self.account_id)
 
     def base_headers(self):
         """Return dictionary of base headers for all HTTP requests."""
@@ -87,7 +92,7 @@ class DocuSignClient(object):
             "\r\n"
             "\r\n"
             "--myboundary\r\n"
-            "Content-Type: application/json\r\n"
+            "Content-Type: application/json; charset=UTF-8\r\n"
             "Content-Disposition: form-data\r\n"
             "\r\n"
             "{json_data}\r\n"
@@ -113,6 +118,9 @@ class DocuSignClient(object):
         """POST to /envelopes and return created envelope ID."""
         parts = self._create_envelope_from_document_request(envelope)
         c = pycurl.Curl()
+        c.setopt(pycurl.SSL_VERIFYPEER, 1)
+        c.setopt(pycurl.SSL_VERIFYHOST, 2)
+        c.setopt(pycurl.CAINFO, certifi.where())
         c.setopt(pycurl.URL, parts['url'])
         c.setopt(
             pycurl.HTTPHEADER,
@@ -146,7 +154,7 @@ class DocuSignClient(object):
 
     def post_recipient_view(self, authenticationMethod=None,
                             clientUserId='', email='', envelopeId='',
-                            returnUrl='', userId=''):
+                            returnUrl='', userId='', userName=''):
         """POST to {account}/envelopes/{envelopeId}/views/recipient.
 
         This is the method to start embedded signing for recipient.
@@ -166,6 +174,7 @@ class DocuSignClient(object):
             'envelopeId': envelopeId,
             'returnUrl': returnUrl,
             'userId': userId,
+            'userName': userName,
         }
         headers = self.base_headers()
         headers['Content-Type'] = 'application/json'
