@@ -1,3 +1,22 @@
 ######
 Vision
 ######
+
+`pydocusign` is a Python client for `DocuSign`_ signature SAAS platform.
+
+As `pydocusign` author, I basically needed Python bindings for DocuSign API,
+but I did not find one either on
+https://pypi.python.org/pypi?%3Aaction=search&term=docusign or
+https://www.docusign.com/developer-center/quick-start/api-explorer/helper-library.
+So initiating a new one looked like a fair start. I published it under BSD so
+that it can be used, improved and maintained by a community.
+
+So, **feel free to report issues, request features or refactoring!** See
+:doc:`/contributing` for details.
+
+
+.. rubric:: Notes & references
+
+.. target-notes::
+
+.. _`DocuSign`: https://www.docusign.com

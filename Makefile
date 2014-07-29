@@ -25,9 +25,10 @@ develop:
 
 
 #: clean - Basic cleanup, mostly temporary files.
-clean: clean-build clean-pyc
+clean:
 	find . -name '*.pyc' -delete
 	find . -name '*.pyo' -delete
+	find . -name '__pycache__' -delete
 
 
 #: distclean - Remove local builds, such as *.egg-info.

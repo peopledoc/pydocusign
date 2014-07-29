@@ -115,7 +115,15 @@ class DocuSignClient(object):
         }
 
     def create_envelope_from_document(self, envelope):
-        """POST to /envelopes and return created envelope ID."""
+        """POST to /envelopes and return created envelope ID.
+
+        If ``envelope`` has no (or empty) ``envelopeId`` attribute, this
+        method sets the value.
+
+        If ``envelope`` has no (or empty) ``client`` attribute, this method
+        sets the value.
+
+        """
         parts = self._create_envelope_from_document_request(envelope)
         c = pycurl.Curl()
         c.setopt(pycurl.SSL_VERIFYPEER, 1)
@@ -140,6 +148,10 @@ class DocuSignClient(object):
         if response.status_code != 201:
             raise exceptions.DocuSignException(response)
         response_data = json.loads(response.text)
+        if not envelope.client:
+            envelope.client = self
+        if not envelope.envelopeId:
+            envelope.envelopeId = response_data['envelopeId']
         return response_data['envelopeId']
 
     def get_envelope_recipients(self, envelopeId):

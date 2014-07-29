@@ -13,6 +13,8 @@ class DocuSignObject(object):
     """Base class for DocuSign objects."""
     #: API fields. Used to iterate attributes.
     attributes = []
+    #: DocuSign client, typically assigned by client itself.
+    client = None
 
     def to_dict(self):
         """Return dict representation of model."""
@@ -258,8 +260,10 @@ class Envelope(DocuSignObject):
                 data['recipients']['signers'].append(recipient.to_dict())
         return data
 
-    def get_recipients(self, client):
+    def get_recipients(self, client=None):
         """Use client to fetch and update info about recipients.
+
+        If ``client`` is ``None``, :attr:`client` is tried.
 
         .. warning::
 
@@ -273,6 +277,8 @@ class Envelope(DocuSignObject):
            features. Feel free to pull request if you need something better ;)
 
         """
+        if client is None:
+            client = self.client
         data = client.get_envelope_recipients(self.envelopeId)
         for recipient_type, recipients in data.items():
             if recipient_type == 'signers':
@@ -280,8 +286,14 @@ class Envelope(DocuSignObject):
                     index = int(recipient_data['routingOrder']) - 1
                     self.recipients[index].userId = recipient_data['userId']
 
-    def post_recipient_view(self, client, routingOrder, returnUrl):
-        """Use ``client`` to fetch embedded signing URL for recipient."""
+    def post_recipient_view(self, routingOrder, returnUrl, client=None):
+        """Use ``client`` to fetch embedded signing URL for recipient.
+
+        If ``client`` is ``None``, :attr:`client` is tried.
+
+        """
+        if client is None:
+            client = self.client
         recipient = self.recipients[routingOrder - 1]
         response_data = client.post_recipient_view(
             envelopeId=self.envelopeId,

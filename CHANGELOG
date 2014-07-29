@@ -10,7 +10,13 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 
 Initial release.
 
-- Nothing changed yet.
+- Introduced ``DocuSignClient`` client and models. Initial features around
+  embedded signing workflow:
+
+  * login
+  * create envelope
+  * get envelope's recipients (read envelope)
+  * post recipient view (get embedded signing URL)
 
 
 .. rubric:: Notes & references

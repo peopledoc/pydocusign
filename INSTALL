@@ -13,7 +13,8 @@ If you want to install a development environment, you should go to
 Prerequisites
 *************
 
-* `Python`_ ==2.7.
+* `Python`_ 2.7, 3.3 or 3.4. Other versions may be ok but are not part of the
+  test suite at the moment.
 
 
 ************
