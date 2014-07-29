@@ -121,7 +121,7 @@ class TestDocuSignClient(unittest.TestCase):
             'multipart/form-data; boundary=myboundary')
         self.assertTrue(parts['body'].strip().startswith(
             '--myboundary\r\n'
-            'Content-Type: application/json\r\n'
+            'Content-Type: application/json; charset=UTF-8\r\n'
             'Content-Disposition: form-data\r\n'
             '\r\n'
         ))
