@@ -26,7 +26,7 @@ Resources
 * PyPI page: http://pypi.python.org/pypi/pydocusign
 * Bugtracker: https://github.com/novapost/pydocusign/issues
 * Changelog: https://pydocusign.readthedocs.org/en/latest/about/changelog.html
-* Roadmap: https://github.com/novapost/pydocusign/issues/milestones
+* Roadmap: https://github.com/novapost/pydocusign/milestones
 * Code repository: https://github.com/novapost/pydocusign
 * Continuous integration: https://travis-ci.org/novapost/pydocusign
 
