@@ -10,9 +10,9 @@ Project status
 **************
 
 `pydocusign` has just been created to provide Python bindings for DocuSign's
-API. The project is not mature yet, but authors plan to use it as soon as
-possible. It means that, while API and implementation may change a bit, authors
-do care of the changes.
+API. The project is not mature yet, but authors already use it! It means that,
+while API and implementation may change (improve!) a bit, authors do care of
+the changes.
 
 Also, help is welcome! Feel free to report issues, request features or
 refactoring!
