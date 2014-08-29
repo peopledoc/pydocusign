@@ -193,19 +193,114 @@ class Document(DocuSignObject):
         return super(Document, self).to_dict()
 
 
+DEFAULT_ENVELOPE_EVENTS = [
+    {'envelopeEventStatusCode': 'Sent', 'includeDocuments': False},
+    {'envelopeEventStatusCode': 'Delivered', 'includeDocuments': False},
+    {'envelopeEventStatusCode': 'Completed', 'includeDocuments': False},
+    {'envelopeEventStatusCode': 'Declined', 'includeDocuments': False},
+    {'envelopeEventStatusCode': 'Voided', 'includeDocuments': False},
+]
+
+
+class EventNotification(DocuSignObject):
+    """Envelope's event notification, typically callback URL and options."""
+    attributes = [
+        'url',
+        'loggingEnabled',
+        'requireAcknoledgement',
+        'useSoapInterface',
+        'soapNameSpace',
+        'includeCertificateWithSoap',
+        'signMessageWithX509Cert',
+        'includeDocuments',
+        'includeTimeZone',
+        'includeSenderAccountAsCustomField',
+        'envelopeEvents',
+    ]
+
+    def __init__(self, url='', loggingEnabled=True, requireAcknoledgement=True,
+                 useSoapInterface=False, soapNameSpace='',
+                 includeCertificateWithSoap=False,
+                 signMessageWithX509Cert=False, includeDocuments=False,
+                 includeTimeZone=True,
+                 includeSenderAccountAsCustomField=True,
+                 envelopeEvents=DEFAULT_ENVELOPE_EVENTS):
+        """Setup."""
+        #: The endpoint where envelope updates are sent.
+        self.url = url
+        self.loggingEnabled = loggingEnabled
+        self.requireAcknoledgement = requireAcknoledgement
+        self.useSoapInterface = useSoapInterface
+        self.soapNameSpace = soapNameSpace
+        self.includeCertificateWithSoap = includeCertificateWithSoap
+        self.signMessageWithX509Cert = signMessageWithX509Cert
+        self.includeDocuments = includeDocuments
+        self.includeTimeZone = includeTimeZone
+        self.includeSenderAccountAsCustomField = \
+            includeSenderAccountAsCustomField
+        self.envelopeEvents = envelopeEvents
+
+    def to_dict(self):
+        """Return dict representation of model.
+
+        >>> event_notification = EventNotification(
+        ...     url='http://example.com',
+        ... )
+        >>> event_notification.to_dict() == {
+        ...     'url': 'http://example.com',
+        ...     'loggingEnabled': True,
+        ...     'requireAcknoledgement': True,
+        ...     'useSoapInterface': False,
+        ...     'soapNameSpace': '',
+        ...     'includeCertificateWithSoap': False,
+        ...     'signMessageWithX509Cert': False,
+        ...     'includeDocuments': False,
+        ...     'includeTimeZone': True,
+        ...     'includeSenderAccountAsCustomField': True,
+        ...     'envelopeEvents': [
+        ...         {
+        ...             'envelopeEventStatusCode': 'Sent',
+        ...             'includeDocuments': False,
+        ...         },
+        ...         {
+        ...             'envelopeEventStatusCode': 'Delivered',
+        ...             'includeDocuments': False,
+        ...         },
+        ...         {
+        ...             'envelopeEventStatusCode': 'Completed',
+        ...             'includeDocuments': False,
+        ...         },
+        ...         {
+        ...             'envelopeEventStatusCode': 'Declined',
+        ...             'includeDocuments': False,
+        ...         },
+        ...         {
+        ...             'envelopeEventStatusCode': 'Voided',
+        ...             'includeDocuments': False,
+        ...         },
+        ...     ],
+        ... }
+        True
+
+        """
+        return super(EventNotification, self).to_dict()
+
+
 class Envelope(DocuSignObject):
     """An envelope."""
-    attributes = ['documents', 'emailBlurb', 'emailSubject', 'recipients',
-                  'status']
+    attributes = ['documents', 'emailBlurb', 'emailSubject',
+                  'eventNotification', 'recipients', 'status']
     STATUS_SENT = 'sent'
     STATUS_DRAFT = 'draft'
 
     def __init__(self, documents=[], emailBlurb='', emailSubject='',
-                 recipients={}, status=STATUS_SENT, envelopeId=None):
+                 recipients={}, status=STATUS_SENT, envelopeId=None,
+                 eventNotification=None):
         """Setup."""
         self.documents = documents
         self.emailBlurb = emailBlurb
         self.emailSubject = emailSubject
+        self.eventNotification = eventNotification
         self.recipients = recipients
         self.status = status
 
@@ -244,6 +339,10 @@ class Envelope(DocuSignObject):
         ...     'status': 'draft',
         ... }
         True
+        >>> notification = EventNotification(url='fake')
+        >>> envelope.eventNotification = notification
+        >>> envelope.to_dict()['eventNotification'] == notification.to_dict()
+        True
 
         """
         data = {
@@ -255,6 +354,8 @@ class Envelope(DocuSignObject):
                 'signers': [],
             },
         }
+        if self.eventNotification:
+            data['eventNotification'] = self.eventNotification.to_dict()
         for recipient in self.recipients:
             if isinstance(recipient, Signer):
                 data['recipients']['signers'].append(recipient.to_dict())

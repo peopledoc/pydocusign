@@ -25,6 +25,7 @@ from pydocusign.client import DocuSignClient  # NoQA
 from pydocusign.models import Document  # NoQA
 from pydocusign.models import DocuSignObject  # NoQA
 from pydocusign.models import Envelope  # NoQA
+from pydocusign.models import EventNotification  # NoQA
 from pydocusign.models import Recipient  # NoQA
 from pydocusign.models import Signer  # NoQA
 from pydocusign.models import SignHereTab  # NoQA

@@ -14,3 +14,15 @@ Embedded signing
 
 .. literalinclude:: ../demo/embeddedsigning.py
    :language: python
+
+You can run this code with:
+
+.. code:: sh
+
+   python demo/embeddedsigning.py
+
+.. note::
+
+   The demo can use the same environment variables as tests. See
+   :doc:`/contributing`. If you do not set environment variables, you will be
+   prompted for some configuration.
