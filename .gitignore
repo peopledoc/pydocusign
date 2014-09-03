@@ -1,8 +1,6 @@
 # Python files.
 *.pyc
 *.pyo
-*.swp
-*.un~
 *.egg-info
 
 # Tox files.
