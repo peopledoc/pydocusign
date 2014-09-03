@@ -125,7 +125,7 @@ class Signer(Recipient):
     attributes = ['clientUserId', 'email', 'name', 'recipientId', 'tabs']
 
     def __init__(self, clientUserId=None, email='', name='', recipientId=None,
-                 tabs=[], userId=None):
+                 tabs=None, userId=None):
         """Setup."""
         #: If ``None`` then the recipient is remote (email sent) else embedded.
         self.clientUserId = clientUserId
@@ -146,7 +146,7 @@ class Signer(Recipient):
         #:
         #: Optional element only used with recipient types
         #: :class:`InPersonSigner` and :class:`Signer`.
-        self.tabs = tabs
+        self.tabs = tabs or []
 
         #: User ID on DocuSign side. It is an UUID.
         self.userId = userId
