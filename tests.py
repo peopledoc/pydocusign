@@ -58,6 +58,12 @@ class TestDocuSignClient(unittest.TestCase):
                                 xPosition=100,
                                 yPosition=100,
                             ),
+                            pydocusign.ApproveTab(
+                                documentId=1,
+                                pageNumber=1,
+                                xPosition=100,
+                                yPosition=200,
+                            ),
                         ],
                     ),
                 ])
