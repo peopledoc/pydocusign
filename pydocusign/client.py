@@ -2,6 +2,7 @@
 from collections import namedtuple
 from io import BytesIO
 import json
+import logging
 
 import certifi
 import pycurl
@@ -9,6 +10,8 @@ import requests
 
 from pydocusign import exceptions
 
+
+logger = logging.getLogger(__name__)
 
 Response = namedtuple('Response', ['status_code', 'text'])
 
@@ -62,7 +65,27 @@ class DocuSignClient(object):
         url = '{root}/login_information'.format(root=self.root_url)
         headers = self.base_headers()
         headers['Content-Type'] = 'application/json'
-        response = requests.get(url, headers=headers)
+        try:
+            response = requests.get(url, headers=headers)
+        except requests.exceptions.RequestException as exception:
+            msg = "DocuSign request error: " \
+                  "GET {url} failed ; " \
+                  "Error: {exception}".format(url=url, exception=exception)
+            logger.error(msg)
+            raise exceptions.DocuSignException(msg)
+        if response.status_code != 200:
+            error_data = json.loads(response.text)
+            msg = "DocuSign login failed: " \
+                  "GET {url} returned {status} ; " \
+                  "Error code: {error_code} ; " \
+                  "Error message: '{error_msg}'".format(
+                      url=url,
+                      status=response.status_code,
+                      error_code=error_data['errorCode'],
+                      error_msg=error_data['message'],
+                  )
+            logger.error(msg)
+            raise exceptions.DocuSignException(msg)
         data = response.json()
         self.account_id = data['loginAccounts'][0]['accountId']
         self.account_url = '{root}/accounts/{account}'.format(
