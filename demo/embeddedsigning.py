@@ -12,13 +12,51 @@ import pydocusign
 from pydocusign.test import fixtures_dir
 
 
+def prompt(environ_key, description, default):
+    try:
+        return os.environ[environ_key]
+    except KeyError:
+        value = raw_input('{description} (default: "{default}"): '.format(
+            default=default, description=description))
+        if not value:
+            return default
+        else:
+            return value
+
+
+# Get configuration from environment or prompt the user...
+root_url = prompt(
+    'PYDOCUSIGN_TEST_ROOT_URL',
+    'DocuSign API URL',
+    'https://demo.docusign.net/restapi/v2')
+username = prompt(
+    'PYDOCUSIGN_TEST_USERNAME',
+    'DocuSign API username',
+    '')
+password = prompt(
+    'PYDOCUSIGN_TEST_PASSWORD',
+    'DocuSign API password',
+    '')
+integrator_key = prompt(
+    'PYDOCUSIGN_TEST_INTEGRATOR_KEY',
+    'DocuSign API integrator key',
+    '')
+callback_url = prompt(
+    'PYDOCUSIGN_TEST_CALLBACK_URL',
+    'Envelope callback URL',
+    '')
+signer_return_url = prompt(
+    'PYDOCUSIGN_TEST_SIGNER_RETURN_URL',
+    'Signer return URL',
+    '')
+
+
 # Create a client.
 client = pydocusign.DocuSignClient(
-    root_url=os.environ.get('PYDOCUSIGN_TEST_ROOT_URL',
-                            'https://demo.docusign.net/restapi/v2'),
-    username=os.environ['PYDOCUSIGN_TEST_USERNAME'],
-    password=os.environ['PYDOCUSIGN_TEST_PASSWORD'],
-    integrator_key=os.environ['PYDOCUSIGN_TEST_INTEGRATOR_KEY'],
+    root_url=root_url,
+    username=username,
+    password=password,
+    integrator_key=integrator_key,
 )
 
 
@@ -49,11 +87,11 @@ signers = [
 
 # Create envelope with embedded signing.
 print("2. POST {account}/envelopes")
+event_notification = pydocusign.EventNotification(
+    url=callback_url,
+)
 with open(os.path.join(fixtures_dir(), 'test.pdf'), 'rb') as pdf_file:
     envelope = pydocusign.Envelope(
-        emailSubject='This is the subject',
-        emailBlurb='This is the body',
-        status=pydocusign.Envelope.STATUS_SENT,
         documents=[
             pydocusign.Document(
                 name='document.pdf',
@@ -61,6 +99,10 @@ with open(os.path.join(fixtures_dir(), 'test.pdf'), 'rb') as pdf_file:
                 data=pdf_file,
             ),
         ],
+        emailSubject='This is the subject',
+        emailBlurb='This is the body',
+        eventNotification=event_notification,
+        status=pydocusign.Envelope.STATUS_SENT,
         recipients=signers,
     )
     client.create_envelope_from_document(envelope)
@@ -78,5 +120,5 @@ print("   Received UserId for recipient 0: {0}".format(
 print("4. Get DocuSign Recipient View")
 signing_url = envelope.post_recipient_view(
     routingOrder=0,
-    returnUrl='http://example.com')
+    returnUrl=signer_return_url)
 print("   Received signing URL: {0}".format(signing_url))

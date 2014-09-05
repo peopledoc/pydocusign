@@ -8,7 +8,10 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.2 (unreleased)
 ----------------
 
-- Nothing changed yet.
+Integrate more DocuSign features.
+
+- Feature #1 - Envelopes can be created with ``eventNotification`` argument,
+  which allows to setup API callbacks on signature updates.
 
 
 0.1 (2014-07-30)
