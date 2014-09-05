@@ -13,6 +13,12 @@ Integrate more DocuSign features.
 - Feature #1 - Envelopes can be created with ``eventNotification`` argument,
   which allows to setup API callbacks on signature updates.
 
+- Feature #3 - Added support for "approve tabs", which allow signer to sign a
+  document without adding visible text/graphic to the document.
+
+- Feature #5 - DocuSignClient.login_information raises DocuSignException and
+  emits logs on error.
+
 
 0.1 (2014-07-30)
 ----------------

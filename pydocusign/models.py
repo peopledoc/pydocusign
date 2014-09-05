@@ -34,10 +34,11 @@ class Tab(DocuSignObject):
     https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Tab%20Parameters.htm
 
     """
+    tabs_name = None
 
 
-class SignHereTab(Tab):
-    """Tag to have a recipient place his signature in the document."""
+class PositionnedTab(Tab):
+    """Base class for a positionned DocuSign Tab."""
     attributes = ['documentId', 'pageNumber', 'xPosition', 'yPosition']
 
     def __init__(self, documentId=None, pageNumber=1, xPosition=0,
@@ -54,6 +55,11 @@ class SignHereTab(Tab):
 
         #: Vertical offset of the tab on the page, from top.
         self.yPosition = yPosition
+
+
+class SignHereTab(PositionnedTab):
+    """Tag to have a recipient place his signature in the document."""
+    tabs_name = 'signHereTabs'
 
     def to_dict(self):
         """Return dict representation of model.
@@ -73,6 +79,30 @@ class SignHereTab(Tab):
 
         """
         return super(SignHereTab, self).to_dict()
+
+
+class ApproveTab(PositionnedTab):
+    """Tag to have a recipient approve the document."""
+    tabs_name = 'approveTabs'
+
+    def to_dict(self):
+        """Return dict representation of model.
+
+        >>> tab = ApproveTab(
+        ...     documentId=2,
+        ...     pageNumber=1,
+        ...     xPosition=100,
+        ...     yPosition=200)
+        >>> tab.to_dict() == {
+        ...     'documentId': 2,
+        ...     'pageNumber': 1,
+        ...     'xPosition': 100,
+        ...     'yPosition': 200,
+        ... }
+        True
+
+        """
+        return super(ApproveTab, self).to_dict()
 
 
 class Recipient(DocuSignObject):
@@ -95,7 +125,7 @@ class Signer(Recipient):
     attributes = ['clientUserId', 'email', 'name', 'recipientId', 'tabs']
 
     def __init__(self, clientUserId=None, email='', name='', recipientId=None,
-                 tabs=[], userId=None):
+                 tabs=None, userId=None):
         """Setup."""
         #: If ``None`` then the recipient is remote (email sent) else embedded.
         self.clientUserId = clientUserId
@@ -116,7 +146,7 @@ class Signer(Recipient):
         #:
         #: Optional element only used with recipient types
         #: :class:`InPersonSigner` and :class:`Signer`.
-        self.tabs = tabs
+        self.tabs = tabs or []
 
         #: User ID on DocuSign side. It is an UUID.
         self.userId = userId
@@ -145,6 +175,27 @@ class Signer(Recipient):
         ...     }
         ... }
         True
+        >>> tab = ApproveTab(
+        ...     documentId=1,
+        ...     pageNumber=2,
+        ...     xPosition=100,
+        ...     yPosition=200)
+        >>> signer = Signer(
+        ...     clientUserId='some ID in your DB',
+        ...     email='signer@example.com',
+        ...     name='My Name',
+        ...     recipientId=1,
+        ...     tabs=[tab])
+        >>> signer.to_dict() == {
+        ...     'clientUserId': 'some ID in your DB',
+        ...     'email': 'signer@example.com',
+        ...     'name': 'My Name',
+        ...     'recipientId': 1,
+        ...     'tabs': {
+        ...         'approveTabs': [tab.to_dict()],
+        ...     }
+        ... }
+        True
 
         """
         data = {
@@ -153,12 +204,11 @@ class Signer(Recipient):
             'name': self.name,
             'recipientId': self.recipientId,
             'tabs': {
-                'signHereTabs': [],
             },
         }
         for tab in self.tabs:
-            if isinstance(tab, SignHereTab):
-                data['tabs']['signHereTabs'].append(tab.to_dict())
+            data['tabs'].setdefault(tab.tabs_name, [])
+            data['tabs'][tab.tabs_name].append(tab.to_dict())
         return data
 
 
