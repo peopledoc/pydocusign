@@ -106,6 +106,8 @@ class DocuSignClient(object):
            of `pydocusign`, not of `DocuSign`.
 
         """
+        if not self.account_url:
+            self.login_information()
         url = '{account}/envelopes'.format(account=self.account_url)
         data = envelope.to_dict()
         document = envelope.documents[0].data
@@ -179,6 +181,8 @@ class DocuSignClient(object):
 
     def get_envelope_recipients(self, envelopeId):
         """GET {account}/envelopes/{envelopeId}/recipients and return JSON."""
+        if not self.account_url:
+            self.login_information()
         url = '{account}/envelopes/{envelopeId}/recipients' \
               .format(account=self.account_url,
                       envelopeId=envelopeId)
@@ -197,6 +201,8 @@ class DocuSignClient(object):
         Return JSON from DocuSign response.
 
         """
+        if not self.account_url:
+            self.login_information()
         url = '{account}/envelopes/{envelopeId}/views/recipient' \
               .format(account=self.account_url,
                       envelopeId=envelopeId)
