@@ -19,8 +19,8 @@ README = open(os.path.join(here, 'README.rst')).read()
 VERSION = open(os.path.join(here, 'VERSION')).read().strip()
 AUTHOR = u'Benoît Bryon'
 EMAIL = 'benoit@marmelune.net'
-LICENSE = ''
-URL = ''
+LICENSE = 'BSD'
+URL = 'https://pypi.python.org/pypi/pydocusign/'
 CLASSIFIERS = [
     'Programming Language :: Python :: 2.7',
     'Programming Language :: Python :: 3.3',
