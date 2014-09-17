@@ -221,3 +221,26 @@ class DocuSignClient(object):
         headers['Content-Type'] = 'application/json'
         response = requests.post(url, headers=headers, data=json.dumps(data))
         return response.json()
+
+    def get_envelope_document_list(self, envelopeId):
+        """GET the list of envelope's documents."""
+        if not self.account_url:
+            self.login_information()
+        url = '{account}/envelopes/{envelopeId}/documents' \
+              .format(account=self.account_url,
+                      envelopeId=envelopeId)
+        headers = self.base_headers()
+        response = requests.get(url, headers=headers)
+        return response.json()['envelopeDocuments']
+
+    def get_envelope_document(self, envelopeId, documentId):
+        """Download one document in envelope, return file-like object."""
+        if not self.account_url:
+            self.login_information()
+        url = '{account}/envelopes/{envelopeId}/documents/{documentId}' \
+              .format(account=self.account_url,
+                      envelopeId=envelopeId,
+                      documentId=documentId)
+        headers = self.base_headers()
+        response = requests.get(url, headers=headers, stream=True)
+        return response.raw

@@ -455,3 +455,19 @@ class Envelope(DocuSignObject):
             returnUrl=returnUrl,
         )
         return response_data['url']
+
+    def get_document_list(self, client=None):
+        """Use ``client`` to fetch document list."""
+        if client is None:
+            client = self.client
+        return client.get_envelope_document_list(self.envelopeId)
+
+    def get_document(self, documentId, client=None):
+        """Use ``client`` to download one document."""
+        if client is None:
+            client = self.client
+        return client.get_envelope_document(self.envelopeId, documentId)
+
+    def get_certificate(self, client=None):
+        """Use ``client`` to download special document: certificate."""
+        return self.get_document(documentId='certificate', client=client)
