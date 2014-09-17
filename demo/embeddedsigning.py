@@ -7,6 +7,7 @@ See also http://iodocs.docusign.com/APIWalkthrough/embeddedSigning
 """
 from __future__ import print_function
 import os
+import sha
 
 import pydocusign
 from pydocusign.test import fixtures_dir
@@ -90,7 +91,8 @@ print("2. POST {account}/envelopes")
 event_notification = pydocusign.EventNotification(
     url=callback_url,
 )
-with open(os.path.join(fixtures_dir(), 'test.pdf'), 'rb') as pdf_file:
+input_document_path = os.path.join(fixtures_dir(), 'test.pdf')
+with open(input_document_path, 'rb') as pdf_file:
     envelope = pydocusign.Envelope(
         documents=[
             pydocusign.Document(
@@ -122,3 +124,19 @@ signing_url = envelope.post_recipient_view(
     routingOrder=0,
     returnUrl=signer_return_url)
 print("   Received signing URL: {0}".format(signing_url))
+
+
+# Download signature documents.
+print("5. List signature documents.")
+document_list = envelope.get_document_list()
+print("   Received document list: {0}".format(document_list))
+print("6. Download document from DocuSign.")
+document = envelope.get_document(document_list[0]['documentId'])
+document_sha = sha.new(document.read()).hexdigest()
+print("   Document SHA1: {0}".format(document_sha))
+document.close()
+print("7. Download signature certificate from DocuSign.")
+document = envelope.get_certificate()
+document_sha = sha.new(document.read()).hexdigest()
+print("   Certificate SHA1: {0}".format(document_sha))
+document.close()
