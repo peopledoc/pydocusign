@@ -243,4 +243,5 @@ class DocuSignClient(object):
                       documentId=documentId)
         headers = self.base_headers()
         response = requests.get(url, headers=headers, stream=True)
+        setattr(response.raw, 'close', response.close)
         return response.raw
