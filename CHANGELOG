@@ -8,7 +8,10 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.5 (unreleased)
 ----------------
 
-- Nothing changed yet.
+Minor feature around document download.
+
+- Feature #12: DocuSignClient.get_envelope_document() returns a file-like
+  object with a close() method.
 
 
 0.4 (2014-09-17)
