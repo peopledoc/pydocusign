@@ -8,7 +8,10 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.6 (unreleased)
 ----------------
 
-- Nothing changed yet.
+Handle recipient event notifications too.
+
+- Feature #15 - On envelope creation, register callback URL for recipient
+  events.
 
 
 0.5 (2014-09-26)
