@@ -243,12 +243,29 @@ class Document(DocuSignObject):
         return super(Document, self).to_dict()
 
 
+#: Default list of envelope events on which register for notifications.
+#:
+#: By default: every envelope event.
 DEFAULT_ENVELOPE_EVENTS = [
     {'envelopeEventStatusCode': 'Sent', 'includeDocuments': False},
     {'envelopeEventStatusCode': 'Delivered', 'includeDocuments': False},
     {'envelopeEventStatusCode': 'Completed', 'includeDocuments': False},
     {'envelopeEventStatusCode': 'Declined', 'includeDocuments': False},
     {'envelopeEventStatusCode': 'Voided', 'includeDocuments': False},
+]
+
+
+#: Default list of recipient events on which register for notifications.
+#:
+#: By default: every recipient event.
+DEFAULT_RECIPIENT_EVENTS = [
+    {'recipientEventStatusCode': 'AuthenticationFailed',
+     'includeDocuments': False},
+    {'recipientEventStatusCode': 'AutoResponded', 'includeDocuments': False},
+    {'recipientEventStatusCode': 'Completed', 'includeDocuments': False},
+    {'recipientEventStatusCode': 'Declined', 'includeDocuments': False},
+    {'recipientEventStatusCode': 'Delivered', 'includeDocuments': False},
+    {'recipientEventStatusCode': 'Sent', 'includeDocuments': False},
 ]
 
 
@@ -266,6 +283,7 @@ class EventNotification(DocuSignObject):
         'includeTimeZone',
         'includeSenderAccountAsCustomField',
         'envelopeEvents',
+        'recipientEvents',
     ]
 
     def __init__(self, url='', loggingEnabled=True, requireAcknoledgement=True,
@@ -274,7 +292,8 @@ class EventNotification(DocuSignObject):
                  signMessageWithX509Cert=False, includeDocuments=False,
                  includeTimeZone=True,
                  includeSenderAccountAsCustomField=True,
-                 envelopeEvents=DEFAULT_ENVELOPE_EVENTS):
+                 envelopeEvents=None,
+                 recipientEvents=None):
         """Setup."""
         #: The endpoint where envelope updates are sent.
         self.url = url
@@ -288,7 +307,12 @@ class EventNotification(DocuSignObject):
         self.includeTimeZone = includeTimeZone
         self.includeSenderAccountAsCustomField = \
             includeSenderAccountAsCustomField
+        if envelopeEvents is None:
+            envelopeEvents = DEFAULT_ENVELOPE_EVENTS
         self.envelopeEvents = envelopeEvents
+        if recipientEvents is None:
+            recipientEvents = DEFAULT_RECIPIENT_EVENTS
+        self.recipientEvents = recipientEvents
 
     def to_dict(self):
         """Return dict representation of model.
@@ -326,6 +350,32 @@ class EventNotification(DocuSignObject):
         ...         },
         ...         {
         ...             'envelopeEventStatusCode': 'Voided',
+        ...             'includeDocuments': False,
+        ...         },
+        ...     ],
+        ...     'recipientEvents': [
+        ...         {
+        ...             'recipientEventStatusCode': 'AuthenticationFailed',
+        ...             'includeDocuments': False,
+        ...         },
+        ...         {
+        ...             'recipientEventStatusCode': 'AutoResponded',
+        ...             'includeDocuments': False,
+        ...         },
+        ...         {
+        ...             'recipientEventStatusCode': 'Completed',
+        ...             'includeDocuments': False,
+        ...         },
+        ...         {
+        ...             'recipientEventStatusCode': 'Declined',
+        ...             'includeDocuments': False,
+        ...         },
+        ...         {
+        ...             'recipientEventStatusCode': 'Delivered',
+        ...             'includeDocuments': False,
+        ...         },
+        ...         {
+        ...             'recipientEventStatusCode': 'Sent',
         ...             'includeDocuments': False,
         ...         },
         ...     ],
