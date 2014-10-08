@@ -31,3 +31,4 @@ from pydocusign.models import Signer  # NoQA
 from pydocusign.models import SignHereTab  # NoQA
 from pydocusign.models import ApproveTab  # NoQA
 from pydocusign.models import Tab  # NoQA
+from pydocusign.parser import DocuSignCallbackParser  # NoQA
