@@ -6,7 +6,7 @@ import pydocusign
 from pydocusign.test import docusign_client_factory, fixtures_dir
 
 
-class TestDocuSignClient(unittest.TestCase):
+class DocuSignClientTestCase(unittest.TestCase):
     """Test suite for :class:`pydocusign.client.DocuSignClient`."""
     def test_api(self):
         """DocuSignClient is part of pydocusign root API."""
@@ -79,3 +79,7 @@ class TestDocuSignClient(unittest.TestCase):
             'Content-Disposition: form-data\r\n'
             '\r\n'
         ))
+
+
+class DocuSignCallbackParserTestCase(unittest.TestCase):
+    """Tests around DocuSign callback content parsers."""

@@ -243,15 +243,34 @@ class Document(DocuSignObject):
         return super(Document, self).to_dict()
 
 
+ENVELOPE_STATUS_LIST = [
+    'Created',
+    'Sent',
+    'Delivered',
+    'Completed',
+    'Declined',
+    'Voided',
+]
+
+
 #: Default list of envelope events on which register for notifications.
 #:
 #: By default: every envelope event.
 DEFAULT_ENVELOPE_EVENTS = [
-    {'envelopeEventStatusCode': 'Sent', 'includeDocuments': False},
-    {'envelopeEventStatusCode': 'Delivered', 'includeDocuments': False},
-    {'envelopeEventStatusCode': 'Completed', 'includeDocuments': False},
-    {'envelopeEventStatusCode': 'Declined', 'includeDocuments': False},
-    {'envelopeEventStatusCode': 'Voided', 'includeDocuments': False},
+    {'envelopeEventStatusCode': event, 'includeDocuments': False}
+    for event in ENVELOPE_STATUS_LIST
+    if event is not 'Created'  # Except some events.
+]
+
+
+RECIPIENT_STATUS_LIST = [
+    'AuthenticationFailed',
+    'AutoResponded',
+    'Signed',
+    'Completed',
+    'Declined',
+    'Delivered',
+    'Sent',
 ]
 
 
@@ -259,13 +278,9 @@ DEFAULT_ENVELOPE_EVENTS = [
 #:
 #: By default: every recipient event.
 DEFAULT_RECIPIENT_EVENTS = [
-    {'recipientEventStatusCode': 'AuthenticationFailed',
-     'includeDocuments': False},
-    {'recipientEventStatusCode': 'AutoResponded', 'includeDocuments': False},
-    {'recipientEventStatusCode': 'Completed', 'includeDocuments': False},
-    {'recipientEventStatusCode': 'Declined', 'includeDocuments': False},
-    {'recipientEventStatusCode': 'Delivered', 'includeDocuments': False},
-    {'recipientEventStatusCode': 'Sent', 'includeDocuments': False},
+    {'recipientEventStatusCode': event, 'includeDocuments': False}
+    for event in RECIPIENT_STATUS_LIST
+    if event is not 'Signed'  # Except some events.
 ]
 
 
@@ -484,8 +499,10 @@ class Envelope(DocuSignObject):
         for recipient_type, recipients in data.items():
             if recipient_type == 'signers':
                 for recipient_data in recipients:
-                    index = int(recipient_data['routingOrder']) - 1
-                    self.recipients[index].userId = recipient_data['userId']
+                    for rec in self.recipients:
+                        if str(rec.clientUserId) == \
+                                recipient_data['clientUserId']:
+                            rec.userId = recipient_data['userId']
 
     def post_recipient_view(self, routingOrder, returnUrl, client=None):
         """Use ``client`` to fetch embedded signing URL for recipient.

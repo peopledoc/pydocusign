@@ -33,7 +33,10 @@ KEYWORDS = [
 ]
 PACKAGES = [NAME.replace('-', '_')]
 REQUIREMENTS = [
+    'beautifulsoup4',
     'certifi',
+    'python-dateutil',
+    'lxml',
     'pycurl',
     'requests',
     'setuptools',
