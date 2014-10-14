@@ -17,7 +17,7 @@
           {% if signer.ClientUserId %}<ClientUserId>{{ signer.ClientUserId }}</ClientUserId>{% endif %}
           <CustomFields />
           <AccountStatus>Active</AccountStatus>
-          <RecipientId>{{ signer.RecipientId|default('81077740-807b-4a1b-9af3-74f79544d81%d'|format(loop.index0) }}</RecipientId>
+          <RecipientId>{{ signer.RecipientId|default('81077740-807b-4a1b-9af3-74f79544d81%d'|format(loop.index0)) }}</RecipientId>
         </RecipientStatus>
       {% endfor %}
     </RecipientStatuses>
