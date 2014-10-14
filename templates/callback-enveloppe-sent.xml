@@ -21,13 +21,13 @@
         </RecipientStatus>
       {% endfor %}
     </RecipientStatuses>
-    <TimeGenerated>{{ TimeGenerated|default('2014-10-06T00:58:49.1655913' }}</TimeGenerated>
+    <TimeGenerated>{{ TimeGenerated|default('2014-10-06T00:58:49.1655913') }}</TimeGenerated>
     <EnvelopeID>{{ Status|default('dffa5826-c5a8-423a-ab31-3e2fafd01c58') }}</EnvelopeID>
     <Subject>{{ Subject }}</Subject>
     <UserName>{{ UserName }}</UserName>
     <Email>{{ Email }}</Email>
     <Status>{{ Status|default('Sent') }}</Status>
-    <Created>{{ Created|default('2014-10-06T00:58:28.713' }}</Created>
+    <Created>{{ Created|default('2014-10-06T00:58:28.713') }}</Created>
     <Sent>{{ Sent|default('2014-10-06T00:58:29.043') }}</Sent>
     <ACStatus>Original</ACStatus>
     <ACStatusDate>2014-10-06T00:58:28.713</ACStatusDate>
