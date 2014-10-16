@@ -1,9 +1,10 @@
 """Tests for `pydocusign`."""
+import json
 import os
 import unittest
 
 import pydocusign
-from pydocusign.test import docusign_client_factory, fixtures_dir
+import pydocusign.test
 
 
 class DocuSignClientTestCase(unittest.TestCase):
@@ -14,7 +15,7 @@ class DocuSignClientTestCase(unittest.TestCase):
 
     def test_login_information(self):
         """DocuSignClient.login_information() populates account information."""
-        docusign = docusign_client_factory()
+        docusign = pydocusign.test.docusign_client_factory()
         result = docusign.login_information()
         self.assertIn('loginAccounts', result)
         self.assertEqual(len(result['loginAccounts']), 1)
@@ -32,9 +33,10 @@ class DocuSignClientTestCase(unittest.TestCase):
 
     def test_create_envelope_from_document_request(self):
         """Request for creating envelope for document has expected format."""
-        docusign = docusign_client_factory()
+        docusign = pydocusign.test.docusign_client_factory()
         docusign.login_information()
-        with open(os.path.join(fixtures_dir(), 'test.pdf'), 'rb') as pdf_file:
+        with open(os.path.join(pydocusign.test.fixtures_dir(), 'test.pdf'),
+                  'rb') as pdf_file:
             envelope = pydocusign.Envelope(
                 emailSubject='This is the subject',
                 emailBlurb='This is the body',
@@ -82,4 +84,22 @@ class DocuSignClientTestCase(unittest.TestCase):
 
 
 class DocuSignCallbackParserTestCase(unittest.TestCase):
-    """Tests around DocuSign callback content parsers."""
+    """Tests around DocuSign callback content parsers.
+
+    At the same time, we use callback templates, so that they are checked too.
+
+    """
+    @classmethod
+    def setUpClass(cls):
+        """Let's generate some callbacks content, once."""
+        unittest.TestCase.setUpClass(cls)
+        data_file = os.path.join(pydocusign.test.fixtures_dir(),
+                                 'callback-data.json')
+        with open(data_file) as data_file_obj:
+            data = json.load(data_file_obj)
+        cls.xml = pydocusign.test.generate_notification_callback_body(data)
+
+    def test_properties(self):
+        """Test parser properties."""
+        parser = pydocusign.DocuSignCallbackParser(self.xml)
+        self.assertEqual(parser.envelope_status, 'Sent')

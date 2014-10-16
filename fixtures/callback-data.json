@@ -1,0 +1,19 @@
+{
+  "RecipientStatuses": [
+    {
+      "Email": "john.doe@example.com",
+      "UserName": "John Doe",
+      "ClientUserId": "specificic-id"
+    },
+    {
+      "Email": "jules.cesar@example.com",
+      "UserName": "Jules César",
+      "ClientUserId": "another-id"
+    }
+  ],
+  "Subject": "Demo signature.",
+  "UserName": "Bob",
+  "Email": "bob@example.com",
+  "AccountId": "123456",
+  "AccountName": "Bobby"
+}

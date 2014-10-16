@@ -65,42 +65,24 @@ def docusign_client_factory(settings=os.environ):
 
 def generate_notification_callback_body(
         data,
-        template='callback.xml',
-        diecutter_root='https://diecutter.alwaysdata.net/github',
-        template_owner='novapost',
-        template_project='pydocusign',
-        template_revision='master',
-        template_path='pydocusign/templates'):
+        template_url='https://diecutter.alwaysdata.net/github/novapost/'
+                     'pydocusign/14-notification-callback/'
+                     'pydocusign/templates/callback.xml'):
     """Return custom body content to mimic DocuSign notification callbacks.
 
     Body content is generated from template, using diecutter web service.
 
     ``data`` argument is a dictionary of data you expect in the callback.
 
-    ``template`` is template file name, one in ``pydocusign/templates/``
-    directory of https://github.com/novapost/pydocusign/tree/master/pydocusign/
-    repository.
+    ``template_url`` is diecutter's template resource URL, which is typically
+    in the form
+    https://diecutter.alwaysdata.net/github/{owner}/{project}/{revision}/{path}
 
     Raise exception if a problem occurs during content generation.
-
-    Additional (optional) arguments:
-
-    * ``diecutter_root``: root URL of diecutter, API endpoint.
-    * ``template_owner``: Github user that owns the template.
-    * ``template_project``: Name of Github project that contains the template.
-    * ``template_revision``: Commit id or branch of the template.
-    * ``template_path``: directory where the template lives.
 
     """
     payload = json.dumps(data)
     headers = {'content-type': 'application/json'}
-    template_url = '/'.join([
-        diecutter_root,
-        template_owner,
-        template_project,
-        template_revision,
-        template_path,
-        template])
     try:
         response = requests.post(template_url, data=payload, headers=headers)
     except requests.exceptions.RequestException as exception:
@@ -121,16 +103,14 @@ def generate_notification_callback_body(
     return response.text
 
 
-def post_notification_callback(callback_url, *args, **kwargs):
+def post_notification_callback(callback_url, data, template_url=None):
     """Post fake notification callback to ``callback_url``, return response.
 
-    Additional required arguments: ``data`` and ``template``.
-
-    For a description of additional (required and optional) arguments, see
+    Additional arguments: ``data`` and ``template_url``. See
     :func:`generate_notification_callback_body`.
 
     """
-    body = generate_notification_callback_body(*args, **kwargs)
+    body = generate_notification_callback_body(data, template_url)
     # POST body to callback URL.
     headers = {'content-type': 'text/xml'}
     response = requests.post(callback_url, data=body, headers=headers)

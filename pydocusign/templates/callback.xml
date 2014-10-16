@@ -1,28 +1,30 @@
 {# Jinja2 #}<?xml version="1.0" encoding="utf-8"?>
-<!-- Sample body of the request posted by DocuSign as event notification when all signers signed documents, during embedded signing workflow. -->
-<DocuSignEnvelopeInformation xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.docusign.net/API/3.0">
+<!-- Sample body of the request posted by DocuSign as event notification. -->
+<DocuSignEnvelopeInformation xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			     xmlns="http://www.docusign.net/API/3.0">
   <EnvelopeStatus>
     <RecipientStatuses>
-      {% for signer in signers %}
+      {% for RecipientStatus in RecipientStatuses %}
         <RecipientStatus>
-          <Type>Signer</Type>
-          <Email>{{ signer.Email }}</Email>
-          <UserName>{{ signer.UserName }}</UserName>
-          <RoutingOrder>{{ signer.RoutingOrder|default(loop.index) }}</RoutingOrder>
-          {% if signer.Sent %}<Sent>{{ signer.Sent|default('2014-10-06T00:58:28.98') }}</Sent>{% endif %}
-          {% if signer.Delivered %}<Delivered>{{ signer.Delivered|default('2014-10-06T00:58:30.98') }}</Delivered>{% endif %}
-          {% if signer.Signed %}<Signed>{{ signer.Signed|default('2014-10-06T00:58:35.98') }}</Signed>{% endif %}
-          {% if signer.Declined or signer.DeclineReason %}<Declined>{{ signer.Declined|default('2014-10-06T00:58:35.98') }}</Declined>{% endif %}
-          {% if signer.DeclineReason %}
+          <Type>{{ RecipientStatus.Type|default('Signer') }}</Type>
+          <Email>{{ RecipientStatus.Email }}</Email>
+          <UserName>{{ RecipientStatus.UserName }}</UserName>
+          <RoutingOrder>{{ RecipientStatus.RoutingOrder|default(loop.index) }}</RoutingOrder>
+          {% if RecipientStatus.Sent %}<Sent>{{ RecipientStatus.Sent|default('2014-10-03T01:23:45.678') }}</Sent>{% endif %}
+          {% if RecipientStatus.Delivered %}<Delivered>{{ RecipientStatus.Delivered|default('2014-10-05T01:23:45.678') }}</Delivered>{% endif %}
+          {% if RecipientStatus.Signed %}<Signed>{{ RecipientStatus.Signed|default('2014-10-06T01:23:45.89') }}</Signed>{% endif %}
+          {% if RecipientStatus.Declined or RecipientStatus.DeclineReason %}<Declined>{{ RecipientStatus.Declined|default('2014-10-07T01:23:45.678') }}</Declined>{% endif %}
+          {% if RecipientStatus.DeclineReason %}
             <DeclineReason xsi:nil="true" />
           {% else %}>
-            <DeclineReason>{{ signer.DeclineReason }}</DeclineReason>
+            <DeclineReason>{{ RecipientStatus.DeclineReason }}</DeclineReason>
           {% endif %}
-          <Status>{{ signer.Status|default('Sent') }}</Status>
+          <Status>{{ RecipientStatus.Status|default('Sent') }}</Status>
           <RecipientIPAddress />
-          {% if signer.ClientUserId %}<ClientUserId>{{ signer.ClientUserId }}</ClientUserId>{% endif %}
+          {% if RecipientStatus.ClientUserId %}<ClientUserId>{{ RecipientStatus.ClientUserId }}</ClientUserId>{% endif %}
           <CustomFields />
-          {% if signer.Signed %}
+          {% if RecipientStatus.Signed %}
             <TabStatuses>
               <TabStatus>
                 <TabType>SignHere</TabType>
@@ -35,29 +37,29 @@
             </TabStatuses>
           {% endif %}
           <AccountStatus>Active</AccountStatus>
-          {% if signer.Delivered or signer.Signed %}
+          {% if RecipientStatus.Delivered or RecipientStatus.Signed %}
             <EsignAgreementInformation>
-              <AccountEsignId>{{ signer.AccountEsignId|default('f32da517-df75-4497-9b9d-6a6270329b1%d'|format(loop.index0)) }}</AccountEsignId>
-              <UserEsignId>{{ signer.UserEsignId|default('cbe72a25-51fb-4208-9a83-6403b81fa2d%d'|format(loop.index0)) }}</UserEsignId>
-              <AgreementDate>{{ signer.AgreementDate|default('2014-10-06T00:58:30.98') }}</AgreementDate>
+              <AccountEsignId>{{ RecipientStatus.AccountEsignId|default('f32da517-df75-4497-9b9d-6a6270329b1%d'|format(loop.index0)) }}</AccountEsignId>
+              <UserEsignId>{{ RecipientStatus.UserEsignId|default('cbe72a25-51fb-4208-9a83-6403b81fa2d%d'|format(loop.index0)) }}</UserEsignId>
+              <AgreementDate>{{ RecipientStatus.AgreementDate|default('2014-10-06T00:58:30.98') }}</AgreementDate>
             </EsignAgreementInformation>
           {% endif %}
-          <RecipientId>{{ signer.RecipientId|default('81077740-807b-4a1b-9af3-74f79544d81%d'|format(loop.index0)) }}</RecipientId>
+          <RecipientId>{{ RecipientStatus.RecipientId|default('81077740-807b-4a1b-9af3-74f79544d81%d'|format(loop.index0)) }}</RecipientId>
         </RecipientStatus>
       {% endfor %}
     </RecipientStatuses>
     <TimeGenerated>{{ TimeGenerated|default('2014-10-06T00:58:49.1655913') }}</TimeGenerated>
-    <EnvelopeID>{{ Status|default('dffa5826-c5a8-423a-ab31-3e2fafd01c58') }}</EnvelopeID>
+    <EnvelopeID>{{ EnvelopeId|default('dffa5826-c5a8-423a-ab31-3e2fafd01c58') }}</EnvelopeID>
     <Subject>{{ Subject }}</Subject>
     <UserName>{{ UserName }}</UserName>
     <Email>{{ Email }}</Email>
     <Status>{{ Status|default('Sent') }}</Status>
-    <Created>{{ Created|default('2014-10-06T00:58:28.713') }}</Created>
-    <Sent>{{ Sent|default('2014-10-06T00:58:29.043') }}</Sent>
-    {% if Delivered %}<Delivered>{{ Sent|default('2014-10-06T00:58:29.043') }}</Delivered>{% endif %}
-    {% if Signed %}<Signed>{{ Sent|default('2014-10-06T00:58:29.043') }}</Signed>{% endif %}
-    {% if Completed or Status=='Completed' %}<Completed>{{ Sent|default('2014-10-06T00:58:29.043') }}</Completed>{% endif %}
-    {% if Declined %}<Declined>{{ Declined|default('2014-10-06T00:58:50.043') }}</Declined>{% endif %}
+    <Created>{{ Created|default('2014-10-01T01:23:45.678') }}</Created>
+    <Sent>{{ Sent|default('2014-10-02T01:23:45.678') }}</Sent>
+    {% if Delivered %}<Delivered>{{ Delivered|default('2014-10-04T01:23:45.043') }}</Delivered>{% endif %}
+    {% if Signed %}<Signed>{{ Signed|default('2014-10-06T02:23:45.678') }}</Signed>{% endif %}
+    {% if Completed or Status=='Completed' %}<Completed>{{ Completed|default('2014-10-06T03:23:45.678') }}</Completed>{% endif %}
+    {% if Declined %}<Declined>{{ Declined|default('2014-10-07T02:23:45.678') }}</Declined>{% endif %}
     <ACStatus>Original</ACStatus>
     <ACStatusDate>{{ ACStatusDate|default('2014-10-06T00:58:28.713') }}</ACStatusDate>
     <ACHolder>{{ UserName }}</ACHolder>

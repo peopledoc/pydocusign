@@ -1,0 +1,45 @@
+#######
+Testing
+#######
+
+`pydocusign` provides some tools to help you test your applications:
+
+* :func:`~pydocusign.test.post_notification_callback`
+* :func:`~pydocusign.test.generate_notification_callback_body`
+
+
+**************************
+post_notification_callback
+**************************
+
+.. note::
+
+   Uses third-party `diecutter`_ online file generation service. See 
+   :func:`~pydocusign.test.generate_notification_callback_body` for details.
+
+.. autofunction:: pydocusign.test.post_notification_callback
+
+
+***********************************
+generate_notification_callback_body
+***********************************
+
+.. note::
+
+   This function uses third-party `diecutter`_ online file generation service.
+   This allows `pydocusign` to use templates without having template engines
+   (Jinja2) as dependencies, since this callback notification feature is for
+   test purpose only. At runtime, `pydocusign` does not require Jinja2.
+
+.. autofunction:: pydocusign.test.generate_notification_callback_body
+
+Available templates are the ones in ``pydocusign/templates`` folder of
+`pydocusign's code repository`_.
+
+
+.. rubric:: References
+
+.. target-notes::
+
+.. _`diecutter`: http://diecutter.io
+.. _`pydocusign's code repository`: https://github.com/novapost/pydocusign/
