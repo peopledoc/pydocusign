@@ -26,9 +26,8 @@ class DocuSignCallbackParser(object):
         status = self.xml_soup.EnvelopeStatus.Status.string
         if status is None:
             raise ValueError('Could not read envelope status from XML.')
-        if status not in self.ENVELOPE_STATUS_LIST:
+        if status not in models.ENVELOPE_STATUS_LIST:
             raise ValueError('Unknown status {status}'.format(status=status))
-        status = status.lower()
         return status
 
     @property
@@ -132,11 +131,11 @@ class DocuSignCallbackParser(object):
         ... </DocuSignEnvelopeInformation>
         ... '''
         >>> parser = DocuSignCallbackParser(xml_source=xml)
-        >>> parser.envelope_status_datetime('created')
+        >>> parser.envelope_status_datetime(models.ENVELOPE_STATUS_CREATED)
         ... # doctest: +NORMALIZE_WHITESPACE
         datetime.datetime(2014, 10, 6, 1, 10, 0, 120000,
                           tzinfo=tzoffset(None, -25200))
-        >>> parser.envelope_status_datetime('sent')
+        >>> parser.envelope_status_datetime(models.ENVELOPE_STATUS_SENT)
         ... # doctest: +NORMALIZE_WHITESPACE
         datetime.datetime(2014, 10, 6, 1, 41, 9, 484507,
                           tzinfo=tzoffset(None, -25200))

@@ -8,7 +8,17 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.7 (unreleased)
 ----------------
 
-- Nothing changed yet.
+Testing tools around notification callbacks.
+
+- Features #14 and #16 - ``pydocusign.test`` provides utilities to test
+  notification callbacks: generate body content for notification requests,
+  post fake notification requests to a custom URL.
+
+- Added pseudo-constants in ``pydocusign.models``, so that you can use them
+  instead of strings. As an example, you'd better use
+  ``pydocusign.models.ENVELOPE_STATUS_SENT`` instead of ``"Sent"``.
+
+  Removed ``STATUS_SENT`` and ``STATUS_DRAFT`` from ``Envelope`` model.
 
 
 0.6 (2014-10-08)
