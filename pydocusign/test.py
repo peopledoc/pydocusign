@@ -66,7 +66,7 @@ def docusign_client_factory(settings=os.environ):
 def generate_notification_callback_body(
         data,
         template_url='https://diecutter.alwaysdata.net/github/novapost/'
-                     'pydocusign/14-notification-callback/'
+                     'pydocusign/14-notification-templates/'
                      'pydocusign/templates/callback.xml'):
     """Return custom body content to mimic DocuSign notification callbacks.
 
@@ -90,14 +90,18 @@ def generate_notification_callback_body(
             'Error while generating notification callback body using '
             'template generation service at URL {url} with data {data}. '
             'Exception is {exception}.'
-            .format(url=template_url, data=data, exception=exception)
+            .format(url=template_url,
+                    data=json.dumps(data),
+                    exception=exception)
         )
     if response.status_code != 200:
         raise Exception(
             'Error while generating notification callback body using '
             'template generation service at URL {url} with data {data}. '
             'Response code {status}, body:\n{body}.'
-            .format(url=template_url, data=data, status=response.status_code,
+            .format(url=template_url,
+                    data=json.dumps(data),
+                    status=response.status_code,
                     body=response.text)
         )
     return response.text

@@ -1,9 +1,13 @@
 """Tests for `pydocusign`."""
+from datetime import datetime
 import json
 import os
 import unittest
 
+from dateutil.tz import tzoffset
+
 import pydocusign
+from pydocusign import models
 import pydocusign.test
 
 
@@ -40,7 +44,7 @@ class DocuSignClientTestCase(unittest.TestCase):
             envelope = pydocusign.Envelope(
                 emailSubject='This is the subject',
                 emailBlurb='This is the body',
-                status=pydocusign.Envelope.STATUS_SENT,
+                status=models.ENVELOPE_STATUS_SENT,
                 documents=[
                     pydocusign.Document(
                         name='document.pdf',
@@ -92,7 +96,6 @@ class DocuSignCallbackParserTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Let's generate some callbacks content, once."""
-        unittest.TestCase.setUpClass(cls)
         data_file = os.path.join(pydocusign.test.fixtures_dir(),
                                  'callback-data.json')
         with open(data_file) as data_file_obj:
@@ -102,4 +105,18 @@ class DocuSignCallbackParserTestCase(unittest.TestCase):
     def test_properties(self):
         """Test parser properties."""
         parser = pydocusign.DocuSignCallbackParser(self.xml)
-        self.assertEqual(parser.envelope_status, 'Sent')
+        self.assertEqual(parser.envelope_status, models.ENVELOPE_STATUS_SENT)
+        self.assertEqual(parser.timezone_offset, -7)
+        self.assertEqual(
+            parser.envelope_id,
+            "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee")
+        self.assertEqual(
+            parser.envelope_status_datetime(models.ENVELOPE_STATUS_SENT),
+            datetime(2014, 10, 6, 1, 10, 0, 12, tzinfo=tzoffset(None, -25200)),
+        )
+        self.assertEqual(
+            parser.recipient_status_datetime(
+                'id-jules-cesar',
+                models.RECIPIENT_STATUS_SENT),
+            datetime(2014, 10, 6, 1, 10, 1, 0, tzinfo=tzoffset(None, -25200)),
+        )

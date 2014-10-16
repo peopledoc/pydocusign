@@ -3,17 +3,20 @@
     {
       "Email": "john.doe@example.com",
       "UserName": "John Doe",
-      "ClientUserId": "specificic-id"
+      "ClientUserId": "id-john-doe"
     },
     {
       "Email": "jules.cesar@example.com",
       "UserName": "Jules César",
-      "ClientUserId": "another-id"
+      "ClientUserId": "id-jules-cesar",
+      "Sent": "2014-10-06T01:10:01.0"
     }
   ],
+  "EnvelopeId": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
   "Subject": "Demo signature.",
   "UserName": "Bob",
   "Email": "bob@example.com",
   "AccountId": "123456",
-  "AccountName": "Bobby"
+  "AccountName": "Bobby",
+  "Sent": "2014-10-06T01:10:00.000012"
 }

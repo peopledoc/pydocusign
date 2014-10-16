@@ -243,13 +243,20 @@ class Document(DocuSignObject):
         return super(Document, self).to_dict()
 
 
+ENVELOPE_STATUS_CREATED = 'Created'
+ENVELOPE_STATUS_DRAFT = 'Draft'
+ENVELOPE_STATUS_SENT = 'Sent'
+ENVELOPE_STATUS_DELIVERED = 'Delivered'
+ENVELOPE_STATUS_COMPLETED = 'Completed'
+ENVELOPE_STATUS_DECLINED = 'Declined'
+ENVELOPE_STATUS_VOIDED = 'Voided'
 ENVELOPE_STATUS_LIST = [
-    'Created',
-    'Sent',
-    'Delivered',
-    'Completed',
-    'Declined',
-    'Voided',
+    ENVELOPE_STATUS_CREATED,
+    ENVELOPE_STATUS_SENT,
+    ENVELOPE_STATUS_DELIVERED,
+    ENVELOPE_STATUS_COMPLETED,
+    ENVELOPE_STATUS_DECLINED,
+    ENVELOPE_STATUS_VOIDED,
 ]
 
 
@@ -259,18 +266,25 @@ ENVELOPE_STATUS_LIST = [
 DEFAULT_ENVELOPE_EVENTS = [
     {'envelopeEventStatusCode': event, 'includeDocuments': False}
     for event in ENVELOPE_STATUS_LIST
-    if event is not 'Created'  # Except some events.
+    if event is not ENVELOPE_STATUS_CREATED  # Except some events.
 ]
 
 
+RECIPIENT_STATUS_AUTHENTICATION_FAILED = 'AuthenticationFailed'
+RECIPIENT_STATUS_AUTO_RESPONDED = 'AutoResponded'
+RECIPIENT_STATUS_SIGNED = 'Signed'
+RECIPIENT_STATUS_COMPLETED = 'Completed'
+RECIPIENT_STATUS_DECLINED = 'Declined'
+RECIPIENT_STATUS_DELIVERED = 'Delivered'
+RECIPIENT_STATUS_SENT = 'Sent'
 RECIPIENT_STATUS_LIST = [
-    'AuthenticationFailed',
-    'AutoResponded',
-    'Signed',
-    'Completed',
-    'Declined',
-    'Delivered',
-    'Sent',
+    RECIPIENT_STATUS_AUTHENTICATION_FAILED,
+    RECIPIENT_STATUS_AUTO_RESPONDED,
+    RECIPIENT_STATUS_SIGNED,
+    RECIPIENT_STATUS_COMPLETED,
+    RECIPIENT_STATUS_DECLINED,
+    RECIPIENT_STATUS_DELIVERED,
+    RECIPIENT_STATUS_SENT,
 ]
 
 
@@ -280,7 +294,7 @@ RECIPIENT_STATUS_LIST = [
 DEFAULT_RECIPIENT_EVENTS = [
     {'recipientEventStatusCode': event, 'includeDocuments': False}
     for event in RECIPIENT_STATUS_LIST
-    if event is not 'Signed'  # Except some events.
+    if event is not RECIPIENT_STATUS_SIGNED  # Except some events.
 ]
 
 
@@ -348,7 +362,7 @@ class EventNotification(DocuSignObject):
         ...     'includeSenderAccountAsCustomField': True,
         ...     'envelopeEvents': [
         ...         {
-        ...             'envelopeEventStatusCode': 'Sent',
+        ...             'envelopeEventStatusCode': ENVELOPE_STATUS_SENT,
         ...             'includeDocuments': False,
         ...         },
         ...         {
@@ -390,7 +404,7 @@ class EventNotification(DocuSignObject):
         ...             'includeDocuments': False,
         ...         },
         ...         {
-        ...             'recipientEventStatusCode': 'Sent',
+        ...             'recipientEventStatusCode': RECIPIENT_STATUS_SENT,
         ...             'includeDocuments': False,
         ...         },
         ...     ],
@@ -405,12 +419,10 @@ class Envelope(DocuSignObject):
     """An envelope."""
     attributes = ['documents', 'emailBlurb', 'emailSubject',
                   'eventNotification', 'recipients', 'status']
-    STATUS_SENT = 'sent'
-    STATUS_DRAFT = 'draft'
 
     def __init__(self, documents=[], emailBlurb='', emailSubject='',
-                 recipients={}, status=STATUS_SENT, envelopeId=None,
-                 eventNotification=None):
+                 recipients={}, status=ENVELOPE_STATUS_SENT,
+                 envelopeId=None, eventNotification=None):
         """Setup."""
         self.documents = documents
         self.emailBlurb = emailBlurb
@@ -443,7 +455,7 @@ class Envelope(DocuSignObject):
         ...     emailBlurb='This is the email body',
         ...     emailSubject='This is the email subject',
         ...     recipients=[signer],
-        ...     status=Envelope.STATUS_DRAFT)
+        ...     status=ENVELOPE_STATUS_DRAFT)
         >>> envelope.to_dict() == {
         ...     'documents': [document.to_dict()],
         ...     'emailBlurb': 'This is the email body',
@@ -451,7 +463,7 @@ class Envelope(DocuSignObject):
         ...     'recipients': {
         ...         'signers': [signer.to_dict()],
         ...     },
-        ...     'status': 'draft',
+        ...     'status': ENVELOPE_STATUS_DRAFT,
         ... }
         True
         >>> notification = EventNotification(url='fake')
