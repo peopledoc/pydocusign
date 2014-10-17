@@ -26,7 +26,7 @@ class DocuSignCallbackParser(object):
         status = self.xml_soup.EnvelopeStatus.Status.string
         if status is None:
             raise ValueError('Could not read envelope status from XML.')
-        if status not in models.ENVELOPE_STATUS_LIST:
+        if status not in models.Envelope.STATUS_LIST:
             raise ValueError('Unknown status {status}'.format(status=status))
         return status
 
@@ -131,11 +131,11 @@ class DocuSignCallbackParser(object):
         ... </DocuSignEnvelopeInformation>
         ... '''
         >>> parser = DocuSignCallbackParser(xml_source=xml)
-        >>> parser.envelope_status_datetime(models.ENVELOPE_STATUS_CREATED)
+        >>> parser.envelope_status_datetime(models.Envelope.STATUS_CREATED)
         ... # doctest: +NORMALIZE_WHITESPACE
         datetime.datetime(2014, 10, 6, 1, 10, 0, 120000,
                           tzinfo=tzoffset(None, -25200))
-        >>> parser.envelope_status_datetime(models.ENVELOPE_STATUS_SENT)
+        >>> parser.envelope_status_datetime(models.Envelope.STATUS_SENT)
         ... # doctest: +NORMALIZE_WHITESPACE
         datetime.datetime(2014, 10, 6, 1, 41, 9, 484507,
                           tzinfo=tzoffset(None, -25200))
@@ -263,7 +263,7 @@ class DocuSignCallbackParser(object):
 
         """
         events = []
-        for status in models.ENVELOPE_STATUS_LIST:
+        for status in models.Envelope.STATUS_LIST:
             status = status.lower()
             instant = self.envelope_status_datetime(status)
             if instant:
@@ -336,7 +336,7 @@ class DocuSignCallbackParser(object):
             except AttributeError:
                 pass
             else:
-                for status in models.RECIPIENT_STATUS_LIST:
+                for status in models.Recipient.STATUS_LIST:
                     status = status.lower()
                     instant = self.recipient_status_datetime(
                         recipient_id, status)
@@ -496,7 +496,7 @@ class DocuSignCallbackParser(object):
                 recipient[child_soup.name] = child_soup.string
             # Transform.
             recipient['RoutingOrder'] = int(recipient['RoutingOrder'])
-            for status in models.RECIPIENT_STATUS_LIST:
+            for status in models.Recipient.STATUS_LIST:
                 try:
                     if status == 'Completed':
                         recipient[status] = self.datetime(recipient['Signed'])

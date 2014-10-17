@@ -5,10 +5,20 @@ This document describes changes between each past release. For information
 about future releases, check `milestones`_ and :doc:`/about/vision`.
 
 
-0.8 (unreleased)
-----------------
+0.7.1 (unreleased)
+------------------
 
-- Nothing changed yet.
+Improved retro-compatibility of release 0.7.
+
+- Bug #20 - Restored pseudo-constants in ``Envelope`` model. They were removed
+  in version 0.7, but it appeared they are useful, and probably the simplest
+  way to access them, since ``pydocusign.Envelope`` is part of the main API,
+  whereas ``pydocusign.models`` is not.
+
+  Also:
+
+  * added keys/values to ``Envelope``'s pseudo-constants.
+  * registered pseudo-constants in ``Recipient`` model.
 
 
 0.7 (2014-10-16)
