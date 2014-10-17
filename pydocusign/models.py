@@ -9,6 +9,61 @@ See https://www.docusign.com/developer-center/explore/common-terms
 """
 
 
+ENVELOPE_STATUS_CREATED = 'Created'
+ENVELOPE_STATUS_DRAFT = 'Draft'
+ENVELOPE_STATUS_SENT = 'Sent'
+ENVELOPE_STATUS_DELIVERED = 'Delivered'
+ENVELOPE_STATUS_COMPLETED = 'Completed'
+ENVELOPE_STATUS_DECLINED = 'Declined'
+ENVELOPE_STATUS_VOIDED = 'Voided'
+ENVELOPE_STATUS_LIST = [
+    ENVELOPE_STATUS_CREATED,
+    ENVELOPE_STATUS_SENT,
+    ENVELOPE_STATUS_DELIVERED,
+    ENVELOPE_STATUS_COMPLETED,
+    ENVELOPE_STATUS_DECLINED,
+    ENVELOPE_STATUS_VOIDED,
+]
+
+
+#: Default list of envelope events on which register for notifications.
+#:
+#: By default: every envelope event.
+DEFAULT_ENVELOPE_EVENTS = [
+    {'envelopeEventStatusCode': event, 'includeDocuments': False}
+    for event in ENVELOPE_STATUS_LIST
+    if event not in [ENVELOPE_STATUS_CREATED, ENVELOPE_STATUS_DRAFT]
+]
+
+
+RECIPIENT_STATUS_AUTHENTICATION_FAILED = 'AuthenticationFailed'
+RECIPIENT_STATUS_AUTO_RESPONDED = 'AutoResponded'
+RECIPIENT_STATUS_SIGNED = 'Signed'
+RECIPIENT_STATUS_COMPLETED = 'Completed'
+RECIPIENT_STATUS_DECLINED = 'Declined'
+RECIPIENT_STATUS_DELIVERED = 'Delivered'
+RECIPIENT_STATUS_SENT = 'Sent'
+RECIPIENT_STATUS_LIST = [
+    RECIPIENT_STATUS_AUTHENTICATION_FAILED,
+    RECIPIENT_STATUS_AUTO_RESPONDED,
+    RECIPIENT_STATUS_SIGNED,
+    RECIPIENT_STATUS_COMPLETED,
+    RECIPIENT_STATUS_DECLINED,
+    RECIPIENT_STATUS_DELIVERED,
+    RECIPIENT_STATUS_SENT,
+]
+
+
+#: Default list of recipient events on which register for notifications.
+#:
+#: By default: every recipient event.
+DEFAULT_RECIPIENT_EVENTS = [
+    {'recipientEventStatusCode': event, 'includeDocuments': False}
+    for event in RECIPIENT_STATUS_LIST
+    if event is not RECIPIENT_STATUS_SIGNED  # Except some events.
+]
+
+
 class DocuSignObject(object):
     """Base class for DocuSign objects."""
     #: API fields. Used to iterate attributes.
@@ -112,6 +167,16 @@ class Recipient(DocuSignObject):
     https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Recipient%20Parameter.htm
 
     """
+    # Pseudo-constants.
+    STATUS_AUTHENTICATION_FAILED = RECIPIENT_STATUS_AUTHENTICATION_FAILED
+    STATUS_AUTO_RESPONDED = RECIPIENT_STATUS_AUTO_RESPONDED
+    STATUS_SIGNED = RECIPIENT_STATUS_SIGNED
+    STATUS_COMPLETED = RECIPIENT_STATUS_COMPLETED
+    STATUS_DECLINED = RECIPIENT_STATUS_DECLINED
+    STATUS_DELIVERED = RECIPIENT_STATUS_DELIVERED
+    STATUS_SENT = RECIPIENT_STATUS_SENT
+    STATUS_LIST = RECIPIENT_STATUS_LIST
+    DEFAULT_EVENTS = DEFAULT_RECIPIENT_EVENTS
 
 
 class Signer(Recipient):
@@ -243,61 +308,6 @@ class Document(DocuSignObject):
         return super(Document, self).to_dict()
 
 
-ENVELOPE_STATUS_CREATED = 'Created'
-ENVELOPE_STATUS_DRAFT = 'Draft'
-ENVELOPE_STATUS_SENT = 'Sent'
-ENVELOPE_STATUS_DELIVERED = 'Delivered'
-ENVELOPE_STATUS_COMPLETED = 'Completed'
-ENVELOPE_STATUS_DECLINED = 'Declined'
-ENVELOPE_STATUS_VOIDED = 'Voided'
-ENVELOPE_STATUS_LIST = [
-    ENVELOPE_STATUS_CREATED,
-    ENVELOPE_STATUS_SENT,
-    ENVELOPE_STATUS_DELIVERED,
-    ENVELOPE_STATUS_COMPLETED,
-    ENVELOPE_STATUS_DECLINED,
-    ENVELOPE_STATUS_VOIDED,
-]
-
-
-#: Default list of envelope events on which register for notifications.
-#:
-#: By default: every envelope event.
-DEFAULT_ENVELOPE_EVENTS = [
-    {'envelopeEventStatusCode': event, 'includeDocuments': False}
-    for event in ENVELOPE_STATUS_LIST
-    if event not in [ENVELOPE_STATUS_CREATED, ENVELOPE_STATUS_DRAFT]
-]
-
-
-RECIPIENT_STATUS_AUTHENTICATION_FAILED = 'AuthenticationFailed'
-RECIPIENT_STATUS_AUTO_RESPONDED = 'AutoResponded'
-RECIPIENT_STATUS_SIGNED = 'Signed'
-RECIPIENT_STATUS_COMPLETED = 'Completed'
-RECIPIENT_STATUS_DECLINED = 'Declined'
-RECIPIENT_STATUS_DELIVERED = 'Delivered'
-RECIPIENT_STATUS_SENT = 'Sent'
-RECIPIENT_STATUS_LIST = [
-    RECIPIENT_STATUS_AUTHENTICATION_FAILED,
-    RECIPIENT_STATUS_AUTO_RESPONDED,
-    RECIPIENT_STATUS_SIGNED,
-    RECIPIENT_STATUS_COMPLETED,
-    RECIPIENT_STATUS_DECLINED,
-    RECIPIENT_STATUS_DELIVERED,
-    RECIPIENT_STATUS_SENT,
-]
-
-
-#: Default list of recipient events on which register for notifications.
-#:
-#: By default: every recipient event.
-DEFAULT_RECIPIENT_EVENTS = [
-    {'recipientEventStatusCode': event, 'includeDocuments': False}
-    for event in RECIPIENT_STATUS_LIST
-    if event is not RECIPIENT_STATUS_SIGNED  # Except some events.
-]
-
-
 class EventNotification(DocuSignObject):
     """Envelope's event notification, typically callback URL and options."""
     attributes = [
@@ -419,6 +429,17 @@ class Envelope(DocuSignObject):
     """An envelope."""
     attributes = ['documents', 'emailBlurb', 'emailSubject',
                   'eventNotification', 'recipients', 'status']
+
+    # Pseudo-constants.
+    STATUS_CREATED = ENVELOPE_STATUS_CREATED
+    STATUS_DRAFT = ENVELOPE_STATUS_DRAFT
+    STATUS_SENT = ENVELOPE_STATUS_SENT
+    STATUS_DELIVERED = ENVELOPE_STATUS_DELIVERED
+    STATUS_COMPLETED = ENVELOPE_STATUS_COMPLETED
+    STATUS_DECLINED = ENVELOPE_STATUS_DECLINED
+    STATUS_VOIDED = ENVELOPE_STATUS_VOIDED
+    STATUS_LIST = ENVELOPE_STATUS_LIST
+    DEFAULT_EVENTS = DEFAULT_ENVELOPE_EVENTS
 
     def __init__(self, documents=[], emailBlurb='', emailSubject='',
                  recipients={}, status=ENVELOPE_STATUS_SENT,
