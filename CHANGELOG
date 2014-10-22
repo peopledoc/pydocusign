@@ -5,10 +5,18 @@ This document describes changes between each past release. For information
 about future releases, check `milestones`_ and :doc:`/about/vision`.
 
 
-0.8 (unreleased)
-----------------
+0.7.2 (unreleased)
+------------------
 
-- Nothing changed yet.
+Bugfixes.
+
+- Bug #23 - Using pseudo-constants of ``pydocusign.Envelope`` and
+  ``pydocusign.Recipient`` instead of raw strings in
+  ``DocuSignCallbackParser``. As a consequence, parser's ``recipient_events``,
+  ``envelope_events`` and ``events`` properties also use values from
+  pseudo-constants. They use CamelCase (they used to be all lowercase).
+
+- Bug #22 - Fixed ``DeclineReason`` in notification callback template.
 
 
 0.7.1 (2014-10-17)
