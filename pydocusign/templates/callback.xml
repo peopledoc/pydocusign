@@ -16,9 +16,9 @@
           {% if RecipientStatus.Signed %}<Signed>{{ RecipientStatus.Signed|default('2014-10-06T01:23:45.89') }}</Signed>{% endif %}
           {% if RecipientStatus.Declined or RecipientStatus.DeclineReason %}<Declined>{{ RecipientStatus.Declined|default('2014-10-07T01:23:45.678') }}</Declined>{% endif %}
           {% if RecipientStatus.DeclineReason %}
-            <DeclineReason xsi:nil="true" />
-          {% else %}>
             <DeclineReason>{{ RecipientStatus.DeclineReason }}</DeclineReason>
+          {% else %}>
+            <DeclineReason xsi:nil="true" />
           {% endif %}
           <Status>{{ RecipientStatus.Status|default('Sent') }}</Status>
           <RecipientIPAddress />
