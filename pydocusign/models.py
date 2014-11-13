@@ -187,10 +187,12 @@ class Signer(Recipient):
     https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Recipients/Signers%20Recipient.htm
 
     """
-    attributes = ['clientUserId', 'email', 'name', 'recipientId', 'tabs']
+    attributes = ['clientUserId', 'email', 'emailBody', 'emailSubject', 'name',
+                  'recipientId', 'supportedLanguage', 'tabs']
 
-    def __init__(self, clientUserId=None, email='', name='', recipientId=None,
-                 tabs=None, userId=None):
+    def __init__(self, clientUserId=None, email='', emailBody=None,
+                 emailSubject=None, name='', recipientId=None,
+                 supportedLanguage=None, tabs=None, userId=None):
         """Setup."""
         #: If ``None`` then the recipient is remote (email sent) else embedded.
         self.clientUserId = clientUserId
@@ -198,6 +200,15 @@ class Signer(Recipient):
         #: Email of the recipient. Notification will be sent to this email id.
         #: This can be a maximum of 100 characters.
         self.email = email
+
+        #: Custom body for recipient's specific e-mail notification.
+        self.emailBody = emailBody
+
+        #: Custom subject for recipient's specific e-mail notification.
+        self.emailSubject = emailSubject
+
+        #: Language for recipient's e-mail notification and DocuSign UI.
+        self.supportedLanguage = supportedLanguage
 
         #: Full legal name of the recipient. This can be a maximum of 100
         #: characters.
@@ -233,6 +244,7 @@ class Signer(Recipient):
         >>> signer.to_dict() == {
         ...     'clientUserId': 'some ID in your DB',
         ...     'email': 'signer@example.com',
+        ...     'emailNotification': None,
         ...     'name': 'My Name',
         ...     'recipientId': 1,
         ...     'tabs': {
@@ -248,17 +260,25 @@ class Signer(Recipient):
         >>> signer = Signer(
         ...     clientUserId='some ID in your DB',
         ...     email='signer@example.com',
+        ...     emailSubject=u'Subject',
+        ...     emailBody=u'Body',
+        ...     supportedLanguage='de',
         ...     name='My Name',
         ...     recipientId=1,
         ...     tabs=[tab])
         >>> signer.to_dict() == {
         ...     'clientUserId': 'some ID in your DB',
         ...     'email': 'signer@example.com',
+        ...     'emailNotification': {
+        ...         'emailBody': u'Body',
+        ...         'emailSubject': u'Subject',
+        ...         'supportedLanguage': 'de',
+        ...     },
         ...     'name': 'My Name',
         ...     'recipientId': 1,
         ...     'tabs': {
         ...         'approveTabs': [tab.to_dict()],
-        ...     }
+        ...     },
         ... }
         True
 
@@ -266,11 +286,17 @@ class Signer(Recipient):
         data = {
             'clientUserId': self.clientUserId,
             'email': self.email,
+            'emailNotification': None,
             'name': self.name,
             'recipientId': self.recipientId,
-            'tabs': {
-            },
+            'tabs': {},
         }
+        if self.emailBody or self.emailSubject or self.supportedLanguage:
+            data['emailNotification'] = {
+                'emailBody': self.emailBody,
+                'emailSubject': self.emailSubject,
+                'supportedLanguage': self.supportedLanguage,
+            }
         for tab in self.tabs:
             data['tabs'].setdefault(tab.tabs_name, [])
             data['tabs'][tab.tabs_name].append(tab.to_dict())

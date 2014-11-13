@@ -8,6 +8,7 @@ See also http://iodocs.docusign.com/APIWalkthrough/embeddedSigning
 from __future__ import print_function
 import os
 import sha
+import uuid
 
 import pydocusign
 from pydocusign.test import fixtures_dir
@@ -70,10 +71,10 @@ print("   Received data: {data}".format(data=login_information))
 # Prepare list of signers. Ordering matters.
 signers = [
     pydocusign.Signer(
-        email='john.accentue@example.com',
-        name=u'John Accentué',
+        email='jean.francais@example.com',
+        name=u'Jean Français',
         recipientId=1,
-        clientUserId='something unique',
+        clientUserId=str(uuid.uuid4()),  # Something unique in your database.
         tabs=[
             pydocusign.SignHereTab(
                 documentId=1,
@@ -82,6 +83,19 @@ signers = [
                 yPosition=100,
             ),
         ],
+        emailSubject='Voici un sujet',
+        emailBody='Voici un message',
+        supportedLanguage='fr',
+    ),
+    pydocusign.Signer(
+        email='paul.english@example.com',
+        name=u'Paul English',
+        recipientId=2,
+        clientUserId=str(uuid.uuid4()),  # Something unique in your database.
+        tabs=[],  # No tabs means user places tabs himself in DocuSign UI.
+        emailSubject='Here is a subject',
+        emailBody='Here is a message',
+        supportedLanguage='en',
     ),
 ]
 
@@ -116,14 +130,20 @@ print("3. GET {account}/envelopes/{envelopeId}/recipients")
 envelope.get_recipients()
 print("   Received UserId for recipient 0: {0}".format(
     envelope.recipients[0].userId))
+print("   Received UserId for recipient 1: {0}".format(
+    envelope.recipients[1].userId))
 
 
 # Retrieve embedded signing for first recipient.
 print("4. Get DocuSign Recipient View")
 signing_url = envelope.post_recipient_view(
-    routingOrder=0,
+    routingOrder=1,
     returnUrl=signer_return_url)
-print("   Received signing URL: {0}".format(signing_url))
+print("   Received signing URL for recipient 0: {0}".format(signing_url))
+signing_url = envelope.post_recipient_view(
+    routingOrder=2,
+    returnUrl=signer_return_url)
+print("   Received signing URL for recipient 1: {0}".format(signing_url))
 
 
 # Download signature documents.

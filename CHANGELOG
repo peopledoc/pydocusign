@@ -8,7 +8,13 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.8 (unreleased)
 ----------------
 
-- Nothing changed yet.
+Feature around internationalization.
+
+- Feature #26 - ``pydocusign.Signer`` model accepts new optional arguments:
+  ``emailSubject``, ``emailBody`` and ``supportedLanguage``. They are used to
+  setup DocuSign's ``emailNotification`` for recipient, which makes it possible
+  to change default language shown in DocuSign user interface for each
+  recipient.
 
 
 0.7.2 (2014-10-22)
