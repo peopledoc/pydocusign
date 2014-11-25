@@ -550,7 +550,8 @@ class EventNotification(DocuSignObject):
 class Envelope(DocuSignObject):
     """An envelope."""
     attributes = ['documents', 'emailBlurb', 'emailSubject',
-                  'eventNotification', 'recipients', 'templateId', 'status']
+                  'eventNotification', 'recipients', 'templateId',
+                  'templateRoles', 'status']
 
     # Pseudo-constants.
     STATUS_CREATED = ENVELOPE_STATUS_CREATED
