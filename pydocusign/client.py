@@ -298,3 +298,14 @@ class DocuSignClient(object):
         response = requests.get(url, headers=headers, stream=True)
         setattr(response.raw, 'close', response.close)
         return response.raw
+
+    def get_template(self, templateId):
+        """GET the definition of the template."""
+        if not self.account_url:
+            self.login_information()
+        url = '{account}/templates/{templateId}' \
+              .format(account=self.account_url,
+                      templateId=templateId)
+        headers = self.base_headers()
+        response = requests.get(url, headers=headers)
+        return response.json()

@@ -690,7 +690,7 @@ class Envelope(DocuSignObject):
         if client is None:
             client = self.client
         data = client.get_envelope_recipients(self.envelopeId)
-        for recipient_data in data.get('signers'):
+        for recipient_data in data.get('signers', []):
             if self.templateId:
                 recipients = self.templateRoles
             else:

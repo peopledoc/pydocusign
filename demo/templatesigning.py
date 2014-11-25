@@ -71,25 +71,38 @@ login_information = client.login_information()
 print("   Received data: {data}".format(data=login_information))
 
 
+# Get the template definition
+print("2. GET {account}/templates/{templateId}")
+template_definition = client.get_template(template_id)
+assert template_definition['recipients']['signers'][0][
+    'roleName'] == 'employee'
+assert template_definition['recipients']['signers'][0][
+    'routingOrder'] == '1'
+assert template_definition['recipients']['signers'][1][
+    'roleName'] == 'employer'
+assert template_definition['recipients']['signers'][1][
+    'routingOrder'] == '1'  # Same routingOrder, important for testing
+
+
 # Prepare list of roles. Ordering matters
 roles = [
     pydocusign.Role(
         email='jean.francais@example.com',
         name=u'Jean Français',
-        roleName='Role 1',
+        roleName='employer',
         clientUserId=str(uuid.uuid4()),  # Something unique in your database.
     ),
     pydocusign.Role(
         email='paul.english@example.com',
         name=u'Paul English',
-        roleName='Role 2',
+        roleName='employee',
         clientUserId=str(uuid.uuid4()),  # Something unique in your database.
     ),
 ]
 
 
 # Create envelope with embedded signing.
-print("2. POST {account}/envelopes")
+print("3. POST {account}/envelopes")
 event_notification = pydocusign.EventNotification(
     url=callback_url,
 )
@@ -106,7 +119,7 @@ print("   Received envelopeId {id}".format(id=envelope.envelopeId))
 
 
 # Update recipient list of envelope: fetch envelope's ``UserId`` from DocuSign.
-print("3. GET {account}/envelopes/{envelopeId}/recipients")
+print("4. GET {account}/envelopes/{envelopeId}/recipients")
 envelope.get_recipients()
 print("   Received UserId for recipient 0: {0}".format(
     envelope.templateRoles[0].userId))
@@ -115,7 +128,7 @@ print("   Received UserId for recipient 1: {0}".format(
 
 
 # Retrieve template signing for first recipient.
-print("4. Get DocuSign Recipient View")
+print("5. Get DocuSign Recipient View")
 signing_url = envelope.post_recipient_view(
     routingOrder=1,
     returnUrl=signer_return_url)
@@ -127,15 +140,15 @@ print("   Received signing URL for recipient 1: {0}".format(signing_url))
 
 
 # Download signature documents.
-print("5. List signature documents.")
+print("6. List signature documents.")
 document_list = envelope.get_document_list()
 print("   Received document list: {0}".format(document_list))
-print("6. Download document from DocuSign.")
+print("7. Download document from DocuSign.")
 document = envelope.get_document(document_list[0]['documentId'])
 document_sha = sha.new(document.read()).hexdigest()
 print("   Document SHA1: {0}".format(document_sha))
 document.close()
-print("7. Download signature certificate from DocuSign.")
+print("8. Download signature certificate from DocuSign.")
 document = envelope.get_certificate()
 document_sha = sha.new(document.read()).hexdigest()
 print("   Certificate SHA1: {0}".format(document_sha))
