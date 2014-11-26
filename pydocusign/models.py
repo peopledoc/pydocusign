@@ -303,6 +303,102 @@ class Signer(Recipient):
         return data
 
 
+class Role(Recipient):
+    """A recipient who must sign, initial, date or add data to form fields on
+    the documents in the envelope template.
+
+    DocuSign reference lives at
+    https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Send%20an%20Envelope%20from%20a%20Template.htm%3FTocPath%3DREST%2520API%2520References|_____37
+    (templateRoles)
+
+    """
+    attributes = ['clientUserId', 'email', 'emailBody', 'emailSubject', 'name',
+                  'supportedLanguage', 'roleName']
+
+    def __init__(self, clientUserId=None, email='', emailBody=None,
+                 emailSubject=None, name='', supportedLanguage=None,
+                 roleName='', userId=None):
+        """Setup."""
+        #: If ``None`` then the recipient is remote (email sent) else embedded.
+        self.clientUserId = clientUserId
+
+        #: Email of the recipient. Notification will be sent to this email id.
+        #: This can be a maximum of 100 characters.
+        self.email = email
+
+        #: Custom body for recipient's specific e-mail notification.
+        self.emailBody = emailBody
+
+        #: Custom subject for recipient's specific e-mail notification.
+        self.emailSubject = emailSubject
+
+        #: Language for recipient's e-mail notification and DocuSign UI.
+        self.supportedLanguage = supportedLanguage
+
+        #: Full legal name of the recipient. This can be a maximum of 100
+        #: characters.
+        self.name = name
+
+        #: Role name. Must be defined in the template.
+        self.roleName = roleName
+
+        #: User ID on DocuSign side. It is an UUID.
+        self.userId = userId
+
+    def to_dict(self):
+        """Return dict representation of model.
+
+        >>> role = Role(
+        ...     clientUserId='some ID in your DB',
+        ...     email='signer@example.com',
+        ...     name='My Name',
+        ...     roleName='Role 1')
+        >>> role.to_dict() == {
+        ...     'clientUserId': 'some ID in your DB',
+        ...     'email': 'signer@example.com',
+        ...     'emailNotification': None,
+        ...     'name': 'My Name',
+        ...     'roleName': 'Role 1',
+        ... }
+        True
+        >>> role = Role(
+        ...     clientUserId='some ID in your DB',
+        ...     email='signer@example.com',
+        ...     emailSubject=u'Subject',
+        ...     emailBody=u'Body',
+        ...     supportedLanguage='de',
+        ...     name='My Name',
+        ...     roleName='Role 1')
+        >>> role.to_dict() == {
+        ...     'clientUserId': 'some ID in your DB',
+        ...     'email': 'signer@example.com',
+        ...     'emailNotification': {
+        ...         'emailBody': u'Body',
+        ...         'emailSubject': u'Subject',
+        ...         'supportedLanguage': 'de',
+        ...     },
+        ...     'name': 'My Name',
+        ...     'roleName': 'Role 1',
+        ... }
+        True
+
+        """
+        data = {
+            'clientUserId': self.clientUserId,
+            'email': self.email,
+            'emailNotification': None,
+            'name': self.name,
+            'roleName': self.roleName,
+        }
+        if self.emailBody or self.emailSubject or self.supportedLanguage:
+            data['emailNotification'] = {
+                'emailBody': self.emailBody,
+                'emailSubject': self.emailSubject,
+                'supportedLanguage': self.supportedLanguage,
+            }
+        return data
+
+
 class Document(DocuSignObject):
     """A document to sign."""
     attributes = ['documentId', 'name']
@@ -454,7 +550,8 @@ class EventNotification(DocuSignObject):
 class Envelope(DocuSignObject):
     """An envelope."""
     attributes = ['documents', 'emailBlurb', 'emailSubject',
-                  'eventNotification', 'recipients', 'status']
+                  'eventNotification', 'recipients', 'templateId',
+                  'templateRoles', 'status']
 
     # Pseudo-constants.
     STATUS_CREATED = ENVELOPE_STATUS_CREATED
@@ -467,15 +564,18 @@ class Envelope(DocuSignObject):
     STATUS_LIST = ENVELOPE_STATUS_LIST
     DEFAULT_EVENTS = DEFAULT_ENVELOPE_EVENTS
 
-    def __init__(self, documents=[], emailBlurb='', emailSubject='',
-                 recipients={}, status=ENVELOPE_STATUS_SENT,
-                 envelopeId=None, eventNotification=None):
+    def __init__(self, documents=None, emailBlurb='', emailSubject='',
+                 recipients=None, templateId=None, templateRoles=None,
+                 status=ENVELOPE_STATUS_SENT, envelopeId=None,
+                 eventNotification=None):
         """Setup."""
-        self.documents = documents
+        self.documents = documents or []
         self.emailBlurb = emailBlurb
         self.emailSubject = emailSubject
         self.eventNotification = eventNotification
-        self.recipients = recipients
+        self.recipients = recipients or {}
+        self.templateId = templateId
+        self.templateRoles = templateRoles
         self.status = status
 
         #: ID in DocuSign database.
@@ -517,22 +617,57 @@ class Envelope(DocuSignObject):
         >>> envelope.eventNotification = notification
         >>> envelope.to_dict()['eventNotification'] == notification.to_dict()
         True
+        >>> role = Role(
+        ...     email='signer@example.com',
+        ...     name='My Name',
+        ...     roleName='Role 1')
+        >>> envelope = Envelope(
+        ...     emailBlurb='This is the email body',
+        ...     emailSubject='This is the email subject',
+        ...     templateId='1111-2222-3333-4444',
+        ...     templateRoles=[role],
+        ...     status=ENVELOPE_STATUS_DRAFT)
+        >>> envelope.to_dict() == {
+        ...     'emailBlurb': 'This is the email body',
+        ...     'emailSubject': 'This is the email subject',
+        ...     'templateId': '1111-2222-3333-4444',
+        ...     'templateRoles': [
+        ...         role.to_dict()
+        ...     ],
+        ...     'status': ENVELOPE_STATUS_DRAFT,
+        ... }
+        True
+        >>> notification = EventNotification(url='fake')
+        >>> envelope.eventNotification = notification
+        >>> envelope.to_dict()['eventNotification'] == notification.to_dict()
+        True
 
         """
         data = {
             'status': self.status,
             'emailBlurb': self.emailBlurb,
             'emailSubject': self.emailSubject,
-            'documents': [doc.to_dict() for doc in self.documents],
-            'recipients': {
-                'signers': [],
-            },
         }
         if self.eventNotification:
             data['eventNotification'] = self.eventNotification.to_dict()
-        for recipient in self.recipients:
-            if isinstance(recipient, Signer):
-                data['recipients']['signers'].append(recipient.to_dict())
+        if self.templateId:
+            data.update({
+                'templateId': self.templateId,
+                'templateRoles': [],
+            })
+            for role in self.templateRoles:
+                if isinstance(role, Role):
+                    data['templateRoles'].append(role.to_dict())
+        else:
+            data.update({
+                'documents': [doc.to_dict() for doc in self.documents],
+                'recipients': {
+                    'signers': [],
+                },
+            })
+            for recipient in self.recipients:
+                if isinstance(recipient, Signer):
+                    data['recipients']['signers'].append(recipient.to_dict())
         return data
 
     def get_recipients(self, client=None):
@@ -555,13 +690,15 @@ class Envelope(DocuSignObject):
         if client is None:
             client = self.client
         data = client.get_envelope_recipients(self.envelopeId)
-        for recipient_type, recipients in data.items():
-            if recipient_type == 'signers':
-                for recipient_data in recipients:
-                    for rec in self.recipients:
-                        if str(rec.clientUserId) == \
-                                recipient_data['clientUserId']:
-                            rec.userId = recipient_data['userId']
+        for recipient_data in data.get('signers', []):
+            if self.templateId:
+                recipients = self.templateRoles
+            else:
+                recipients = self.recipients
+            for rec in recipients:
+                if str(rec.clientUserId) == \
+                        recipient_data['clientUserId']:
+                    rec.userId = recipient_data['userId']
 
     def post_recipient_view(self, routingOrder, returnUrl, client=None):
         """Use ``client`` to fetch embedded signing URL for recipient.
@@ -571,7 +708,11 @@ class Envelope(DocuSignObject):
         """
         if client is None:
             client = self.client
-        recipient = self.recipients[routingOrder - 1]
+        if self.templateId:
+            recipients = self.templateRoles
+        else:
+            recipients = self.recipients
+        recipient = recipients[routingOrder - 1]
         response_data = client.post_recipient_view(
             envelopeId=self.envelopeId,
             clientUserId=recipient.clientUserId,

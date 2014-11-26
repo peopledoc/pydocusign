@@ -8,7 +8,14 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.9 (unreleased)
 ----------------
 
-- Nothing changed yet.
+New feature around envelope creation.
+
+- Feature #29 - ``pydocusign.DocuSignClient`` can create envelope using
+  template. Added method ``create_envelope_from_template()``. Check the
+  ``templatesigning.py`` demo in documentation.
+  When running tests or demo, you need an additional
+  ``PYDOCUSIGN_TEST_TEMPLATE_ID`` environment variable, which is the UUID of
+  a DocuSign template having 2 signers with routing order set to "1".
 
 
 0.8 (2014-11-13)

@@ -139,17 +139,44 @@ class DocuSignClient(object):
             'body': body,
         }
 
-    def create_envelope_from_document(self, envelope):
-        """POST to /envelopes and return created envelope ID.
+    def _create_envelope_from_template_request(self, envelope):
+        """Return parts of the POST request for /envelopes.
 
-        If ``envelope`` has no (or empty) ``envelopeId`` attribute, this
-        method sets the value.
-
-        If ``envelope`` has no (or empty) ``client`` attribute, this method
-        sets the value.
+        This is encapsultated in a method for test purposes: we do not want to
+        post a real request on DocuSign API for each test, whereas we want to
+        check that the HTTP request's parts meet the DocuSign specification.
 
         """
-        parts = self._create_envelope_from_document_request(envelope)
+        if not self.account_url:
+            self.login_information()
+        url = '{account}/envelopes'.format(account=self.account_url)
+        data = envelope.to_dict()
+        body = str(
+            "\r\n"
+            "\r\n"
+            "--myboundary\r\n"
+            "Content-Type: application/json; charset=UTF-8\r\n"
+            "Content-Disposition: form-data\r\n"
+            "\r\n"
+            "{json_data}\r\n"
+            "--myboundary--\r\n"
+            "\r\n".format(json_data=json.dumps(data)))
+        headers = self.base_headers()
+        headers['Content-Type'] = "multipart/form-data; boundary=myboundary"
+        headers['Content-Length'] = len(body)
+        return {
+            'url': url,
+            'headers': headers,
+            'body': body,
+        }
+
+    def _create_envelope(self, envelope, parts):
+        """POST to /envelopes and return created envelope ID.
+
+        Called by ``create_envelope_from_document`` and
+        ``create_envelope_from_template`` methods.
+
+        """
         c = pycurl.Curl()
         c.setopt(pycurl.SSL_VERIFYPEER, 1)
         c.setopt(pycurl.SSL_VERIFYHOST, 2)
@@ -178,6 +205,32 @@ class DocuSignClient(object):
         if not envelope.envelopeId:
             envelope.envelopeId = response_data['envelopeId']
         return response_data['envelopeId']
+
+    def create_envelope_from_document(self, envelope):
+        """POST to /envelopes and return created envelope ID.
+
+        If ``envelope`` has no (or empty) ``envelopeId`` attribute, this
+        method sets the value.
+
+        If ``envelope`` has no (or empty) ``client`` attribute, this method
+        sets the value.
+
+        """
+        parts = self._create_envelope_from_document_request(envelope)
+        return self._create_envelope(envelope, parts)
+
+    def create_envelope_from_template(self, envelope):
+        """POST to /envelopes and return created envelope ID.
+
+        If ``envelope`` has no (or empty) ``envelopeId`` attribute, this
+        method sets the value.
+
+        If ``envelope`` has no (or empty) ``client`` attribute, this method
+        sets the value.
+
+        """
+        parts = self._create_envelope_from_template_request(envelope)
+        return self._create_envelope(envelope, parts)
 
     def get_envelope_recipients(self, envelopeId):
         """GET {account}/envelopes/{envelopeId}/recipients and return JSON."""
@@ -245,3 +298,14 @@ class DocuSignClient(object):
         response = requests.get(url, headers=headers, stream=True)
         setattr(response.raw, 'close', response.close)
         return response.raw
+
+    def get_template(self, templateId):
+        """GET the definition of the template."""
+        if not self.account_url:
+            self.login_information()
+        url = '{account}/templates/{templateId}' \
+              .format(account=self.account_url,
+                      templateId=templateId)
+        headers = self.base_headers()
+        response = requests.get(url, headers=headers)
+        return response.json()

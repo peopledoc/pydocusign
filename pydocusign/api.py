@@ -28,6 +28,7 @@ from pydocusign.models import Envelope  # NoQA
 from pydocusign.models import EventNotification  # NoQA
 from pydocusign.models import Recipient  # NoQA
 from pydocusign.models import Signer  # NoQA
+from pydocusign.models import Role  # NoQA
 from pydocusign.models import SignHereTab  # NoQA
 from pydocusign.models import ApproveTab  # NoQA
 from pydocusign.models import Tab  # NoQA

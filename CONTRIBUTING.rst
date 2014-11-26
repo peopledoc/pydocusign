@@ -95,6 +95,7 @@ get the setup. Here is an example to run the tests:
    PYDOCUSIGN_TEST_USERNAME='your-username' \
    PYDOCUSIGN_TEST_PASSWORD='your-password' \
    PYDOCUSIGN_TEST_INTEGRATOR_KEY='your-integrator-key' \
+   PYDOCUSIGN_TEST_TEMPLATE_ID='UUID-of-your-docusign-template' \
    PYDOCUSIGN_TEST_SIGNER_RETURN_URL='http://example.com/signer-return/' \
    PYDOCUSIGN_TEST_CALLBACK_URL='http://example.com/callback/' \
    make test
