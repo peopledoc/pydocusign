@@ -57,7 +57,61 @@ class DocuSignClient(object):
                 'Password': self.password,
                 'IntegratorKey': self.integrator_key,
             }),
+            'Content-Type': 'application/json',
         }
+
+    def _request(self, url, method='GET', headers=None, data=None,
+                 expected_status_code=200):
+        """Shortcut to perform HTTP requests."""
+        do_url = '{root}{path}'.format(root=self.root_url, path=url)
+        do_request = getattr(requests, method.lower())
+        if headers is None:
+            headers = {}
+        do_headers = self.base_headers()
+        do_headers.update(headers)
+        if data is not None:
+            do_data = json.dumps(data)
+        else:
+            do_data = None
+        try:
+            response = do_request(do_url, headers=do_headers, data=do_data)
+        except requests.exceptions.RequestException as exception:
+            msg = "DocuSign request error: " \
+                  "{method} {url} failed ; " \
+                  "Error: {exception}" \
+                  .format(method=method, url=do_url, exception=exception)
+            logger.error(msg)
+            raise exceptions.DocuSignException(msg)
+        if response.status_code != expected_status_code:
+            msg = "DocuSign request failed: " \
+                  "{method} {url} returned code {status} " \
+                  "while expecting code {expected}; " \
+                  "Message: {message} ; " \
+                  .format(
+                      method=method,
+                      url=do_url,
+                      status=response.status_code,
+                      expected=expected_status_code,
+                      message=response.text,
+                  )
+            logger.error(msg)
+            raise exceptions.DocuSignException(msg)
+        if response.headers.get('Content-Type', '') \
+                           .startswith('application/json'):
+            return response.json()
+        return response.text
+
+    def get(self, *args, **kwargs):
+        """Shortcut to perform GET operations on DocuSign API."""
+        return self._request(method='GET', *args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        """Shortcut to perform POST operations on DocuSign API."""
+        return self._request(method='POST', *args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        """Shortcut to perform DELETE operations on DocuSign API."""
+        return self._request(method='DELETE', *args, **kwargs)
 
     def login_information(self):
         """Return dictionary of /login_information.
@@ -65,31 +119,10 @@ class DocuSignClient(object):
         Populate :attr:`account_id` and :attr:`account_url`.
 
         """
-        url = '{root}/login_information'.format(root=self.root_url)
-        headers = self.base_headers()
-        headers['Content-Type'] = 'application/json'
-        try:
-            response = requests.get(url, headers=headers)
-        except requests.exceptions.RequestException as exception:
-            msg = "DocuSign request error: " \
-                  "GET {url} failed ; " \
-                  "Error: {exception}".format(url=url, exception=exception)
-            logger.error(msg)
-            raise exceptions.DocuSignException(msg)
-        if response.status_code != 200:
-            error_data = json.loads(response.text)
-            msg = "DocuSign login failed: " \
-                  "GET {url} returned {status} ; " \
-                  "Error code: {error_code} ; " \
-                  "Error message: '{error_msg}'".format(
-                      url=url,
-                      status=response.status_code,
-                      error_code=error_data['errorCode'],
-                      error_msg=error_data['message'],
-                  )
-            logger.error(msg)
-            raise exceptions.DocuSignException(msg)
-        data = response.json()
+        url = '/login_information'
+        headers = {
+        }
+        data = self.get(url, headers=headers)
         self.account_id = data['loginAccounts'][0]['accountId']
         self.account_url = '{root}/accounts/{account}'.format(
             root=self.root_url,
@@ -105,92 +138,29 @@ class DocuSignClient(object):
         """
         if account_id is None:
             account_id = self.account_id
-        url = '{root}/accounts/{accountId}/'.format(
-            root=self.root_url,
-            accountId=self.account_id)
-        headers = self.base_headers()
-        try:
-            response = requests.get(url, headers=headers)
-        except requests.exceptions.RequestException as exception:
-            msg = "DocuSign request error: " \
-                  "GET {url} failed ; " \
-                  "Error: {exception}".format(url=url, exception=exception)
-            logger.error(msg)
-            raise exceptions.DocuSignException(msg)
-        if response.status_code is not 200:
-            msg = "DocuSign request error: " \
-                  "GET {url} failed ; " \
-                  "Error: {exception}".format(url=url, exception=exception)
-            logger.error(msg)
-            raise exceptions.DocuSignException(msg)
-        data = response.json()
-        return data
+            url = self.account_url
+        else:
+            url = '/accounts/{accountId}/'.format(accountId=self.account_id)
+        return self.get(url)
 
     def get_account_provisioning(self):
         """Return dictionary of /accounts/provisioning."""
-        url = '{root}/accounts/provisioning'.format(root=self.root_url)
-        headers = self.base_headers()
-        headers['X-DocuSign-AppToken'] = self.app_token
-        try:
-            response = requests.get(url, headers=headers)
-        except requests.exceptions.RequestException as exception:
-            msg = "DocuSign request error: " \
-                  "GET {url} failed ; " \
-                  "Error: {exception}".format(url=url, exception=exception)
-            logger.error(msg)
-            raise exceptions.DocuSignException(msg)
-        if response.status_code is not 200:
-            msg = "DocuSign request error: " \
-                  "GET {url} failed ; " \
-                  "Error: {exception}".format(url=url, exception=response.text)
-            logger.error(msg)
-            raise exceptions.DocuSignException(msg)
-        data = response.json()
-        return data
+        url = '/accounts/provisioning'
+        headers = {
+            'X-DocuSign-AppToken': self.app_token,
+        }
+        return self.get(url, headers=headers)
 
     def post_account(self, data):
         """Create account."""
-        url = '{root}/accounts'.format(root=self.root_url)
-        headers = self.base_headers()
-        try:
-            response = requests.post(url, headers=headers,
-                                     data=json.dumps(data))
-        except requests.exceptions.RequestException as exception:
-            msg = "DocuSign request error: " \
-                  "POST {url} failed ; " \
-                  "Error: {exception}".format(url=url, exception=exception)
-            logger.error(msg)
-            raise exceptions.DocuSignException(msg)
-        if response.status_code is not 201:
-            msg = "DocuSign request error: " \
-                  "POST {url} failed ; " \
-                  "Error: {exception}".format(url=url, exception=exception)
-            logger.error(msg)
-            raise exceptions.DocuSignException(msg)
-        data = response.json()
-        return data
+        url = '/accounts'
+        return self.post(url, data=data, expected_status_code=201)
 
     def delete_account(self, accountId):
         """Create account."""
-        url = '{root}/accounts/{accountId}'.format(
-            root=self.root_url,
-            accountId=accountId)
-        headers = self.base_headers()
-        try:
-            response = requests.delete(url, headers=headers)
-        except requests.exceptions.RequestException as exception:
-            msg = "DocuSign request error: " \
-                  "POST {url} failed ; " \
-                  "Error: {exception}".format(url=url, exception=exception)
-            logger.error(msg)
-            raise exceptions.DocuSignException(msg)
-        if response.status_code is not 200:
-            msg = "DocuSign request error: " \
-                  "DELETE {url} failed ; " \
-                  "Error: {exception}".format(url=url, exception=response.text)
-            logger.error(msg)
-            raise exceptions.DocuSignException(msg)
-        return response.text.strip() == ''
+        url = '/accounts/{accountId}'.format(accountId=accountId)
+        data = self.delete(url)
+        return data.strip() == ''
 
     def _create_envelope_from_document_request(self, envelope):
         """Return parts of the POST request for /envelopes.
@@ -335,13 +305,10 @@ class DocuSignClient(object):
         """GET {account}/envelopes/{envelopeId}/recipients and return JSON."""
         if not self.account_url:
             self.login_information()
-        url = '{account}/envelopes/{envelopeId}/recipients' \
-              .format(account=self.account_url,
+        url = '/accounts/{accountId}/envelopes/{envelopeId}/recipients' \
+              .format(accountId=self.account_id,
                       envelopeId=envelopeId)
-        headers = self.base_headers()
-        headers['Content-Type'] = 'application/json'
-        response = requests.get(url, headers=headers)
-        return response.json()
+        return self.get(url)
 
     def post_recipient_view(self, authenticationMethod=None,
                             clientUserId='', email='', envelopeId='',
@@ -355,8 +322,8 @@ class DocuSignClient(object):
         """
         if not self.account_url:
             self.login_information()
-        url = '{account}/envelopes/{envelopeId}/views/recipient' \
-              .format(account=self.account_url,
+        url = '/accounts/{accountId}/envelopes/{envelopeId}/views/recipient' \
+              .format(accountId=self.account_id,
                       envelopeId=envelopeId)
         if authenticationMethod is None:
             authenticationMethod = 'none'
@@ -369,28 +336,26 @@ class DocuSignClient(object):
             'userId': userId,
             'userName': userName,
         }
-        headers = self.base_headers()
-        headers['Content-Type'] = 'application/json'
-        response = requests.post(url, headers=headers, data=json.dumps(data))
-        return response.json()
+        return self.post(url, data=data, expected_status_code=201)
 
     def get_envelope_document_list(self, envelopeId):
         """GET the list of envelope's documents."""
         if not self.account_url:
             self.login_information()
-        url = '{account}/envelopes/{envelopeId}/documents' \
-              .format(account=self.account_url,
+        url = '/accounts/{accountId}/envelopes/{envelopeId}/documents' \
+              .format(accountId=self.account_id,
                       envelopeId=envelopeId)
-        headers = self.base_headers()
-        response = requests.get(url, headers=headers)
-        return response.json()['envelopeDocuments']
+        data = self.get(url)
+        return data['envelopeDocuments']
 
     def get_envelope_document(self, envelopeId, documentId):
         """Download one document in envelope, return file-like object."""
         if not self.account_url:
             self.login_information()
-        url = '{account}/envelopes/{envelopeId}/documents/{documentId}' \
-              .format(account=self.account_url,
+        url = '{root}/accounts/{accountId}/envelopes/{envelopeId}' \
+              '/documents/{documentId}' \
+              .format(root=self.root_url,
+                      accountId=self.account_id,
                       envelopeId=envelopeId,
                       documentId=documentId)
         headers = self.base_headers()
@@ -402,9 +367,7 @@ class DocuSignClient(object):
         """GET the definition of the template."""
         if not self.account_url:
             self.login_information()
-        url = '{account}/templates/{templateId}' \
-              .format(account=self.account_url,
+        url = '/accounts/{accountId}/templates/{templateId}' \
+              .format(accountId=self.account_id,
                       templateId=templateId)
-        headers = self.base_headers()
-        response = requests.get(url, headers=headers)
-        return response.json()
+        return self.get(url)
