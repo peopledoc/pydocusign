@@ -24,7 +24,8 @@ class DocuSignClient(object):
                  password='',
                  integrator_key='',
                  account_id='',
-                 account_url=''):
+                 account_url='',
+                 app_token=None):
         """Configure DocuSign client."""
         #: Root URL of DocuSign API.
         self.root_url = root_url
@@ -37,6 +38,8 @@ class DocuSignClient(object):
         #: API account ID.
         #: This attribute can be guessed via :meth:`login_information`.
         self.account_id = account_id
+        #: API AppToken.
+        self.app_token = app_token
         #: User's URL, i.e. the one mentioning :attr:`account_id`.
         #: This attribute can be guessed via :meth:`login_information`.
         self.account_url = account_url
@@ -92,6 +95,102 @@ class DocuSignClient(object):
             root=self.root_url,
             account=self.account_id)
         return data
+
+    def get_account_information(self, account_id=None):
+        """Return dictionary of /accounts/:accountId.
+
+        Uses :attr:`account_id` (see :meth:`login_information`) if
+        ``account_id`` is ``None``.
+
+        """
+        if account_id is None:
+            account_id = self.account_id
+        url = '{root}/accounts/{accountId}/'.format(
+            root=self.root_url,
+            accountId=self.account_id)
+        headers = self.base_headers()
+        try:
+            response = requests.get(url, headers=headers)
+        except requests.exceptions.RequestException as exception:
+            msg = "DocuSign request error: " \
+                  "GET {url} failed ; " \
+                  "Error: {exception}".format(url=url, exception=exception)
+            logger.error(msg)
+            raise exceptions.DocuSignException(msg)
+        if response.status_code is not 200:
+            msg = "DocuSign request error: " \
+                  "GET {url} failed ; " \
+                  "Error: {exception}".format(url=url, exception=exception)
+            logger.error(msg)
+            raise exceptions.DocuSignException(msg)
+        data = response.json()
+        return data
+
+    def get_account_provisioning(self):
+        """Return dictionary of /accounts/provisioning."""
+        url = '{root}/accounts/provisioning'.format(root=self.root_url)
+        headers = self.base_headers()
+        headers['X-DocuSign-AppToken'] = self.app_token
+        try:
+            response = requests.get(url, headers=headers)
+        except requests.exceptions.RequestException as exception:
+            msg = "DocuSign request error: " \
+                  "GET {url} failed ; " \
+                  "Error: {exception}".format(url=url, exception=exception)
+            logger.error(msg)
+            raise exceptions.DocuSignException(msg)
+        if response.status_code is not 200:
+            msg = "DocuSign request error: " \
+                  "GET {url} failed ; " \
+                  "Error: {exception}".format(url=url, exception=response.text)
+            logger.error(msg)
+            raise exceptions.DocuSignException(msg)
+        data = response.json()
+        return data
+
+    def post_account(self, data):
+        """Create account."""
+        url = '{root}/accounts'.format(root=self.root_url)
+        headers = self.base_headers()
+        try:
+            response = requests.post(url, headers=headers,
+                                     data=json.dumps(data))
+        except requests.exceptions.RequestException as exception:
+            msg = "DocuSign request error: " \
+                  "POST {url} failed ; " \
+                  "Error: {exception}".format(url=url, exception=exception)
+            logger.error(msg)
+            raise exceptions.DocuSignException(msg)
+        if response.status_code is not 201:
+            msg = "DocuSign request error: " \
+                  "POST {url} failed ; " \
+                  "Error: {exception}".format(url=url, exception=exception)
+            logger.error(msg)
+            raise exceptions.DocuSignException(msg)
+        data = response.json()
+        return data
+
+    def delete_account(self, accountId):
+        """Create account."""
+        url = '{root}/accounts/{accountId}'.format(
+            root=self.root_url,
+            accountId=accountId)
+        headers = self.base_headers()
+        try:
+            response = requests.delete(url, headers=headers)
+        except requests.exceptions.RequestException as exception:
+            msg = "DocuSign request error: " \
+                  "POST {url} failed ; " \
+                  "Error: {exception}".format(url=url, exception=exception)
+            logger.error(msg)
+            raise exceptions.DocuSignException(msg)
+        if response.status_code is not 200:
+            msg = "DocuSign request error: " \
+                  "DELETE {url} failed ; " \
+                  "Error: {exception}".format(url=url, exception=response.text)
+            logger.error(msg)
+            raise exceptions.DocuSignException(msg)
+        return response.text.strip() == ''
 
     def _create_envelope_from_document_request(self, envelope):
         """Return parts of the POST request for /envelopes.
