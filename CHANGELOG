@@ -8,7 +8,10 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.10 (unreleased)
 -----------------
 
-- Nothing changed yet.
+Features around DocuSign accounts.
+
+- Feature #28 - ``pydocusign.DocuSignClient`` can create, read and delete
+  accounts.
 
 
 0.9 (2014-11-26)

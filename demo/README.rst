@@ -7,6 +7,12 @@ Here is sample code to illustrate `pydocusign` usage.
 To run the demo code, you need a development environment. See
 :doc:`/contributing`.
 
+.. note::
+
+   The demo can use the same environment variables as tests. See
+   :doc:`/contributing`. If you do not set environment variables, you will be
+   prompted for some configuration.
+
 
 ****************
 Embedded signing
@@ -21,28 +27,30 @@ You can run this code with:
 
    python demo/embeddedsigning.py
 
-.. note::
-
-   The demo can use the same environment variables as tests. See
-   :doc:`/contributing`. If you do not set environment variables, you will be
-   prompted for some configuration.
-
 
 ********************************
 Creating envelope using template
 ********************************
 
-.. literalinclude:: ../demo/templatesigning.py
+.. literalinclude:: ../demo/templates.py
    :language: python
 
 You can run this code with:
 
 .. code:: sh
 
-   python demo/templatesigning.py
+   python demo/templates.py
 
-.. note::
 
-   The demo can use the same environment variables as tests. See
-   :doc:`/contributing`. If you do not set environment variables, you will be
-   prompted for some configuration.
+*****************
+Managing accounts
+*****************
+
+.. literalinclude:: ../demo/accounts.py
+   :language: python
+
+You can run this code with:
+
+.. code:: sh
+
+   python demo/accounts.py
