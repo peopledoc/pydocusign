@@ -86,6 +86,13 @@ class DocuSignClientTestCase(unittest.TestCase):
             '\r\n'
         ))
 
+    def test_timeout(self):
+        """DocuSignClient with (too small) timeout raises exception."""
+        docusign = pydocusign.test.docusign_client_factory(timeout=0.00001)
+        self.assertRaises(
+            pydocusign.exceptions.DocuSignException,
+            docusign.login_information)
+
 
 class DocuSignCallbackParserTestCase(unittest.TestCase):
     """Tests around DocuSign callback content parsers.
