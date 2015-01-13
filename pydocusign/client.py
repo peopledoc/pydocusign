@@ -25,8 +25,7 @@ class DocuSignClient(object):
                  integrator_key='',
                  account_id='',
                  account_url='',
-                 app_token=None,
-                 timeout=30):
+                 app_token=None):
         """Configure DocuSign client."""
         #: Root URL of DocuSign API.
         self.root_url = root_url
@@ -48,8 +47,6 @@ class DocuSignClient(object):
             self.account_url = '{root}/accounts/{account}'.format(
                 root=self.root_url,
                 account=self.account_id)
-        #: Requests timeout
-        self.http_timeout = timeout
 
     def base_headers(self):
         """Return dictionary of base headers for all HTTP requests."""
@@ -77,8 +74,7 @@ class DocuSignClient(object):
         else:
             do_data = None
         try:
-            response = do_request(do_url, headers=do_headers, data=do_data,
-                                  timeout=self.http_timeout)
+            response = do_request(do_url, headers=do_headers, data=do_data)
         except requests.exceptions.RequestException as exception:
             msg = "DocuSign request error: " \
                   "{method} {url} failed ; " \
