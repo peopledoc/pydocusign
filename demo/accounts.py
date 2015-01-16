@@ -118,6 +118,7 @@ account_input = {
 account_data = client.post_account(account_input)
 print("   Received data: {data}".format(data=account_data))
 
+raw_input("Please activate account {} and type RET".format(account_email))
 
 # Get subsidiary account information.
 print("4. GET /accounts/{accountId}".format(

@@ -8,7 +8,9 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.11 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Bug #41 - demo/accounts.py cannot be completed automatically: user
+  interaction is required to activate account. Added an interactive prompt
+  in demo. Removed demo/accounts.py from tests.
 
 
 0.10 (2014-12-03)
