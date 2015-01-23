@@ -12,6 +12,10 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
   interaction is required to activate account. Added an interactive prompt
   in demo. Removed demo/accounts.py from tests.
 
+- Feature #34 - DocuSignClient accepts ``timeout`` option (defaults to 30
+  seconds). This timeout is used as connection timeout when performing HTTP
+  requests to DocuSign API.
+
 
 0.10 (2014-12-03)
 -----------------
