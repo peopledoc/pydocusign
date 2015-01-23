@@ -48,8 +48,42 @@ class DocuSignClient(object):
             self.account_url = '{root}/accounts/{account}'.format(
                 root=self.root_url,
                 account=self.account_id)
-        #: Timeout used for HTTP requests to DocuSign's API.
         self.timeout = timeout
+
+    def get_timeout(self):
+        return self._timeout
+
+    def set_timeout(self, value):
+        if value < 0.001:
+            raise ValueError('Cannot set timeout lower than 0.001')
+        self._timeout = int(value * 1000) / 1000.
+
+    def del_timeout(self):
+        del self._timeout
+
+    timeout = property(
+        get_timeout,
+        set_timeout,
+        del_timeout,
+        """Connection timeout, in seconds, for HTTP requests to DocuSign's API.
+
+        This is not timeout for full request, only connection.
+
+        Precision is limited to milliseconds:
+
+        >>> client = DocuSignClient(timeout=1.2345)
+        >>> client.timeout
+        1.234
+
+        Setting timeout lower than 0.001 is forbidden.
+
+        >>> client.timeout = 0.0009  # Doctest: +ELLIPSIS
+        Traceback (most recent call last):
+            ...
+        ValueError: Cannot set timeout lower than 0.001
+
+        """
+    )
 
     def base_headers(self):
         """Return dictionary of base headers for all HTTP requests."""
@@ -253,6 +287,8 @@ class DocuSignClient(object):
         c = pycurl.Curl()
         c.setopt(pycurl.SSL_VERIFYPEER, 1)
         c.setopt(pycurl.SSL_VERIFYHOST, 2)
+        timeout_ms = int(self.timeout * 1000)
+        c.setopt(pycurl.CONNECTTIMEOUT_MS, timeout_ms)
         c.setopt(pycurl.CAINFO, certifi.where())
         c.setopt(pycurl.URL, parts['url'])
         c.setopt(
