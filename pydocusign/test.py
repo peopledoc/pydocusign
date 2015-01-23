@@ -35,7 +35,7 @@ def fixtures_dir():
     return os.path.normpath(os.path.join(project_dir, 'fixtures'))
 
 
-def docusign_client_factory(settings=os.environ):
+def docusign_client_factory(settings=os.environ, **kwargs):
     """Return :class:`pydocusign.DocuSignClient` using ``settings``.
 
     The following keys are used in ``settings``:
@@ -59,6 +59,7 @@ def docusign_client_factory(settings=os.environ):
         username=settings['PYDOCUSIGN_TEST_USERNAME'],
         password=settings['PYDOCUSIGN_TEST_PASSWORD'],
         integrator_key=settings['PYDOCUSIGN_TEST_INTEGRATOR_KEY'],
+        **kwargs
     )
     return client
 
