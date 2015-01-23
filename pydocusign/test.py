@@ -52,15 +52,19 @@ def docusign_client_factory(settings=os.environ, **kwargs):
     By default, ``settings`` is ``os.environ``, i.e. environment variables are
     used.
 
+    Additional keyword arguments override settings and are proxied to
+    :class:`pydocusign.DocuSignClient` constructor.
+
     """
-    client = pydocusign.DocuSignClient(
-        root_url=settings.get('PYDOCUSIGN_TEST_ROOT_URL',
-                              'https://demo.docusign.net/restapi/v2'),
-        username=settings['PYDOCUSIGN_TEST_USERNAME'],
-        password=settings['PYDOCUSIGN_TEST_PASSWORD'],
-        integrator_key=settings['PYDOCUSIGN_TEST_INTEGRATOR_KEY'],
-        **kwargs
-    )
+    options = {
+        'root_url': settings.get('PYDOCUSIGN_TEST_ROOT_URL',
+                                 'https://demo.docusign.net/restapi/v2'),
+        'username': settings.get('PYDOCUSIGN_TEST_USERNAME'),
+        'password': settings.get('PYDOCUSIGN_TEST_PASSWORD'),
+        'integrator_key': settings.get('PYDOCUSIGN_TEST_INTEGRATOR_KEY'),
+    }
+    options.update(kwargs)
+    client = pydocusign.DocuSignClient(**options)
     return client
 
 

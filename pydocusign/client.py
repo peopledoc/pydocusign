@@ -48,7 +48,7 @@ class DocuSignClient(object):
             self.account_url = '{root}/accounts/{account}'.format(
                 root=self.root_url,
                 account=self.account_id)
-        #: Requests timeout
+        #: Timeout used for HTTP requests to DocuSign's API.
         self.timeout = timeout
 
     def base_headers(self):
