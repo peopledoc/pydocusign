@@ -70,8 +70,9 @@ def docusign_client_factory(settings=os.environ, **kwargs):
 
 def generate_notification_callback_body(
         data,
-        template_url='https://diecutter.alwaysdata.net/github/novapost/'
-                     'pydocusign/master/pydocusign/templates/callback.xml'):
+        template_url='http://diecutter.io/github/'
+                     'novapost/pydocusign/master/'
+                     'pydocusign/templates/callback.xml'):
     """Return custom body content to mimic DocuSign notification callbacks.
 
     Body content is generated from template, using diecutter web service.
@@ -80,7 +81,7 @@ def generate_notification_callback_body(
 
     ``template_url`` is diecutter's template resource URL, which is typically
     in the form
-    https://diecutter.alwaysdata.net/github/{owner}/{project}/{revision}/{path}
+    ``http://diecutter.io/github/{owner}/{project}/{revision}/{path}``
 
     Raise exception if a problem occurs during content generation.
 

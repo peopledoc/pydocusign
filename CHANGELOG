@@ -8,7 +8,11 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.12 (unreleased)
 -----------------
 
-- Nothing changed yet.
+Bugfixes.
+
+- Bug #44 - Using http://diecutter.io in
+  ``pydocusign.test.generate_notification_callback_body()``. Secure URL was
+  broken because of SSL certificate.
 
 
 0.11 (2015-01-23)
