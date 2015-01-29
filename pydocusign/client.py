@@ -3,6 +3,7 @@ from collections import namedtuple
 from io import BytesIO
 import json
 import logging
+import os
 
 import certifi
 import pycurl
@@ -26,21 +27,58 @@ class DocuSignClient(object):
                  account_id='',
                  account_url='',
                  app_token=None,
-                 timeout=30):
+                 timeout=None):
         """Configure DocuSign client."""
         #: Root URL of DocuSign API.
+        #:
+        #: If not explicitely provided or empty, then ``PYDOCUSIGN_ROOT_URL``
+        #: environment variable, if available, is used.
         self.root_url = root_url
+        if not self.root_url:
+            self.root_url = os.environ.get('PYDOCUSIGN_ROOT_URL', '')
+
         #: API username.
+        #:
+        #: If not explicitely provided or empty, then ``PYDOCUSIGN_USERNAME``
+        #: environment variable, if available, is used.
         self.username = username
+        if not self.username:
+            self.username = os.environ.get('PYDOCUSIGN_USERNAME', '')
+
         #: API password.
+        #:
+        #: If not explicitely provided or empty, then ``PYDOCUSIGN_PASSWORD``
+        #: environment variable, if available, is used.
         self.password = password
+        if not self.password:
+            self.password = os.environ.get('PYDOCUSIGN_PASSWORD', '')
+
         #: API integrator key.
+        #:
+        #: If not explicitely provided or empty, then
+        #: ``PYDOCUSIGN_INTEGRATOR_KEY`` environment variable, if available, is
+        #: used.
         self.integrator_key = integrator_key
+        if not self.integrator_key:
+            self.integrator_key = os.environ.get('PYDOCUSIGN_INTEGRATOR_KEY',
+                                                 '')
         #: API account ID.
         #: This attribute can be guessed via :meth:`login_information`.
+        #:
+        #: If not explicitely provided or empty, then ``PYDOCUSIGN_ACCOUNT_ID``
+        #: environment variable, if available, is used.
         self.account_id = account_id
+        if not self.account_id:
+            self.account_id = os.environ.get('PYDOCUSIGN_ACCOUNT_ID', '')
+
         #: API AppToken.
+        #:
+        #: If not explicitely provided or empty, then ``PYDOCUSIGN_APP_TOKEN``
+        #: environment variable, if available, is used.
         self.app_token = app_token
+        if not self.app_token:
+            self.app_token = os.environ.get('PYDOCUSIGN_APP_TOKEN', '')
+
         #: User's URL, i.e. the one mentioning :attr:`account_id`.
         #: This attribute can be guessed via :meth:`login_information`.
         self.account_url = account_url
@@ -48,17 +86,28 @@ class DocuSignClient(object):
             self.account_url = '{root}/accounts/{account}'.format(
                 root=self.root_url,
                 account=self.account_id)
+
+        # Connection timeout.
+        if timeout is None:
+            timeout = float(os.environ.get('PYDOCUSIGN_TIMEOUT', 30))
         self.timeout = timeout
 
     def get_timeout(self):
+        """Return connection timeout."""
         return self._timeout
 
     def set_timeout(self, value):
+        """Set connection timeout. Converts ``value`` to a float.
+
+        Raises :class:`ValueError` in case the value is lower than 0.001.
+
+        """
         if value < 0.001:
             raise ValueError('Cannot set timeout lower than 0.001')
         self._timeout = int(value * 1000) / 1000.
 
     def del_timeout(self):
+        """Remove timeout attribute."""
         del self._timeout
 
     timeout = property(

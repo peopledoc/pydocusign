@@ -8,11 +8,20 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.12 (unreleased)
 -----------------
 
-Bugfixes.
+Bugfixes and workaround settings.
 
 - Bug #44 - Using http://diecutter.io in
   ``pydocusign.test.generate_notification_callback_body()``. Secure URL was
   broken because of SSL certificate.
+
+- Feature #45 - ``DocuSignClient`` can be configured using environment
+  variables. Supported environment variables are: ``PYDOCUSIGN_ROOT_URL``,
+  ``PYDOCUSIGN_USERNAME``, ``PYDOCUSIGN_PASSWORD``,
+  ``PYDOCUSIGN_INTEGRATOR_KEY``, ``PYDOCUSIGN_ACCOUNT_ID``,
+  ``PYDOCUSIGN_APP_TOKEN`` and ``PYDOCUSIGN_TIMEOUT``.
+
+  Obviously, arguments you explicitely pass to the constructor have priority
+  over environment variables.
 
 
 0.11 (2015-01-23)

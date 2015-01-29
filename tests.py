@@ -17,6 +17,85 @@ class DocuSignClientTestCase(unittest.TestCase):
         """DocuSignClient is part of pydocusign root API."""
         pydocusign.DocuSignClient
 
+    def test_explicit_options(self):
+        """DocuSignClient() uses explicit arguments."""
+        explicit_options = {
+            'root_url': 'http://example.com',
+            'username': 'johndoe',
+            'password': 'secret',
+            'integrator_key': 'very-secret',
+            'account_id': 'some-uuid',
+            'app_token': 'some-token',
+            'timeout': 300.0,
+        }
+        client = pydocusign.DocuSignClient(**explicit_options)
+        for key, value in explicit_options.items():
+            self.assertEqual(getattr(client, key), value)
+
+    def test_environment_options(self):
+        """DocuSignClient uses PYDOCUSIGN_* environment variables."""
+        environ_options = {
+            'PYDOCUSIGN_ROOT_URL': 'http://other.example.com',
+            'PYDOCUSIGN_USERNAME': 'pierre paul ou jacques',
+            'PYDOCUSIGN_PASSWORD': 'not-a-secret',
+            'PYDOCUSIGN_INTEGRATOR_KEY': 'not-an-integator-key',
+            'PYDOCUSIGN_ACCOUNT_ID': 'not-an-uuid',
+            'PYDOCUSIGN_APP_TOKEN': 'not-a-token',
+            'PYDOCUSIGN_TIMEOUT': '200.123',
+        }
+        environ_backup = dict(os.environ).copy()
+        try:
+            # Alter environment.
+            for key, value in environ_options.items():
+                os.environ[key] = value
+            # Instanciate client.
+            client = pydocusign.DocuSignClient()
+            # Check environment variables have been used.
+            for key, value in environ_options.items():
+                attribute = key.lower()[len('PYDOCUSIGN_'):]
+                if attribute == 'timeout':
+                    value = float(value)
+                self.assertEqual(getattr(client, attribute), value)
+        finally:
+            # Restore os.environ.
+            for key, value in environ_backup.items():
+                os.environ[key] = value
+
+    def test_options_priority(self):
+        """Explicit arguments to DocuSignClient have priority over env vars."""
+        explicit_options = {
+            'root_url': 'http://example.com',
+            'username': 'johndoe',
+            'password': 'secret',
+            'integrator_key': 'very-secret',
+            'account_id': 'some-uuid',
+            'app_token': 'some-token',
+            'timeout': 300.0,
+        }
+        environ_options = {
+            'PYDOCUSIGN_ROOT_URL': 'http://other.example.com',
+            'PYDOCUSIGN_USERNAME': 'pierre paul ou jacques',
+            'PYDOCUSIGN_PASSWORD': 'not-a-secret',
+            'PYDOCUSIGN_INTEGRATOR_KEY': 'not-an-integator-key',
+            'PYDOCUSIGN_ACCOUNT_ID': 'not-an-uuid',
+            'PYDOCUSIGN_APP_TOKEN': 'not-a-token',
+            'PYDOCUSIGN_TIMEOUT': '200.123',
+        }
+        environ_backup = dict(os.environ).copy()
+        try:
+            # Alter environment.
+            for key, value in environ_options.items():
+                os.environ[key] = value
+            # Instanciate client with explicit options.
+            client = pydocusign.DocuSignClient(**explicit_options)
+            # Check.
+            for key, value in explicit_options.items():
+                self.assertEqual(getattr(client, key), value)
+        finally:
+            # Restore os.environ.
+            for key, value in environ_backup.items():
+                os.environ[key] = value
+
     def test_login_information(self):
         """DocuSignClient.login_information() populates account information."""
         docusign = pydocusign.test.docusign_client_factory()
