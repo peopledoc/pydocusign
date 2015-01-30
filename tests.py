@@ -33,15 +33,15 @@ class DocuSignClientTestCase(unittest.TestCase):
             self.assertEqual(getattr(client, key), value)
 
     def test_environment_options(self):
-        """DocuSignClient uses PYDOCUSIGN_* environment variables."""
+        """DocuSignClient uses DOCUSIGN_* environment variables."""
         environ_options = {
-            'PYDOCUSIGN_ROOT_URL': 'http://other.example.com',
-            'PYDOCUSIGN_USERNAME': 'pierre paul ou jacques',
-            'PYDOCUSIGN_PASSWORD': 'not-a-secret',
-            'PYDOCUSIGN_INTEGRATOR_KEY': 'not-an-integator-key',
-            'PYDOCUSIGN_ACCOUNT_ID': 'not-an-uuid',
-            'PYDOCUSIGN_APP_TOKEN': 'not-a-token',
-            'PYDOCUSIGN_TIMEOUT': '200.123',
+            'DOCUSIGN_ROOT_URL': 'http://other.example.com',
+            'DOCUSIGN_USERNAME': 'pierre paul ou jacques',
+            'DOCUSIGN_PASSWORD': 'not-a-secret',
+            'DOCUSIGN_INTEGRATOR_KEY': 'not-an-integator-key',
+            'DOCUSIGN_ACCOUNT_ID': 'not-an-uuid',
+            'DOCUSIGN_APP_TOKEN': 'not-a-token',
+            'DOCUSIGN_TIMEOUT': '200.123',
         }
         environ_backup = dict(os.environ).copy()
         try:
@@ -52,7 +52,7 @@ class DocuSignClientTestCase(unittest.TestCase):
             client = pydocusign.DocuSignClient()
             # Check environment variables have been used.
             for key, value in environ_options.items():
-                attribute = key.lower()[len('PYDOCUSIGN_'):]
+                attribute = key.lower()[len('DOCUSIGN_'):]
                 if attribute == 'timeout':
                     value = float(value)
                 self.assertEqual(getattr(client, attribute), value)
@@ -73,13 +73,13 @@ class DocuSignClientTestCase(unittest.TestCase):
             'timeout': 300.0,
         }
         environ_options = {
-            'PYDOCUSIGN_ROOT_URL': 'http://other.example.com',
-            'PYDOCUSIGN_USERNAME': 'pierre paul ou jacques',
-            'PYDOCUSIGN_PASSWORD': 'not-a-secret',
-            'PYDOCUSIGN_INTEGRATOR_KEY': 'not-an-integator-key',
-            'PYDOCUSIGN_ACCOUNT_ID': 'not-an-uuid',
-            'PYDOCUSIGN_APP_TOKEN': 'not-a-token',
-            'PYDOCUSIGN_TIMEOUT': '200.123',
+            'DOCUSIGN_ROOT_URL': 'http://other.example.com',
+            'DOCUSIGN_USERNAME': 'pierre paul ou jacques',
+            'DOCUSIGN_PASSWORD': 'not-a-secret',
+            'DOCUSIGN_INTEGRATOR_KEY': 'not-an-integator-key',
+            'DOCUSIGN_ACCOUNT_ID': 'not-an-uuid',
+            'DOCUSIGN_APP_TOKEN': 'not-a-token',
+            'DOCUSIGN_TIMEOUT': '200.123',
         }
         environ_backup = dict(os.environ).copy()
         try:
@@ -98,7 +98,7 @@ class DocuSignClientTestCase(unittest.TestCase):
 
     def test_login_information(self):
         """DocuSignClient.login_information() populates account information."""
-        docusign = pydocusign.test.docusign_client_factory()
+        docusign = pydocusign.DocuSignClient()
         result = docusign.login_information()
         self.assertIn('loginAccounts', result)
         self.assertEqual(len(result['loginAccounts']), 1)
@@ -116,7 +116,7 @@ class DocuSignClientTestCase(unittest.TestCase):
 
     def test_create_envelope_from_document_request(self):
         """Request for creating envelope for document has expected format."""
-        docusign = pydocusign.test.docusign_client_factory()
+        docusign = pydocusign.DocuSignClient()
         docusign.login_information()
         with open(os.path.join(pydocusign.test.fixtures_dir(), 'test.pdf'),
                   'rb') as pdf_file:
@@ -167,7 +167,7 @@ class DocuSignClientTestCase(unittest.TestCase):
 
     def test_timeout(self):
         """DocuSignClient with (too small) timeout raises exception."""
-        docusign = pydocusign.test.docusign_client_factory(timeout=0.001)
+        docusign = pydocusign.DocuSignClient(timeout=0.001)
         self.assertRaises(
             pydocusign.exceptions.DocuSignException,
             docusign.login_information)

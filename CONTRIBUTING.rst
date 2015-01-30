@@ -91,14 +91,24 @@ get the setup. Here is an example to run the tests:
 
 .. code:: sh
 
-   PYDOCUSIGN_ROOT_URL='https://demo.docusign.net/restapi/v2' \
-   PYDOCUSIGN_USERNAME='your-username' \
-   PYDOCUSIGN_PASSWORD='your-password' \
-   PYDOCUSIGN_INTEGRATOR_KEY='your-integrator-key' \
-   PYDOCUSIGN_TEST_TEMPLATE_ID='UUID-of-your-docusign-template' \
-   PYDOCUSIGN_TEST_SIGNER_RETURN_URL='http://example.com/signer-return/' \
-   PYDOCUSIGN_TEST_CALLBACK_URL='http://example.com/callback/' \
+   DOCUSIGN_ROOT_URL='https://demo.docusign.net/restapi/v2' \
+   DOCUSIGN_USERNAME='your-username' \
+   DOCUSIGN_PASSWORD='your-password' \
+   DOCUSIGN_INTEGRATOR_KEY='your-integrator-key' \
+   DOCUSIGN_TEST_TEMPLATE_ID='UUID-of-your-docusign-template' \
+   DOCUSIGN_TEST_SIGNER_RETURN_URL='http://example.com/signer-return/' \
+   DOCUSIGN_TEST_CALLBACK_URL='http://example.com/callback/' \
    make test
+
+.. note::
+
+   Environment variables with prefix ``DOCUSIGN_TEST_`` may be deprecated in
+   future releases: they are only used in tests.
+
+   Whereas environment variables with prefix ``DOCUSIGN_`` are used both for
+   tests and normal use: ``pydocusign.DocuSignClient`` use them as default
+   values.
+
 
 .. rubric:: Notes & references
 
