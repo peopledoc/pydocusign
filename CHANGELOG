@@ -8,20 +8,25 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.12 (unreleased)
 -----------------
 
-Bugfixes and workaround settings.
+Workaround environment variables for configuration, and bugfix.
+
+- Feature #45 - ``DocuSignClient`` can be configured using environment
+  variables. Supported environment variables are: ``DOCUSIGN_ROOT_URL``,
+  ``DOCUSIGN_USERNAME``, ``DOCUSIGN_PASSWORD``,
+  ``DOCUSIGN_INTEGRATOR_KEY``, ``DOCUSIGN_ACCOUNT_ID``,
+  ``DOCUSIGN_APP_TOKEN`` and ``DOCUSIGN_TIMEOUT``.
+
+  Obviously, arguments you explicitely pass to the constructor have priority
+  over environment variables.
+
+  Demo scripts were  using environment variables with prefix
+  ``PYDOCUSIGN_TEST_``. The environment variables have been renamed with
+  either ``DOCUSIGN_`` (the ones in the list above) or ``DOCUSIGN_TEST_``
+  prefix.
 
 - Bug #44 - Using http://diecutter.io in
   ``pydocusign.test.generate_notification_callback_body()``. Secure URL was
   broken because of SSL certificate.
-
-- Feature #45 - ``DocuSignClient`` can be configured using environment
-  variables. Supported environment variables are: ``PYDOCUSIGN_ROOT_URL``,
-  ``PYDOCUSIGN_USERNAME``, ``PYDOCUSIGN_PASSWORD``,
-  ``PYDOCUSIGN_INTEGRATOR_KEY``, ``PYDOCUSIGN_ACCOUNT_ID``,
-  ``PYDOCUSIGN_APP_TOKEN`` and ``PYDOCUSIGN_TIMEOUT``.
-
-  Obviously, arguments you explicitely pass to the constructor have priority
-  over environment variables.
 
 
 0.11 (2015-01-23)
@@ -54,7 +59,7 @@ New feature around envelope creation.
   template. Added method ``create_envelope_from_template()``. Check the
   ``templatesigning.py`` demo in documentation.
   When running tests or demo, you need an additional
-  ``PYDOCUSIGN_TEST_TEMPLATE_ID`` environment variable, which is the UUID of
+  ``DOCUSIGN_TEST_TEMPLATE_ID`` environment variable, which is the UUID of
   a DocuSign template having 2 signers with routing order set to "1".
 
 

@@ -24,35 +24,35 @@ def prompt(environ_key, description, default):
 
 # Get configuration from environment or prompt the user...
 root_url = prompt(
-    'PYDOCUSIGN_ROOT_URL',
+    'DOCUSIGN_ROOT_URL',
     'DocuSign API URL',
     'https://demo.docusign.net/restapi/v2')
 username = prompt(
-    'PYDOCUSIGN_USERNAME',
+    'DOCUSIGN_USERNAME',
     'DocuSign API username',
     '')
 password = prompt(
-    'PYDOCUSIGN_PASSWORD',
+    'DOCUSIGN_PASSWORD',
     'DocuSign API password',
     '')
 integrator_key = prompt(
-    'PYDOCUSIGN_INTEGRATOR_KEY',
+    'DOCUSIGN_INTEGRATOR_KEY',
     'DocuSign API integrator key',
     '')
 distributor_code = prompt(
-    'PYDOCUSIGN_TEST_DISTRIBUTOR_CODE',
+    'DOCUSIGN_TEST_DISTRIBUTOR_CODE',
     'DocuSign API distributor code',
     '')
 distributor_password = prompt(
-    'PYDOCUSIGN_TEST_DISTRIBUTOR_PASSWORD',
+    'DOCUSIGN_TEST_DISTRIBUTOR_PASSWORD',
     'DocuSign API distributor password',
     '')
 callback_url = prompt(
-    'PYDOCUSIGN_TEST_CALLBACK_URL',
+    'DOCUSIGN_TEST_CALLBACK_URL',
     'Envelope callback URL',
     '')
 signer_return_url = prompt(
-    'PYDOCUSIGN_TEST_SIGNER_RETURN_URL',
+    'DOCUSIGN_TEST_SIGNER_RETURN_URL',
     'Signer return URL',
     '')
 
