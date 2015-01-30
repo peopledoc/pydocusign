@@ -4,8 +4,6 @@ import os
 
 import requests
 
-import pydocusign
-
 
 def fixtures_dir():
     """Return absolute path to `pydocusign`'s fixtures dir, as best guess.
