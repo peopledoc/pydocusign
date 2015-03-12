@@ -7,6 +7,23 @@ import sys
 from setuptools import setup
 
 
+# Tox integration.
+from setuptools.command.test import test as TestCommand
+
+
+class Tox(TestCommand):
+    """Test command that runs tox."""
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        import tox  # import here, cause outside the eggs aren't loaded.
+        errno = tox.cmdline(self.test_args)
+        sys.exit(errno)
+
+
 #: Absolute path to directory containing setup.py file.
 here = os.path.abspath(os.path.dirname(__file__))
 #: Boolean, ``True`` if environment is running Python version 2.
@@ -42,32 +59,23 @@ REQUIREMENTS = [
     'setuptools',
 ]
 ENTRY_POINTS = {}
-TEST_REQUIREMENTS = []
-CMDCLASS = {}
-SETUP_REQUIREMENTS = [
-    'setuptools'
+TEST_REQUIREMENTS = [
+    'tox',
 ]
-
-
-# Tox integration.
-from setuptools.command.test import test as TestCommand
-
-
-class Tox(TestCommand):
-    """Test command that runs tox."""
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = []
-        self.test_suite = True
-
-    def run_tests(self):
-        import tox  # import here, cause outside the eggs aren't loaded.
-        errno = tox.cmdline(self.test_args)
-        sys.exit(errno)
-
-
-TEST_REQUIREMENTS.append('tox')
-CMDCLASS['test'] = Tox
+if IS_PYTHON2:
+    TEST_REQUIREMENTS.extend([
+        'mock',
+    ])
+CMDCLASS = {
+    'test': Tox,
+}
+SETUP_REQUIREMENTS = [
+    'setuptools',
+]
+EXTRA_REQUIREMENTS = {
+    'test': TEST_REQUIREMENTS,
+    'ssh': ['fabric', 'fabtools'],
+}
 
 
 if __name__ == '__main__':  # Do not run setup() when we import this module.
@@ -90,4 +98,5 @@ if __name__ == '__main__':  # Do not run setup() when we import this module.
         tests_require=TEST_REQUIREMENTS,
         cmdclass=CMDCLASS,
         setup_requires=SETUP_REQUIREMENTS,
+        extras_require=EXTRA_REQUIREMENTS,
     )

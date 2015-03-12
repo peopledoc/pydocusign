@@ -3,6 +3,11 @@ from datetime import datetime
 import json
 import os
 import unittest
+try:
+    from unittest import mock
+except ImportError:  # Python 2 fallback.
+    import mock
+
 
 from dateutil.tz import tzoffset
 
@@ -171,6 +176,85 @@ class DocuSignClientTestCase(unittest.TestCase):
         self.assertRaises(
             pydocusign.exceptions.DocuSignException,
             docusign.login_information)
+
+
+class EnvelopetestCase(unittest.TestCase):
+    """Test suite for :class:`pydocusign.models.Envelope`."""
+    def test_get_recipients(self):
+        """Envelope.get_recipients() updates recipients attribute."""
+        # Setup fake envelope.
+        signers = [
+            models.Signer(
+                email='paul.english@example.com',
+                name=u'Paul English',
+                recipientId=32,
+                clientUserId='2',
+                tabs=[],
+                emailSubject='Here is a subject',
+                emailBody='Here is a message',
+                supportedLanguage='en',
+            ),
+            models.Signer(
+                email='whatever@example.com',
+                name=u'This One Will Be Removed',
+                recipientId=43,
+                clientUserId='3',
+                tabs=[],
+                supportedLanguage='en',
+            ),
+        ]
+        envelope = models.Envelope(recipients=signers)
+        envelope.envelopeId = 'fake-envelope-id'
+        # Setup response data, where signers have been updated after envelope
+        # object was posted to DocuSign API.
+        response_data = {
+            "agents": [],
+            "carbonCopies": [],
+            "certifiedDeliveries": [],
+            "currentRoutingOrder": "String content",
+            "editors": [],
+            "inPersonSigners": [],
+            "intermediaries": [],
+            "recipientCount": "String content",
+            "signers": [
+                {
+                    "recipientId": "32",
+                    "userId": "22",
+                    "clientUserId": "2",
+                    "roleName": "",
+                    "routingOrder": "12",
+                    "email": "paul.english@example.com",
+                    "name": "Paul English",
+                },
+                {
+                    "recipientId": "31",
+                    "userId": "21",
+                    "clientUserId": "1",
+                    "roleName": "",
+                    "routingOrder": "11",
+                    "email": "jean@example.com",
+                    "name": "Jean",
+                },
+            ],
+        }
+        client = pydocusign.DocuSignClient()
+        client.get_envelope_recipients = mock.Mock(return_value=response_data)
+        result = envelope.get_recipients(client=client)
+        assert result is None
+        self.assertEqual(len(envelope.recipients), 2)
+        self.assertEqual(envelope.recipients[0].clientUserId, '1')
+        self.assertEqual(envelope.recipients[0].routingOrder, 11)
+        self.assertEqual(envelope.recipients[0].userId, '21')
+        self.assertEqual(envelope.recipients[0].recipientId, '31')
+        self.assertEqual(envelope.recipients[0].email, 'jean@example.com')
+        self.assertEqual(envelope.recipients[0].name, 'Jean')
+        self.assertEqual(envelope.recipients[1].clientUserId, '2')
+        self.assertEqual(envelope.recipients[1].routingOrder, 12)
+        self.assertEqual(envelope.recipients[1].userId, '22')
+        self.assertEqual(envelope.recipients[1].recipientId, '32')
+        self.assertEqual(envelope.recipients[1].email,
+                         'paul.english@example.com')
+        self.assertEqual(envelope.recipients[1].name, 'Paul English')
 
 
 class DocuSignCallbackParserTestCase(unittest.TestCase):
