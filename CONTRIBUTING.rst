@@ -114,7 +114,7 @@ get the setup. Here is an example to run the tests:
 
 .. target-notes::
 
-.. _`pydocusign bugtracker`: https://github.com/novapost/pydocusign/issues
+.. _`pydocusign bugtracker`: https://github.com/novafloss/pydocusign/issues
 .. _`rebase`: http://git-scm.com/book/en/Git-Branching-Rebasing
 .. _`merge-based rebase`: http://tech.novapost.fr/psycho-rebasing-en.html
 .. _`pip`: https://pypi.python.org/pypi/pip/
