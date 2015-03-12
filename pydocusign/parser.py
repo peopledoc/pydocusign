@@ -309,18 +309,24 @@ class DocuSignCallbackParser(object):
         ...                              tzinfo=tzoffset(None, -25200)),
         ...         'status': pydocusign.Recipient.STATUS_SENT,
         ...         'recipient': '12',
+        ...         'clientUserId': '12',
+        ...         'recipientId': 'bc5989a1-d642-4296-b96f-02ae7e3e2e66',
         ...     },
         ...     {
         ...         'datetime': datetime(2014, 10, 7, 10, 0, 0, 0,
         ...                              tzinfo=tzoffset(None, -25200)),
         ...         'status': pydocusign.Recipient.STATUS_SENT,
         ...         'recipient': '44',
+        ...         'clientUserId': '44',
+        ...         'recipientId': 'de5989a1-d642-4296-b96f-02ae7e3e2e72',
         ...     },
         ...     {
         ...         'datetime': datetime(2014, 10, 8, 10, 0, 0, 0,
         ...                              tzinfo=tzoffset(None, -25200)),
         ...         'status': pydocusign.Recipient.STATUS_DELIVERED,
         ...         'recipient': '12',
+        ...         'clientUserId': '12',
+        ...         'recipientId': 'bc5989a1-d642-4296-b96f-02ae7e3e2e66',
         ...     },
         ... ]
         True
@@ -331,18 +337,21 @@ class DocuSignCallbackParser(object):
                                            .RecipientStatuses \
                                            .children:
             try:
-                recipient_id = recipient_soup.ClientUserId.string
+                recipient_id = recipient_soup.RecipientId.string
+                client_user_id = recipient_soup.ClientUserId.string
             except AttributeError:
                 pass
             else:
                 for status in pydocusign.Recipient.STATUS_LIST:
                     instant = self.recipient_status_datetime(
-                        recipient_id, status)
+                        client_user_id, status)
                     if instant:
                         events.append({
                             'datetime': instant,
                             'status': status,
-                            'recipient': recipient_id,
+                            'recipient': client_user_id,  # Backward compat.
+                            'recipientId': recipient_id,
+                            'clientUserId': client_user_id,
                         })
         events.sort(self.cmp_events)
         return events
@@ -391,6 +400,8 @@ class DocuSignCallbackParser(object):
         ...         'object': 'recipient',
         ...         'status': pydocusign.Recipient.STATUS_SENT,
         ...         'recipient': '12',
+        ...         'recipientId': 'bc5989a1-d642-4296-b96f-02ae7e3e2e66',
+        ...         'clientUserId': '12',
         ...     },
         ...     {
         ...         'datetime': datetime(2014, 10, 6, 10, 0, 0, 0,
@@ -405,6 +416,8 @@ class DocuSignCallbackParser(object):
         ...         'object': 'recipient',
         ...         'status': pydocusign.Recipient.STATUS_SENT,
         ...         'recipient': '44',
+        ...         'recipientId': 'de5989a1-d642-4296-b96f-02ae7e3e2e72',
+        ...         'clientUserId': '44',
         ...     },
         ...     {
         ...         'datetime': datetime(2014, 10, 8, 10, 0, 0, 0,
@@ -412,6 +425,8 @@ class DocuSignCallbackParser(object):
         ...         'object': 'recipient',
         ...         'status': pydocusign.Recipient.STATUS_DELIVERED,
         ...         'recipient': '12',
+        ...         'recipientId': 'bc5989a1-d642-4296-b96f-02ae7e3e2e66',
+        ...         'clientUserId': '12',
         ...     },
         ... ]
         True
