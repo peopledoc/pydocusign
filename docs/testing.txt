@@ -42,4 +42,4 @@ Available templates are the ones in ``pydocusign/templates`` folder of
 .. target-notes::
 
 .. _`diecutter`: http://diecutter.io
-.. _`pydocusign's code repository`: https://github.com/novapost/pydocusign/
+.. _`pydocusign's code repository`: https://github.com/novafloss/pydocusign/

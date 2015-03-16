@@ -12,7 +12,7 @@ DocuSign's helper libraries
 ***************************
 
 There are other libraries related to `DocuSign`_ service. Check
-https://www.docusign.com/developer-center/quick-start/api-explorer/helper-library
+https://www.docusign.com/developer-center/helper-libraries
 
 
 ***************
@@ -28,5 +28,5 @@ django-docusign
 .. target-notes::
 
 .. _`DocuSign`: https://www.docusign.com/
-.. _`django-anysign`: https://github.com/novapost/django-anysign/
-.. _`django-docusign`: https://github.com/novapost/django-docusign/
+.. _`django-anysign`: https://github.com/novafloss/django-anysign/
+.. _`django-docusign`: https://github.com/novafloss/django-docusign/
