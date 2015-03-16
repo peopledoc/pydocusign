@@ -5,7 +5,7 @@ This document describes changes between each past release. For information
 about future releases, check `milestones`_ and :doc:`/about/vision`.
 
 
-0.13 (unreleased)
+0.13 (2015-03-16)
 -----------------
 
 Work around signer model: ``routingOrder``, ``recipientId`` and
