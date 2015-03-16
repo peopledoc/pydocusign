@@ -726,7 +726,7 @@ class Envelope(DocuSignObject):
         synced_recipients = sorted(synced_recipients, cmp_recipients)
         self.recipients = synced_recipients
 
-    def post_recipient_view(self, routingOrder, returnUrl, client=None):
+    def post_recipient_view(self, recipient, returnUrl, client=None):
         """Use ``client`` to fetch embedded signing URL for recipient.
 
         If ``client`` is ``None``, :attr:`client` is tried.
@@ -734,11 +734,6 @@ class Envelope(DocuSignObject):
         """
         if client is None:
             client = self.client
-        if self.templateId:
-            recipients = self.templateRoles
-        else:
-            recipients = self.recipients
-        recipient = recipients[routingOrder - 1]
         response_data = client.post_recipient_view(
             envelopeId=self.envelopeId,
             clientUserId=recipient.clientUserId,
