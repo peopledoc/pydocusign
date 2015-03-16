@@ -8,7 +8,10 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.13 (unreleased)
 -----------------
 
-Work around ``recipientId`` and ``clientUserId``.
+Work around signer model: ``routingOrder``, ``recipientId`` and
+``clientUserId``.
+
+- Feature #51 - Added routingOrder attribute to Signer model. Defaults to 0.
 
 - Feature #50 - ``DocuSignCallbackParser.recipients_events`` returns
   ``recipientId`` and ``clientUserId`` (former ``recipient`` value  gets

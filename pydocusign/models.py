@@ -188,10 +188,10 @@ class Signer(Recipient):
 
     """
     attributes = ['clientUserId', 'email', 'emailBody', 'emailSubject', 'name',
-                  'recipientId', 'supportedLanguage', 'tabs']
+                  'recipientId', 'routingOrder', 'supportedLanguage', 'tabs']
 
     def __init__(self, clientUserId=None, email='', emailBody=None,
-                 emailSubject=None, name='', recipientId=None,
+                 emailSubject=None, name='', recipientId=None, routingOrder=0,
                  supportedLanguage=None, tabs=None, userId=None):
         """Setup."""
         #: If ``None`` then the recipient is remote (email sent) else embedded.
@@ -217,6 +217,9 @@ class Signer(Recipient):
         #: Unique for the recipient. It is used by the tab element to indicate
         #: which recipient is to sign the Document.
         self.recipientId = recipientId
+
+        #: Routing order of the recipient in the envelope.
+        self.routingOrder = routingOrder
 
         #: Specifies the Tabs associated with the recipient. See :class:`Tab`.
         #:
@@ -247,6 +250,7 @@ class Signer(Recipient):
         ...     'emailNotification': None,
         ...     'name': 'My Name',
         ...     'recipientId': 1,
+        ...     'routingOrder': 0,
         ...     'tabs': {
         ...         'signHereTabs': [tab.to_dict()],
         ...     }
@@ -265,6 +269,7 @@ class Signer(Recipient):
         ...     supportedLanguage='de',
         ...     name='My Name',
         ...     recipientId=1,
+        ...     routingOrder=100,
         ...     tabs=[tab])
         >>> signer.to_dict() == {
         ...     'clientUserId': 'some ID in your DB',
@@ -276,6 +281,7 @@ class Signer(Recipient):
         ...     },
         ...     'name': 'My Name',
         ...     'recipientId': 1,
+        ...     'routingOrder': 100,
         ...     'tabs': {
         ...         'approveTabs': [tab.to_dict()],
         ...     },
@@ -289,6 +295,7 @@ class Signer(Recipient):
             'emailNotification': None,
             'name': self.name,
             'recipientId': self.recipientId,
+            'routingOrder': self.routingOrder,
             'tabs': {},
         }
         if self.emailBody or self.emailSubject or self.supportedLanguage:
