@@ -8,6 +8,10 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.13 (unreleased)
 -----------------
 
+- Bug #49 - Improved update of envelope's recipients via
+  ``Envelope.get_recipients()``. Fixes potential ``KeyError`` from
+  ``models.Envelope.get_recipients()``.
+
 - Refactoring #52 - Project's repository moved to
   https://github.com/novafloss/pydocusign
 

@@ -690,15 +690,34 @@ class Envelope(DocuSignObject):
         if client is None:
             client = self.client
         data = client.get_envelope_recipients(self.envelopeId)
+        if self.templateId:
+            initial_recipients = self.templateRoles
+        else:
+            initial_recipients = self.recipients
+        synced_recipients = []
         for recipient_data in data.get('signers', []):
-            if self.templateId:
-                recipients = self.templateRoles
-            else:
-                recipients = self.recipients
-            for rec in recipients:
-                if str(rec.clientUserId) == \
-                        recipient_data['clientUserId']:
-                    rec.userId = recipient_data['userId']
+            recipient = Signer()
+            client_user_id = recipient_data.get('clientUserId', None)
+            if client_user_id:
+                for index, initial_recipient in enumerate(initial_recipients):
+                    if initial_recipient.clientUserId == client_user_id:
+                        recipient = initial_recipient
+                        del(initial_recipients[index])
+                        break
+            recipient.routingOrder = int(recipient_data.get('routingOrder', 1))
+            recipient.name = recipient_data.get('name', '')
+            recipient.userId = recipient_data.get('userId', None)
+            recipient.recipientId = recipient_data.get('recipientId', None)
+            recipient.clientUserId = recipient_data.get('clientUserId', None)
+            recipient.email = recipient_data.get('email', None)
+            recipient.roleName = recipient_data.get('roleName', None)
+            synced_recipients.append(recipient)
+
+        def cmp_recipients(a, b):
+            return cmp(a.routingOrder, b.routingOrder)
+
+        synced_recipients = sorted(synced_recipients, cmp_recipients)
+        self.recipients = synced_recipients
 
     def post_recipient_view(self, routingOrder, returnUrl, client=None):
         """Use ``client`` to fetch embedded signing URL for recipient.
