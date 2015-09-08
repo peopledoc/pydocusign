@@ -155,6 +155,7 @@ class DocuSignClientTestCase(unittest.TestCase):
                                 yPosition=200,
                             ),
                         ],
+                        accessCode='0000',
                     ),
                 ])
             parts = docusign._create_envelope_from_document_request(envelope)
