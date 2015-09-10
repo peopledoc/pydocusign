@@ -188,11 +188,13 @@ class Signer(Recipient):
 
     """
     attributes = ['clientUserId', 'email', 'emailBody', 'emailSubject', 'name',
-                  'recipientId', 'routingOrder', 'supportedLanguage', 'tabs']
+                  'recipientId', 'routingOrder', 'supportedLanguage', 'tabs',
+                  'accessCode']
 
     def __init__(self, clientUserId=None, email='', emailBody=None,
                  emailSubject=None, name='', recipientId=None, routingOrder=0,
-                 supportedLanguage=None, tabs=None, userId=None):
+                 supportedLanguage=None, tabs=None, userId=None,
+                 accessCode=None):
         """Setup."""
         #: If ``None`` then the recipient is remote (email sent) else embedded.
         self.clientUserId = clientUserId
@@ -230,6 +232,9 @@ class Signer(Recipient):
         #: User ID on DocuSign side. It is an UUID.
         self.userId = userId
 
+        #: Access code required for signer before signing the document
+        self.accessCode = accessCode
+
     def to_dict(self):
         """Return dict representation of model.
 
@@ -253,7 +258,8 @@ class Signer(Recipient):
         ...     'routingOrder': 0,
         ...     'tabs': {
         ...         'signHereTabs': [tab.to_dict()],
-        ...     }
+        ...     },
+        ...     'accessCode': None,
         ... }
         True
         >>> tab = ApproveTab(
@@ -270,7 +276,8 @@ class Signer(Recipient):
         ...     name='My Name',
         ...     recipientId=1,
         ...     routingOrder=100,
-        ...     tabs=[tab])
+        ...     tabs=[tab],
+        ...     accessCode='toto')
         >>> signer.to_dict() == {
         ...     'clientUserId': 'some ID in your DB',
         ...     'email': 'signer@example.com',
@@ -285,6 +292,7 @@ class Signer(Recipient):
         ...     'tabs': {
         ...         'approveTabs': [tab.to_dict()],
         ...     },
+        ...     'accessCode': 'toto',
         ... }
         True
 
@@ -297,6 +305,7 @@ class Signer(Recipient):
             'recipientId': self.recipientId,
             'routingOrder': self.routingOrder,
             'tabs': {},
+            'accessCode': self.accessCode,
         }
         if self.emailBody or self.emailSubject or self.supportedLanguage:
             data['emailNotification'] = {
