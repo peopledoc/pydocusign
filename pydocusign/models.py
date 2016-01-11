@@ -326,14 +326,26 @@ class Role(Recipient):
     DocuSign reference lives at
     https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Send%20an%20Envelope%20from%20a%20Template.htm%3FTocPath%3DREST%2520API%2520References|_____37
     (templateRoles)
+    
+    tab data can be added in this format - 
+    
+    {
+        'textTabs': [
+            {
+                'tabLabel': "Contractor Unique ID",
+                'value': 'AHYU6578'
+            },
+
+        ]
+    }
 
     """
     attributes = ['clientUserId', 'email', 'emailBody', 'emailSubject', 'name',
-                  'supportedLanguage', 'roleName']
+                  'supportedLanguage', 'roleName', 'tabs']
 
     def __init__(self, clientUserId=None, email='', emailBody=None,
                  emailSubject=None, name='', supportedLanguage=None,
-                 roleName='', userId=None):
+                 roleName='', userId=None, tabs={}):
         """Setup."""
         #: If ``None`` then the recipient is remote (email sent) else embedded.
         self.clientUserId = clientUserId
@@ -360,6 +372,9 @@ class Role(Recipient):
 
         #: User ID on DocuSign side. It is an UUID.
         self.userId = userId
+        
+        # dictionary for all tab data
+        self.tabs = tabs
 
     def to_dict(self):
         """Return dict representation of model.
@@ -405,6 +420,7 @@ class Role(Recipient):
             'emailNotification': None,
             'name': self.name,
             'roleName': self.roleName,
+            'tabs': self.tabs,
         }
         if self.emailBody or self.emailSubject or self.supportedLanguage:
             data['emailNotification'] = {
