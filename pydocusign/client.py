@@ -410,6 +410,7 @@ class DocuSignClient(object):
         ``recipientIds`` is a list of ``recipientId`` values for recipients
         which will be deleted from the envelope
 
+        NOTE: only `Signer` type recipients are currently supported
         """
         if isinstance(recipientIds, basestring):
             recipientIds = [recipientIds]
@@ -418,7 +419,9 @@ class DocuSignClient(object):
         url = '/accounts/{accountId}/envelopes/{envelopeId}/recipients' \
               .format(accountId=self.account_id,
                       envelopeId=envelopeId)
-        data = [{'recipientId': x} for x in recipientIds]
+        data = {
+            'signers': [{'recipientId': x} for x in recipientIds]
+        }
         return self.delete(url, data=data)
 
     def delete_envelope_recipient(self, envelopeId, recipientId):
