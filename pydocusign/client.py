@@ -196,6 +196,10 @@ class DocuSignClient(object):
         """Shortcut to perform POST operations on DocuSign API."""
         return self._request(method='POST', *args, **kwargs)
 
+    def put(self, *args, **kwargs):
+        """Shortcut to perform PUT operations on DocuSign API."""
+        return self._request(method='PUT', *args, **kwargs)
+
     def delete(self, *args, **kwargs):
         """Shortcut to perform DELETE operations on DocuSign API."""
         return self._request(method='DELETE', *args, **kwargs)
@@ -399,6 +403,48 @@ class DocuSignClient(object):
                       envelopeId=envelopeId)
         return self.get(url)
 
+    def delete_envelope_recipients(self, envelopeId, recipientIds):
+        """DELETE to /accounts/{accountId}/envelopes/{envelopeId}/recipients
+        and return JSON.
+
+        ``recipientIds`` is a list of ``recipientId`` values for recipients
+        which will be deleted from the envelope
+
+        """
+        if isinstance(recipientIds, basestring):
+            recipientIds = [recipientIds]
+        if not self.account_url:
+            self.login_information()
+        url = '/accounts/{accountId}/envelopes/{envelopeId}/recipients' \
+              .format(accountId=self.account_id,
+                      envelopeId=envelopeId)
+        data = [{'recipientId': x} for x in recipientIds]
+        return self.delete(url, data=data)
+
+    def delete_envelope_recipient(self, envelopeId, recipientId):
+        """Remove a recipient, by id, from an envelope."""
+        return self.delete_envelope_recipients(envelopeId, [recipientId])
+
+    def add_envelope_recipients(self, envelopeId, recipients):
+        """PUT to {account}/envelopes/{envelopeId}/recipients and return
+        JSON.
+
+        """
+        if not self.account_url:
+            self.login_information()
+        url = '/accounts/{accountId}/envelopes/{envelopeId}/recipients' \
+              .format(accountId=self.account_id,
+                      envelopeId=envelopeId)
+        data = {
+            'signers': [signer.to_dict() for signer in recipients]
+        }
+        return self.put(url, data=data)
+
+    def add_envelope_recipient(self, envelopeId, recipient):
+        """Add a recipient (`Signer` or `Role`) to an envelope
+        """
+        return self.add_envelope_recipients(envelopeId, [recipient])
+
     def post_recipient_view(self, authenticationMethod=None,
                             clientUserId='', email='', envelopeId='',
                             returnUrl='', userId='', userName=''):
@@ -460,3 +506,4 @@ class DocuSignClient(object):
               .format(accountId=self.account_id,
                       templateId=templateId)
         return self.get(url)
+
