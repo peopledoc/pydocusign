@@ -325,13 +325,16 @@ class DocuSignClient(object):
 
         """
         data = envelope.to_dict()
-        document = envelope.documents[0].data
-        data['documents'] = [{
-            "documentId": "1",
-            "name": "document.pdf",
-            "fileExtension": "pdf",
-            "documentBase64": base64.b64encode(
-                document.read()).decode('utf-8')}]
+        documents = []
+        for document in envelope.documents:
+            documents.append({
+                "documentId": document.documentId,
+                "name": document.name,
+                "fileExtension": "pdf",
+                "documentBase64": base64.b64encode(
+                    document.data.read()).decode('utf-8')
+            })
+        data['documents'] = documents
         return data
 
     def _create_envelope_from_template_request(self, envelope):
