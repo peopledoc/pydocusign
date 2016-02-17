@@ -69,16 +69,46 @@ class DocuSignObject(object):
     """Base class for DocuSign objects."""
     #: API fields. Used to iterate attributes.
     attributes = []
+
+    #: Required attributes. These will be serialized out even if their values
+    #: are None
+    required_attributes = set()
+
+    #: Default values for attributes which do not get passed to __init__ and
+    #: should be something other than None
+    attribute_defaults = {}
+
     #: DocuSign client, typically assigned by client itself.
     client = None
 
+    def __init__(self, **kwargs):
+        attribute_defaults = self.get_attribute_defaults()
+        for attribute in self.attributes:
+            setattr(
+                self, attribute,
+                kwargs.get(attribute, attribute_defaults.get(attribute, None))
+            )
+
     def to_dict(self):
-        """Return dict representation of model."""
-        data = dict([(k, getattr(self, k)) for k in self.attributes])
-        return data
+        """Return dict representation of model.
+
+        Serializes out fields that are not None or marked as required
+        """
+        return {k: v for k, v in
+                self.__dict__.items() if k in self.attributes
+                if v is not None or k in self.required_attributes}
 
     def __unicode__(self):
         return self.to_dict()
+
+    def get_attribute_defaults(self):
+        """Get the dict of attribute defaults for this class.
+
+        Defaults to using `self.attribute_defaults`. You may want to override
+        this function if you need to provide different defaults for different
+        class instances.
+        """
+        return self.attribute_defaults
 
 
 class Tab(DocuSignObject):
@@ -90,75 +120,116 @@ class Tab(DocuSignObject):
     https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Tab%20Parameters.htm
 
     """
+    _common_attributes = [
+        'anchorString',
+        'anchorXOffset',
+        'anchorYOffset',
+        'anchorIgnoreIfNotPresent',
+        'anchorUnits',
+        'conditionalParentLabel',
+        'conditionalParentvalue',
+        'customTabId',
+        'documentId',
+        'pageNumber',
+        'recipientId',
+        'templateLocked',
+        'templateRequired',
+        'xPosition',
+        'yPosition',
+        'tabLabel',
+    ]
+
+    _formatting_attributes = [
+        'bold',
+        'font',
+        'fontColor',
+        'fontSize',
+        'italic',
+        'underline',
+    ]
+
+    required_attributes = {
+        'documentId',
+        'pageNumber',
+        'recipientId',
+        'xPosition',
+        'yPosition'
+    }
+
+    attribute_defaults = {
+        'pageNumber': 1,
+        'xPosition': 0,
+        'yPosition': 0,
+    }
+
     tabs_name = None
 
 
-class PositionnedTab(Tab):
-    """Base class for a positionned DocuSign Tab."""
-    attributes = ['documentId', 'pageNumber', 'xPosition', 'yPosition']
+class SignHereTab(Tab):
+    """Tab to have a recipient place their signature in the document.
 
-    def __init__(self, documentId=None, pageNumber=1, xPosition=0,
-                 yPosition=0, recipientId=None):
-        """Setup."""
-        #: Document ID number that the tab is placed on.
-        self.documentId = documentId
-
-        #: Page number where the tab will be affixed.
-        self.pageNumber = pageNumber
-
-        #: Horizontal offset of the tab on the page, from left.
-        self.xPosition = xPosition
-
-        #: Vertical offset of the tab on the page, from top.
-        self.yPosition = yPosition
-
-
-class SignHereTab(PositionnedTab):
-    """Tag to have a recipient place his signature in the document."""
+    DocuSign reference lives at
+    https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Tabs/Sign%20Here%20Tab.htm
+    """
+    attributes = Tab._common_attributes + [
+        'name',
+        'optional',
+        'scaleValue',
+    ]
     tabs_name = 'signHereTabs'
 
-    def to_dict(self):
-        """Return dict representation of model.
 
-        >>> tab = SignHereTab(
-        ...     documentId=2,
-        ...     pageNumber=1,
-        ...     xPosition=100,
-        ...     yPosition=200)
-        >>> tab.to_dict() == {
-        ...     'documentId': 2,
-        ...     'pageNumber': 1,
-        ...     'xPosition': 100,
-        ...     'yPosition': 200,
-        ... }
-        True
+class InitialHereTab(Tab):
+    """Tab to have a recipient place their initials in the document.
 
-        """
-        return super(SignHereTab, self).to_dict()
+    DocuSign reference lives at
+    https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Tabs/Initial%20Here%20Tab.htm
+    """
+    attributes = Tab._common_attributes + [
+        'name',
+        'optional',
+        'scaleValue',
+    ]
+    tabs_name = 'initialHereTabs'
 
 
-class ApproveTab(PositionnedTab):
-    """Tag to have a recipient approve the document."""
+class ApproveTab(Tab):
+    """Tab to have a recipient approve the document.
+
+    DocuSign reference lives at
+    https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Tabs/Approve%20Tab.htm
+    """
+    attributes = Tab._common_attributes + Tab._formatting_attributes + [
+        'buttonText',
+        'height',
+        'width'
+    ]
     tabs_name = 'approveTabs'
 
-    def to_dict(self):
-        """Return dict representation of model.
 
-        >>> tab = ApproveTab(
-        ...     documentId=2,
-        ...     pageNumber=1,
-        ...     xPosition=100,
-        ...     yPosition=200)
-        >>> tab.to_dict() == {
-        ...     'documentId': 2,
-        ...     'pageNumber': 1,
-        ...     'xPosition': 100,
-        ...     'yPosition': 200,
-        ... }
-        True
+class FullNameTab(Tab):
+    """Tab to show the user's full name.
 
-        """
-        return super(ApproveTab, self).to_dict()
+    DocuSign reference lives at
+    https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Tabs/Full%20Name%20Tab.htm
+    """
+    attributes = Tab._common_attributes + Tab._formatting_attributes + [
+        'name',
+    ]
+    tabs_name = 'fullNameTabs'
+
+
+class DateSignedTab(Tab):
+    """Tab to show the date the recipient signed the document.
+
+    DocuSign reference lives at
+    https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Tabs/Date%20Signed%20Tab.htm
+    """
+    attributes = Tab._common_attributes + Tab._formatting_attributes + [
+        'name',
+        'value'
+    ]
+    tabs_name = 'dateSignedTabs'
 
 
 class Recipient(DocuSignObject):
@@ -190,114 +261,20 @@ class Signer(Recipient):
     """
     attributes = ['clientUserId', 'email', 'emailBody', 'emailSubject', 'name',
                   'recipientId', 'routingOrder', 'supportedLanguage', 'tabs',
-                  'accessCode']
+                  'accessCode', 'userId']
 
-    def __init__(self, clientUserId=None, email='', emailBody=None,
-                 emailSubject=None, name='', recipientId=None, routingOrder=0,
-                 supportedLanguage=None, tabs=None, userId=None,
-                 accessCode=None):
-        """Setup."""
-        #: If ``None`` then the recipient is remote (email sent) else embedded.
-        self.clientUserId = clientUserId
+    attribute_defaults = {
+        'name': '',
+        'routingOrder': 0
+    }
 
-        #: Email of the recipient. Notification will be sent to this email id.
-        #: This can be a maximum of 100 characters.
-        self.email = email
-
-        #: Custom body for recipient's specific e-mail notification.
-        self.emailBody = emailBody
-
-        #: Custom subject for recipient's specific e-mail notification.
-        self.emailSubject = emailSubject
-
-        #: Language for recipient's e-mail notification and DocuSign UI.
-        self.supportedLanguage = supportedLanguage
-
-        #: Full legal name of the recipient. This can be a maximum of 100
-        #: characters.
-        self.name = name
-
-        #: Unique for the recipient. It is used by the tab element to indicate
-        #: which recipient is to sign the Document.
-        self.recipientId = recipientId
-
-        #: Routing order of the recipient in the envelope.
-        self.routingOrder = routingOrder
-
-        #: Specifies the Tabs associated with the recipient. See :class:`Tab`.
-        #:
-        #: Optional element only used with recipient types
-        #: :class:`InPersonSigner` and :class:`Signer`.
-        self.tabs = tabs or []
-
-        #: User ID on DocuSign side. It is an UUID.
-        self.userId = userId
-
-        #: Access code required for signer before signing the document
-        self.accessCode = accessCode
+    def __init__(self, **kwargs):
+        super(Signer, self).__init__(**kwargs)
+        if self.tabs is None:
+            self.tabs = []
 
     def to_dict(self):
-        """Return dict representation of model.
-
-        >>> tab = SignHereTab(
-        ...     documentId=1,
-        ...     pageNumber=2,
-        ...     xPosition=100,
-        ...     yPosition=200)
-        >>> signer = Signer(
-        ...     clientUserId='some ID in your DB',
-        ...     email='signer@example.com',
-        ...     name='My Name',
-        ...     recipientId=1,
-        ...     tabs=[tab])
-        >>> signer.to_dict() == {
-        ...     'clientUserId': 'some ID in your DB',
-        ...     'email': 'signer@example.com',
-        ...     'emailNotification': None,
-        ...     'name': 'My Name',
-        ...     'recipientId': 1,
-        ...     'routingOrder': 0,
-        ...     'tabs': {
-        ...         'signHereTabs': [tab.to_dict()],
-        ...     },
-        ...     'accessCode': None,
-        ... }
-        True
-        >>> tab = ApproveTab(
-        ...     documentId=1,
-        ...     pageNumber=2,
-        ...     xPosition=100,
-        ...     yPosition=200)
-        >>> signer = Signer(
-        ...     clientUserId='some ID in your DB',
-        ...     email='signer@example.com',
-        ...     emailSubject=u'Subject',
-        ...     emailBody=u'Body',
-        ...     supportedLanguage='de',
-        ...     name='My Name',
-        ...     recipientId=1,
-        ...     routingOrder=100,
-        ...     tabs=[tab],
-        ...     accessCode='toto')
-        >>> signer.to_dict() == {
-        ...     'clientUserId': 'some ID in your DB',
-        ...     'email': 'signer@example.com',
-        ...     'emailNotification': {
-        ...         'emailBody': u'Body',
-        ...         'emailSubject': u'Subject',
-        ...         'supportedLanguage': 'de',
-        ...     },
-        ...     'name': 'My Name',
-        ...     'recipientId': 1,
-        ...     'routingOrder': 100,
-        ...     'tabs': {
-        ...         'approveTabs': [tab.to_dict()],
-        ...     },
-        ...     'accessCode': 'toto',
-        ... }
-        True
-
-        """
+        """Return dict representation of model. """
         data = {
             'clientUserId': self.clientUserId,
             'email': self.email,
@@ -332,74 +309,8 @@ class Role(Recipient):
     attributes = ['clientUserId', 'email', 'emailBody', 'emailSubject', 'name',
                   'supportedLanguage', 'roleName']
 
-    def __init__(self, clientUserId=None, email='', emailBody=None,
-                 emailSubject=None, name='', supportedLanguage=None,
-                 roleName='', userId=None):
-        """Setup."""
-        #: If ``None`` then the recipient is remote (email sent) else embedded.
-        self.clientUserId = clientUserId
-
-        #: Email of the recipient. Notification will be sent to this email id.
-        #: This can be a maximum of 100 characters.
-        self.email = email
-
-        #: Custom body for recipient's specific e-mail notification.
-        self.emailBody = emailBody
-
-        #: Custom subject for recipient's specific e-mail notification.
-        self.emailSubject = emailSubject
-
-        #: Language for recipient's e-mail notification and DocuSign UI.
-        self.supportedLanguage = supportedLanguage
-
-        #: Full legal name of the recipient. This can be a maximum of 100
-        #: characters.
-        self.name = name
-
-        #: Role name. Must be defined in the template.
-        self.roleName = roleName
-
-        #: User ID on DocuSign side. It is an UUID.
-        self.userId = userId
-
     def to_dict(self):
-        """Return dict representation of model.
-
-        >>> role = Role(
-        ...     clientUserId='some ID in your DB',
-        ...     email='signer@example.com',
-        ...     name='My Name',
-        ...     roleName='Role 1')
-        >>> role.to_dict() == {
-        ...     'clientUserId': 'some ID in your DB',
-        ...     'email': 'signer@example.com',
-        ...     'emailNotification': None,
-        ...     'name': 'My Name',
-        ...     'roleName': 'Role 1',
-        ... }
-        True
-        >>> role = Role(
-        ...     clientUserId='some ID in your DB',
-        ...     email='signer@example.com',
-        ...     emailSubject=u'Subject',
-        ...     emailBody=u'Body',
-        ...     supportedLanguage='de',
-        ...     name='My Name',
-        ...     roleName='Role 1')
-        >>> role.to_dict() == {
-        ...     'clientUserId': 'some ID in your DB',
-        ...     'email': 'signer@example.com',
-        ...     'emailNotification': {
-        ...         'emailBody': u'Body',
-        ...         'emailSubject': u'Subject',
-        ...         'supportedLanguage': 'de',
-        ...     },
-        ...     'name': 'My Name',
-        ...     'roleName': 'Role 1',
-        ... }
-        True
-
-        """
+        """Return dict representation of model."""
         data = {
             'clientUserId': self.clientUserId,
             'email': self.email,
@@ -420,31 +331,9 @@ class Document(DocuSignObject):
     """A document to sign."""
     attributes = ['documentId', 'name']
 
-    def __init__(self, documentId=None, name='', data=None):
-        """Setup."""
-        #: The unique Id for the document in an envelope.
-        self.documentId = documentId
-
-        #: The name of the document. This can be a maximum of 100 characters.
-        self.name = name
-
-        #: A file wrapper.
-        self.data = data
-
-    def to_dict(self):
-        """Return dict representation of model.
-
-        >>> document = Document(
-        ...     documentId=2,
-        ...     name='document.pdf')
-        >>> document.to_dict() == {
-        ...     'documentId': 2,
-        ...     'name': 'document.pdf',
-        ... }
-        True
-
-        """
-        return super(Document, self).to_dict()
+    def __init__(self, **kwargs):
+        super(Document, self).__init__(**kwargs)
+        self.data = kwargs.get('data', None)
 
 
 class EventNotification(DocuSignObject):
@@ -452,7 +341,7 @@ class EventNotification(DocuSignObject):
     attributes = [
         'url',
         'loggingEnabled',
-        'requireAcknowledgment',
+        'requireAcknowledgement',
         'useSoapInterface',
         'soapNameSpace',
         'includeCertificateWithSoap',
@@ -463,112 +352,35 @@ class EventNotification(DocuSignObject):
         'envelopeEvents',
         'recipientEvents',
     ]
-
-    def __init__(self, url='', loggingEnabled=True, requireAcknowledgment=True,
-                 useSoapInterface=False, soapNameSpace='',
-                 includeCertificateWithSoap=False,
-                 signMessageWithX509Cert=False, includeDocuments=False,
-                 includeTimeZone=True,
-                 includeSenderAccountAsCustomField=True,
-                 envelopeEvents=None,
-                 recipientEvents=None):
-        """Setup."""
-        #: The endpoint where envelope updates are sent.
-        self.url = url
-        self.loggingEnabled = loggingEnabled
-        self.requireAcknowledgment = requireAcknowledgment
-        self.useSoapInterface = useSoapInterface
-        self.soapNameSpace = soapNameSpace
-        self.includeCertificateWithSoap = includeCertificateWithSoap
-        self.signMessageWithX509Cert = signMessageWithX509Cert
-        self.includeDocuments = includeDocuments
-        self.includeTimeZone = includeTimeZone
-        self.includeSenderAccountAsCustomField = \
-            includeSenderAccountAsCustomField
-        if envelopeEvents is None:
-            envelopeEvents = DEFAULT_ENVELOPE_EVENTS
-        self.envelopeEvents = envelopeEvents
-        if recipientEvents is None:
-            recipientEvents = DEFAULT_RECIPIENT_EVENTS
-        self.recipientEvents = recipientEvents
-
-    def to_dict(self):
-        """Return dict representation of model.
-
-        >>> event_notification = EventNotification(
-        ...     url='http://example.com',
-        ... )
-        >>> event_notification.to_dict() == {
-        ...     'url': 'http://example.com',
-        ...     'loggingEnabled': True,
-        ...     'requireAcknowledgment': True,
-        ...     'useSoapInterface': False,
-        ...     'soapNameSpace': '',
-        ...     'includeCertificateWithSoap': False,
-        ...     'signMessageWithX509Cert': False,
-        ...     'includeDocuments': False,
-        ...     'includeTimeZone': True,
-        ...     'includeSenderAccountAsCustomField': True,
-        ...     'envelopeEvents': [
-        ...         {
-        ...             'envelopeEventStatusCode': ENVELOPE_STATUS_SENT,
-        ...             'includeDocuments': False,
-        ...         },
-        ...         {
-        ...             'envelopeEventStatusCode': 'Delivered',
-        ...             'includeDocuments': False,
-        ...         },
-        ...         {
-        ...             'envelopeEventStatusCode': 'Completed',
-        ...             'includeDocuments': False,
-        ...         },
-        ...         {
-        ...             'envelopeEventStatusCode': 'Declined',
-        ...             'includeDocuments': False,
-        ...         },
-        ...         {
-        ...             'envelopeEventStatusCode': 'Voided',
-        ...             'includeDocuments': False,
-        ...         },
-        ...     ],
-        ...     'recipientEvents': [
-        ...         {
-        ...             'recipientEventStatusCode': 'AuthenticationFailed',
-        ...             'includeDocuments': False,
-        ...         },
-        ...         {
-        ...             'recipientEventStatusCode': 'AutoResponded',
-        ...             'includeDocuments': False,
-        ...         },
-        ...         {
-        ...             'recipientEventStatusCode': 'Completed',
-        ...             'includeDocuments': False,
-        ...         },
-        ...         {
-        ...             'recipientEventStatusCode': 'Declined',
-        ...             'includeDocuments': False,
-        ...         },
-        ...         {
-        ...             'recipientEventStatusCode': 'Delivered',
-        ...             'includeDocuments': False,
-        ...         },
-        ...         {
-        ...             'recipientEventStatusCode': RECIPIENT_STATUS_SENT,
-        ...             'includeDocuments': False,
-        ...         },
-        ...     ],
-        ... }
-        True
-
-        """
-        return super(EventNotification, self).to_dict()
+    attribute_defaults = {
+        'url': '',
+        'loggingEnabled': True,
+        'requireAcknowledgement': True,
+        'useSoapInterface': False,
+        'soapNameSpace': '',
+        'includeCertificateWithSoap': False,
+        'signMessageWithX509Cert': False,
+        'includeDocuments': False,
+        'includeTimeZone': True,
+        'includeSenderAccountAsCustomField': True,
+        'envelopeEvents': DEFAULT_ENVELOPE_EVENTS,
+        'recipientEvents': DEFAULT_RECIPIENT_EVENTS,
+    }
 
 
 class Envelope(DocuSignObject):
     """An envelope."""
     attributes = ['documents', 'emailBlurb', 'emailSubject',
                   'eventNotification', 'recipients', 'templateId',
-                  'templateRoles', 'status']
+                  'templateRoles', 'status', 'envelopeId', 'userId',
+                  'enableWetSign']
+    required_attributes = ['envelopeId', 'userId']
+    attribute_defaults = {
+        'emailBlurb': '',
+        'emailSubject': '',
+        'status': ENVELOPE_STATUS_SENT,
+        'enableWetSign': False,
+    }
 
     # Pseudo-constants.
     STATUS_CREATED = ENVELOPE_STATUS_CREATED
@@ -581,89 +393,20 @@ class Envelope(DocuSignObject):
     STATUS_LIST = ENVELOPE_STATUS_LIST
     DEFAULT_EVENTS = DEFAULT_ENVELOPE_EVENTS
 
-    def __init__(self, documents=None, emailBlurb='', emailSubject='',
-                 recipients=None, templateId=None, templateRoles=None,
-                 status=ENVELOPE_STATUS_SENT, envelopeId=None,
-                 eventNotification=None, sobo_email=None):
+    def __init__(self, sobo_email=None, **kwargs):
         """Setup."""
-        self.documents = documents or []
-        self.emailBlurb = emailBlurb
-        self.emailSubject = emailSubject
-        self.eventNotification = eventNotification
-        self.recipients = recipients or {}
-        self.templateId = templateId
-        self.templateRoles = templateRoles
-        self.status = status
-
-        #: ID in DocuSign database.
-        self.envelopeId = envelopeId
+        super(Envelope, self).__init__(**kwargs)
+        if self.documents is None:
+            self.documents = []
+        if self.recipients is None:
+            self.recipients = {}
 
         #: Email address of user to send on behalf of.
         #: If None, will use logged in user.
         self.sobo_email = sobo_email
 
     def to_dict(self):
-        """Return dict representation of model.
-
-        >>> tab = SignHereTab(
-        ...     documentId=1,
-        ...     pageNumber=1,
-        ...     xPosition=100,
-        ...     yPosition=100)
-        >>> signer = Signer(
-        ...     email='signer@example.com',
-        ...     name='My Name',
-        ...     recipientId=1,
-        ...     tabs=[tab])
-        >>> document = Document(
-        ...     documentId=2,
-        ...     name='document.pdf')
-        >>> envelope = Envelope(
-        ...     documents=[document],
-        ...     emailBlurb='This is the email body',
-        ...     emailSubject='This is the email subject',
-        ...     recipients=[signer],
-        ...     status=ENVELOPE_STATUS_DRAFT)
-        >>> envelope.to_dict() == {
-        ...     'documents': [document.to_dict()],
-        ...     'emailBlurb': 'This is the email body',
-        ...     'emailSubject': 'This is the email subject',
-        ...     'recipients': {
-        ...         'signers': [signer.to_dict()],
-        ...     },
-        ...     'status': ENVELOPE_STATUS_DRAFT,
-        ... }
-        True
-        >>> notification = EventNotification(url='fake')
-        >>> envelope.eventNotification = notification
-        >>> envelope.to_dict()['eventNotification'] == notification.to_dict()
-        True
-        >>> role = Role(
-        ...     email='signer@example.com',
-        ...     name='My Name',
-        ...     roleName='Role 1')
-        >>> envelope = Envelope(
-        ...     emailBlurb='This is the email body',
-        ...     emailSubject='This is the email subject',
-        ...     templateId='1111-2222-3333-4444',
-        ...     templateRoles=[role],
-        ...     status=ENVELOPE_STATUS_DRAFT)
-        >>> envelope.to_dict() == {
-        ...     'emailBlurb': 'This is the email body',
-        ...     'emailSubject': 'This is the email subject',
-        ...     'templateId': '1111-2222-3333-4444',
-        ...     'templateRoles': [
-        ...         role.to_dict()
-        ...     ],
-        ...     'status': ENVELOPE_STATUS_DRAFT,
-        ... }
-        True
-        >>> notification = EventNotification(url='fake')
-        >>> envelope.eventNotification = notification
-        >>> envelope.to_dict()['eventNotification'] == notification.to_dict()
-        True
-
-        """
+        """Return dict representation of model."""
         data = {
             'status': self.status,
             'emailBlurb': self.emailBlurb,
