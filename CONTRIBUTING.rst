@@ -95,6 +95,7 @@ get the setup. Here is an example to run the tests:
    DOCUSIGN_USERNAME='your-username' \
    DOCUSIGN_PASSWORD='your-password' \
    DOCUSIGN_INTEGRATOR_KEY='your-integrator-key' \
+   DOCUSIGN_OAUTH2_TOKEN='' \
    DOCUSIGN_TEST_TEMPLATE_ID='UUID-of-your-docusign-template' \
    DOCUSIGN_TEST_SIGNER_RETURN_URL='http://example.com/signer-return/' \
    DOCUSIGN_TEST_CALLBACK_URL='http://example.com/callback/' \
