@@ -232,6 +232,20 @@ class DateSignedTab(Tab):
     tabs_name = 'dateSignedTabs'
 
 
+class TitleTab(Tab):
+    """Tab to show the recipient's title on the document.
+
+    DocuSign reference lives at
+    https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST API References/Tabs/Title%20Tab.htm
+    """
+    attributes = Tab._common_attributes + Tab._formatting_attributes + [
+        'name',
+        'value',
+        'width'
+    ]
+    tabs_name = 'titleTabs'
+
+
 class Recipient(DocuSignObject):
     """Base class for "recipient" objects.
 
