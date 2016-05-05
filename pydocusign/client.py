@@ -509,4 +509,3 @@ class DocuSignClient(object):
               .format(accountId=self.account_id,
                       templateId=templateId)
         return self.get(url)
-
