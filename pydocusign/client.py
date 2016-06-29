@@ -452,6 +452,20 @@ class DocuSignClient(object):
         setattr(response.raw, 'close', response.close)
         return response.raw
 
+    def list_templates(self):
+        """Get the templates in the account.
+
+        Yields a series of template data structures.
+        """
+        if not self.account_url:
+            self.login_information()
+        url = '/accounts/{accountId}/templates/' \
+              .format(accountId=self.account_id)
+        response = self.get(url)
+
+        for template in response['envelopeTemplates']:
+            yield template
+
     def get_template(self, templateId):
         """GET the definition of the template."""
         if not self.account_url:
@@ -460,3 +474,16 @@ class DocuSignClient(object):
               .format(accountId=self.account_id,
                       templateId=templateId)
         return self.get(url)
+
+    def list_template_documents(self, templateId):
+        """Get the documents that use a given template.
+
+        Yields a series of document data structures."""
+        if not self.account_url:
+            self.login_information()
+        url = '/accounts/{accountId}/templates/{templateId}/documents' \
+              .format(accountId=self.account_id, templateId=templateId)
+        response = self.get(url)
+
+        for document in response['templateDocuments']:
+            yield document
