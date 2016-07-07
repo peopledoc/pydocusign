@@ -6,12 +6,17 @@ See also http://iodocs.docusign.com/APIWalkthrough/embeddedSigning
 
 """
 from __future__ import print_function
+import hashlib
 import os
-import sha
 import uuid
 
 import pydocusign
 from pydocusign.test import fixtures_dir
+
+try:
+    raw_input
+except NameError:
+    raw_input = input
 
 
 def prompt(environ_key, description, default):
@@ -137,11 +142,11 @@ print("   Received UserId for recipient 1: {0}".format(
 # Retrieve embedded signing for first recipient.
 print("4. Get DocuSign Recipient View")
 signing_url = envelope.post_recipient_view(
-    routingOrder=1,
+    envelope.recipients[0],
     returnUrl=signer_return_url)
 print("   Received signing URL for recipient 0: {0}".format(signing_url))
 signing_url = envelope.post_recipient_view(
-    routingOrder=2,
+    envelope.recipients[1],
     returnUrl=signer_return_url)
 print("   Received signing URL for recipient 1: {0}".format(signing_url))
 
@@ -152,11 +157,9 @@ document_list = envelope.get_document_list()
 print("   Received document list: {0}".format(document_list))
 print("6. Download document from DocuSign.")
 document = envelope.get_document(document_list[0]['documentId'])
-document_sha = sha.new(document.read()).hexdigest()
+document_sha = hashlib.sha1(document.read()).hexdigest()
 print("   Document SHA1: {0}".format(document_sha))
-document.close()
 print("7. Download signature certificate from DocuSign.")
 document = envelope.get_certificate()
-document_sha = sha.new(document.read()).hexdigest()
+document_sha = hashlib.sha1(document.read()).hexdigest()
 print("   Certificate SHA1: {0}".format(document_sha))
-document.close()

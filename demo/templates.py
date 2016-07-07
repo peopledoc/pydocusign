@@ -6,11 +6,16 @@ See also http://iodocs.docusign.com/APIWalkthrough/requestSignatureFromTemplate
 
 """
 from __future__ import print_function
+import hashlib
 import os
-import sha
 import uuid
 
 import pydocusign
+
+try:
+    raw_input
+except NameError:
+    raw_input = input
 
 
 def prompt(environ_key, description, default):
@@ -122,19 +127,19 @@ print("   Received envelopeId {id}".format(id=envelope.envelopeId))
 print("4. GET {account}/envelopes/{envelopeId}/recipients")
 envelope.get_recipients()
 print("   Received UserId for recipient 0: {0}".format(
-    envelope.templateRoles[0].userId))
+    envelope.recipients[0].userId))
 print("   Received UserId for recipient 1: {0}".format(
-    envelope.templateRoles[1].userId))
+    envelope.recipients[1].userId))
 
 
 # Retrieve template signing for first recipient.
 print("5. Get DocuSign Recipient View")
 signing_url = envelope.post_recipient_view(
-    routingOrder=1,
+    envelope.recipients[0],
     returnUrl=signer_return_url)
 print("   Received signing URL for recipient 0: {0}".format(signing_url))
 signing_url = envelope.post_recipient_view(
-    routingOrder=2,
+    envelope.recipients[1],
     returnUrl=signer_return_url)
 print("   Received signing URL for recipient 1: {0}".format(signing_url))
 
@@ -145,11 +150,9 @@ document_list = envelope.get_document_list()
 print("   Received document list: {0}".format(document_list))
 print("7. Download document from DocuSign.")
 document = envelope.get_document(document_list[0]['documentId'])
-document_sha = sha.new(document.read()).hexdigest()
+document_sha = hashlib.sha1(document.read()).hexdigest()
 print("   Document SHA1: {0}".format(document_sha))
-document.close()
 print("8. Download signature certificate from DocuSign.")
 document = envelope.get_certificate()
-document_sha = sha.new(document.read()).hexdigest()
+document_sha = hashlib.sha1(document.read()).hexdigest()
 print("   Certificate SHA1: {0}".format(document_sha))
-document.close()

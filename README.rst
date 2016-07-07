@@ -28,6 +28,6 @@ Resources
 * Changelog: https://pydocusign.readthedocs.org/en/latest/about/changelog.html
 * Roadmap: https://github.com/novafloss/pydocusign/milestones
 * Code repository: https://github.com/novafloss/pydocusign
-* Continuous integration: https://travis-ci.org/novapost/pydocusign
+* Continuous integration: https://travis-ci.org/novafloss/pydocusign
 
 .. _`DocuSign`: https://www.docusign.com
