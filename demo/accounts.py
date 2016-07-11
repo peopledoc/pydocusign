@@ -9,6 +9,11 @@ import os
 
 import pydocusign
 
+try:
+    raw_input
+except NameError:
+    raw_input = input
+
 
 def prompt(environ_key, description, default):
     try:
@@ -55,6 +60,18 @@ signer_return_url = prompt(
     'DOCUSIGN_TEST_SIGNER_RETURN_URL',
     'Signer return URL',
     '')
+account_email = prompt(
+    'DOCUSIGN_TEST_ACCOUNT_EMAIL',
+    'Subsidiary account email',
+    '')
+account_password = prompt(
+    'DOCUSIGN_TEST_ACCOUNT_PASSWORD',
+    'Subsidiary account password',
+    '')
+plan_id = prompt(
+    'DOCUSIGN_TEST_PLAN_ID',
+    'DocuSign Plan ID',
+    '')
 
 
 # Create a client.
@@ -80,13 +97,11 @@ print("   Received data: {data}".format(data=account_information))
 
 # Create a subsidiary account.
 print("3. POST /accounts")
-account_email = "benoit.bryon+pydocusign-test@novapost.fr"
-account_password = "notasecret"
 account_input = {
     "accountName": "Pydocusign Test Account",
     "accountSettings": [],
     "addressInformation": {
-        "address1": "32 rue de Paradis",
+        "address1": "Somewhere",
         "address2": "",
         "city": "Paris",
         "country": "France",
@@ -110,7 +125,7 @@ account_input = {
         "userSettings": [],
     },
     "planInformation": {
-        "planId": "64c9f146-91d8-4137-8367-fd3f3a23ef76",
+        "planId": plan_id,
     },
     "referralInformation": None,
     "socialAccountInformation": None,

@@ -8,7 +8,7 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.13.3 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Add support of python3.
 
 
 0.13.2 (2015-09-10)

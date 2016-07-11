@@ -46,7 +46,7 @@ Clone `pydocusign` repository (adapt to use your own fork):
 
 .. code:: sh
 
-   git clone git@github.com:novapost/pydocusign.git
+   git clone git@github.com:novafloss/pydocusign.git
    cd pydocusign/
 
 

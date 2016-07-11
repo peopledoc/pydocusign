@@ -7,6 +7,7 @@ See https://www.docusign.com/developer-center/explore/common-terms
    CamelCase is used here to mimic DocuSign names.
 
 """
+from operator import attrgetter
 
 
 ENVELOPE_STATUS_CREATED = 'Created'
@@ -729,10 +730,7 @@ class Envelope(DocuSignObject):
             recipient.roleName = recipient_data.get('roleName', None)
             synced_recipients.append(recipient)
 
-        def cmp_recipients(a, b):
-            return cmp(a.routingOrder, b.routingOrder)
-
-        synced_recipients = sorted(synced_recipients, cmp_recipients)
+        synced_recipients.sort(key=attrgetter('routingOrder'))
         self.recipients = synced_recipients
 
     def post_recipient_view(self, recipient, returnUrl, client=None):

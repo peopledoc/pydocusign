@@ -1,5 +1,6 @@
 """Utilities to parse DocuSign callback responses."""
 from collections import OrderedDict
+from operator import itemgetter
 
 from bs4 import BeautifulSoup
 import dateutil.parser
@@ -106,7 +107,7 @@ class DocuSignCallbackParser(object):
         ... </DocuSignEnvelopeInformation>
         ... '''
         >>> parser = DocuSignCallbackParser(xml_source=xml)
-        >>> print parser.envelope_id
+        >>> print(parser.envelope_id)
         some-uuid
 
         """
@@ -213,10 +214,6 @@ class DocuSignCallbackParser(object):
                     return None
         return None
 
-    def cmp_events(self, left, right):
-        """Compare ``left`` and ``right`` events."""
-        return cmp(left['datetime'], right['datetime'])
-
     @property
     def envelope_events(self):
         """Ordered (chronological) list of events for envelope.
@@ -270,7 +267,7 @@ class DocuSignCallbackParser(object):
                     'datetime': instant,
                     'status': status,
                 })
-        events.sort(self.cmp_events)
+        events.sort(key=itemgetter('datetime'))
         return events
 
     @property
@@ -353,7 +350,7 @@ class DocuSignCallbackParser(object):
                             'recipientId': recipient_id,
                             'clientUserId': client_user_id,
                         })
-        events.sort(self.cmp_events)
+        events.sort(key=itemgetter('datetime'))
         return events
 
     @property
@@ -440,7 +437,7 @@ class DocuSignCallbackParser(object):
         for event in self.recipient_events:
             event['object'] = 'recipient'
             events.append(event)
-        events.sort(self.cmp_events)
+        events.sort(key=itemgetter('datetime'))
         return events
 
     @property
@@ -520,7 +517,7 @@ class DocuSignCallbackParser(object):
             # Register.
             recipients.append(recipient)
         # Sort by routing order.
-        recipients.sort(lambda a, b: cmp(a['RoutingOrder'], b['RoutingOrder']))
+        recipients.sort(key=itemgetter('RoutingOrder'))
         # Return OrderedDict.
         recipients = OrderedDict([(rec['ClientUserId'], rec)
                                   for rec in recipients])

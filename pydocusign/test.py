@@ -36,7 +36,7 @@ def fixtures_dir():
 def generate_notification_callback_body(
         data,
         template_url='http://diecutter.io/github/'
-                     'novapost/pydocusign/master/'
+                     'novafloss/pydocusign/master/'
                      'pydocusign/templates/callback.xml'):
     """Return custom body content to mimic DocuSign notification callbacks.
 

@@ -1,12 +1,10 @@
 """DocuSign client."""
 from collections import namedtuple
-from io import BytesIO
+import base64
 import json
 import logging
 import os
 
-import certifi
-import pycurl
 import requests
 
 from pydocusign import exceptions
@@ -147,7 +145,7 @@ class DocuSignClient(object):
         }
 
     def _request(self, url, method='GET', headers=None, data=None,
-                 expected_status_code=200):
+                 json_data=None, expected_status_code=200):
         """Shortcut to perform HTTP requests."""
         do_url = '{root}{path}'.format(root=self.root_url, path=url)
         do_request = getattr(requests, method.lower())
@@ -161,7 +159,7 @@ class DocuSignClient(object):
             do_data = None
         try:
             response = do_request(do_url, headers=do_headers, data=do_data,
-                                  timeout=self.timeout)
+                                  json=json_data, timeout=self.timeout)
         except requests.exceptions.RequestException as exception:
             msg = "DocuSign request error: " \
                   "{method} {url} failed ; " \
@@ -252,112 +250,43 @@ class DocuSignClient(object):
     def _create_envelope_from_document_request(self, envelope):
         """Return parts of the POST request for /envelopes.
 
-        This is encapsultated in a method for test purposes: we do not want to
-        post a real request on DocuSign API for each test, whereas we want to
-        check that the HTTP request's parts meet the DocuSign specification.
-
         .. warning::
 
            Only one document is supported at the moment. This is a limitation
            of `pydocusign`, not of `DocuSign`.
 
         """
-        if not self.account_url:
-            self.login_information()
-        url = '{account}/envelopes'.format(account=self.account_url)
         data = envelope.to_dict()
         document = envelope.documents[0].data
-        document.seek(0)
-        file_content = document.read()
-        body = str(
-            "\r\n"
-            "\r\n"
-            "--myboundary\r\n"
-            "Content-Type: application/json; charset=UTF-8\r\n"
-            "Content-Disposition: form-data\r\n"
-            "\r\n"
-            "{json_data}\r\n"
-            "--myboundary\r\n"
-            "Content-Type:application/pdf\r\n"
-            "Content-Disposition: file; "
-            "filename=\"document.pdf\"; "
-            "documentid=1 \r\n"
-            "\r\n"
-            "{file_data}\r\n"
-            "--myboundary--\r\n"
-            "\r\n".format(json_data=json.dumps(data), file_data=file_content))
-        headers = self.base_headers()
-        headers['Content-Type'] = "multipart/form-data; boundary=myboundary"
-        headers['Content-Length'] = len(body)
-        return {
-            'url': url,
-            'headers': headers,
-            'body': body,
-        }
+        data['documents'] = [{
+            "documentId": "1",
+            "name": "document.pdf",
+            "fileExtension": "pdf",
+            "documentBase64": base64.b64encode(
+                document.read()).decode('utf-8')}]
+        return data
 
     def _create_envelope_from_template_request(self, envelope):
-        """Return parts of the POST request for /envelopes.
-
-        This is encapsultated in a method for test purposes: we do not want to
-        post a real request on DocuSign API for each test, whereas we want to
-        check that the HTTP request's parts meet the DocuSign specification.
+        """Return parts of the POST request for /envelopes,
+        for creating an envelope from a template.
 
         """
-        if not self.account_url:
-            self.login_information()
-        url = '{account}/envelopes'.format(account=self.account_url)
-        data = envelope.to_dict()
-        body = str(
-            "\r\n"
-            "\r\n"
-            "--myboundary\r\n"
-            "Content-Type: application/json; charset=UTF-8\r\n"
-            "Content-Disposition: form-data\r\n"
-            "\r\n"
-            "{json_data}\r\n"
-            "--myboundary--\r\n"
-            "\r\n".format(json_data=json.dumps(data)))
-        headers = self.base_headers()
-        headers['Content-Type'] = "multipart/form-data; boundary=myboundary"
-        headers['Content-Length'] = len(body)
-        return {
-            'url': url,
-            'headers': headers,
-            'body': body,
-        }
+        return envelope.to_dict()
 
-    def _create_envelope(self, envelope, parts):
+    def _create_envelope(self, envelope, data):
         """POST to /envelopes and return created envelope ID.
 
         Called by ``create_envelope_from_document`` and
         ``create_envelope_from_template`` methods.
 
         """
-        c = pycurl.Curl()
-        c.setopt(pycurl.SSL_VERIFYPEER, 1)
-        c.setopt(pycurl.SSL_VERIFYHOST, 2)
-        timeout_ms = int(self.timeout * 1000)
-        c.setopt(pycurl.CONNECTTIMEOUT_MS, timeout_ms)
-        c.setopt(pycurl.CAINFO, certifi.where())
-        c.setopt(pycurl.URL, parts['url'])
-        c.setopt(
-            pycurl.HTTPHEADER,
-            ['{key}: {value}'.format(key=key, value=value)
-             for (key, value) in parts['headers'].items()])
-        c.setopt(pycurl.VERBOSE, 0)
-        c.setopt(pycurl.POST, 1)
-        c.setopt(pycurl.POSTFIELDS, parts['body'])
-        response_body = BytesIO()
-        c.setopt(pycurl.WRITEFUNCTION, response_body.write)
-        c.perform()
-        response_body.seek(0)
-        response = Response(
-            status_code=c.getinfo(pycurl.HTTP_CODE),
-            text=response_body.read())
-        c.close()
-        if response.status_code != 201:
-            raise exceptions.DocuSignException(response)
-        response_data = json.loads(response.text)
+        if not self.account_url:
+            self.login_information()
+        url = '/accounts/{accountId}/envelopes'.format(
+            accountId=self.account_id)
+        response_data = self._request(
+            url, method='POST', json_data=data, expected_status_code=201)
+
         if not envelope.client:
             envelope.client = self
         if not envelope.envelopeId:
@@ -374,8 +303,8 @@ class DocuSignClient(object):
         sets the value.
 
         """
-        parts = self._create_envelope_from_document_request(envelope)
-        return self._create_envelope(envelope, parts)
+        data = self._create_envelope_from_document_request(envelope)
+        return self._create_envelope(envelope, data)
 
     def create_envelope_from_template(self, envelope):
         """POST to /envelopes and return created envelope ID.
@@ -387,8 +316,8 @@ class DocuSignClient(object):
         sets the value.
 
         """
-        parts = self._create_envelope_from_template_request(envelope)
-        return self._create_envelope(envelope, parts)
+        data = self._create_envelope_from_template_request(envelope)
+        return self._create_envelope(envelope, data)
 
     def get_envelope_recipients(self, envelopeId):
         """GET {account}/envelopes/{envelopeId}/recipients and return JSON."""
