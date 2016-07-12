@@ -4,6 +4,10 @@ pydocusign
 
 .. image:: https://travis-ci.org/novafloss/pydocusign.svg?branch=master
     :target: https://travis-ci.org/novafloss/pydocusign
+    :alt: Build Status
+.. image:: https://readthedocs.org/projects/pydocusign/badge/
+    :target: http://pydocusign.readthedocs.io/en/latest/
+    :alt: Documentation Status
 `pydocusign` is a Python client for `DocuSign`_ signature SAAS platform.
 
 
