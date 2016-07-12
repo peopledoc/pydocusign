@@ -1,13 +1,9 @@
+|Build Status| |Documentation Status|
+
 ##########
 pydocusign
 ##########
 
-.. image:: https://travis-ci.org/novafloss/pydocusign.svg?branch=master
-    :target: https://travis-ci.org/novafloss/pydocusign
-    :alt: Build Status
-.. image:: https://readthedocs.org/projects/pydocusign/badge/
-    :target: http://pydocusign.readthedocs.io/en/latest/
-    :alt: Documentation Status
 `pydocusign` is a Python client for `DocuSign`_ signature SAAS platform.
 
 
@@ -37,3 +33,11 @@ Resources
 * Continuous integration: https://travis-ci.org/novafloss/pydocusign
 
 .. _`DocuSign`: https://www.docusign.com
+
+.. |Build Status| image:: https://travis-ci.org/novafloss/pydocusign.svg?branch=master
+    :target: https://travis-ci.org/novafloss/pydocusign
+    :alt: Build Status
+
+.. |Documentation Status| image:: https://readthedocs.org/projects/pydocusign/badge/
+    :target: http://pydocusign.readthedocs.io/en/latest/
+    :alt: Build Status
