@@ -2,6 +2,8 @@
 pydocusign
 ##########
 
+.. image:: https://travis-ci.org/novafloss/pydocusign.svg?branch=master
+    :target: https://travis-ci.org/novafloss/pydocusign
 `pydocusign` is a Python client for `DocuSign`_ signature SAAS platform.
 
 
