@@ -28,7 +28,6 @@ Resources
 * PyPI page: https://pypi.python.org/pypi/pydocusign
 * Bugtracker: https://github.com/novafloss/pydocusign/issues
 * Changelog: https://pydocusign.readthedocs.org/en/latest/about/changelog.html
-* Roadmap: https://github.com/novafloss/pydocusign/milestones
 * Code repository: https://github.com/novafloss/pydocusign
 * Continuous integration: https://travis-ci.org/novafloss/pydocusign
 
