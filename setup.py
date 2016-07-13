@@ -39,12 +39,12 @@ EMAIL = u'novafloss@people-doc.com'
 LICENSE = 'BSD'
 URL = 'https://pypi.python.org/pypi/pydocusign/'
 CLASSIFIERS = [
+    'Development Status :: 5 - Production/Stable',
+    'License :: OSI Approved :: BSD License',
     'Programming Language :: Python :: 2.7',
     'Programming Language :: Python :: 3.3',
     'Programming Language :: Python :: 3.4',
     'Programming Language :: Python :: 3.5',
-    # Add your classifiers here from
-    # https://pypi.python.org/pypi?%3Aaction=list_classifiers
 ]
 KEYWORDS = [
     '',
