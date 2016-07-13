@@ -37,7 +37,7 @@ VERSION = open(os.path.join(here, 'VERSION')).read().strip()
 AUTHOR = u'Benoît Bryon'
 EMAIL = u'novafloss@people-doc.com'
 LICENSE = 'BSD'
-URL = 'https://pypi.python.org/pypi/pydocusign/'
+URL = 'https://{name}.readthedocs.io/'.format(name=NAME)
 CLASSIFIERS = [
     'Development Status :: 5 - Production/Stable',
     'License :: OSI Approved :: BSD License',
