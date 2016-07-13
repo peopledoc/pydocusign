@@ -42,7 +42,7 @@ master_doc = 'index'
 # General information about the project.
 project = u'pydocusign'
 project_slug = re.sub(r'([\W_.-]+)', u'-', project)
-copyright = u'2014 - Benoît Bryon'
+copyright = u'2014-2016, PeopleDoc'
 author = u'Benoît Bryon'
 author_slug = re.sub(r'([\W_.-]+)', u'-', author)
 
