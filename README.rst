@@ -1,4 +1,4 @@
-|Build Status| |Documentation Status|
+|Build Status| |Documentation Status| |Pypi Status|
 
 ##########
 pydocusign
@@ -40,3 +40,6 @@ Resources
 .. |Documentation Status| image:: https://readthedocs.org/projects/pydocusign/badge/
     :target: http://pydocusign.readthedocs.io/en/latest/
     :alt: Build Status
+
+.. |Pypi Status| image:: https://img.shields.io/pypi/v/pydocusign.svg
+    :target: https://pypi.python.org/pypi/pydocusign
