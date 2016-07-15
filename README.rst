@@ -1,4 +1,4 @@
-|Build Status| |Documentation Status|
+|Build Status| |Documentation Status| |Pypi Status|
 
 ##########
 pydocusign
@@ -28,7 +28,6 @@ Resources
 * PyPI page: https://pypi.python.org/pypi/pydocusign
 * Bugtracker: https://github.com/novafloss/pydocusign/issues
 * Changelog: https://pydocusign.readthedocs.org/en/latest/about/changelog.html
-* Roadmap: https://github.com/novafloss/pydocusign/milestones
 * Code repository: https://github.com/novafloss/pydocusign
 * Continuous integration: https://travis-ci.org/novafloss/pydocusign
 
@@ -41,3 +40,6 @@ Resources
 .. |Documentation Status| image:: https://readthedocs.org/projects/pydocusign/badge/
     :target: http://pydocusign.readthedocs.io/en/latest/
     :alt: Build Status
+
+.. |Pypi Status| image:: https://img.shields.io/pypi/v/pydocusign.svg
+    :target: https://pypi.python.org/pypi/pydocusign
