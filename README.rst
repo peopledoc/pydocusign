@@ -35,11 +35,9 @@ Resources
 
 .. |Build Status| image:: https://travis-ci.org/novafloss/pydocusign.svg?branch=master
     :target: https://travis-ci.org/novafloss/pydocusign
-    :alt: Build Status
 
 .. |Documentation Status| image:: https://readthedocs.org/projects/pydocusign/badge/
     :target: http://pydocusign.readthedocs.io/en/latest/
-    :alt: Build Status
 
 .. |Pypi Status| image:: https://img.shields.io/pypi/v/pydocusign.svg
     :target: https://pypi.python.org/pypi/pydocusign
