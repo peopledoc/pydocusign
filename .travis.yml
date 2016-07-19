@@ -7,6 +7,11 @@ env:
   - TOXENV=py35
   - TOXENV=flake8
   - TOXENV=readme
+  global:
+  - secure: cQFryu8C/AyTdulTOGwTLIKFSjitx5TQIWbUDogEC0HYIA3kolxCrlAOm3XOjHRTpulwZkQP3ruSxTkYImfwageDFhbefcURdxd3Y1fwHmr1yBGeBlDsk/qfsyUfLzMKZjUeHphMaxUmRWRPgv7t6AML6a4KHNxz0CFKDt8zdxU=
+  - secure: Q3hR5HDvTdg3JaAVkWkFoBrGnmtsr++pjMZG3/IOVnJFR+31MdvAg/Ou1RWk/npm843NExSVje3kGeqkLITZLoty2NfXV3Bpk6fuNRjy1hQqGGnKb+U2DeIZEfzKTh62WQlO+7m6vrZ1gq5XBb15+r4XJsoIcdCk+dhI8F/40Ng=
+  - secure: BWF9Ff3m9MZzU3HRzDdVEiVwyq91MixZjX5oCssA7EuoCbMS9ZIhiUH3te5lKsrNv2VgPSk9j3V7PcQsMunYaSdnJ2uXPNWw89BxOIFSyuRFnp7NCoRAghKR1ywy/AZ67SmyJuOvWfrTIgqbZXo/q3Cpv8T796aYgZHaSZTeJP8=
+  - secure: a/mFeBUl7575Tsffco2+/yok1oao60Mj+B0MggscQU3KMyw6fQFLwl5f/9mbaR94wNjgL8FYn+g8/FQLwGmY+siiTt1ODgKt8DFk743wgxGWnU1L1gMnBdva0Uwz4WwZC3ky1WboyPPRkA1VdUPcVKpJLexoTDoUT1ZbRGxdSK8=
 install:
 - make develop
 script:
