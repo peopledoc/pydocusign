@@ -452,7 +452,7 @@ class EventNotification(DocuSignObject):
     attributes = [
         'url',
         'loggingEnabled',
-        'requireAcknoledgement',
+        'requireAcknowledgment',
         'useSoapInterface',
         'soapNameSpace',
         'includeCertificateWithSoap',
@@ -464,7 +464,7 @@ class EventNotification(DocuSignObject):
         'recipientEvents',
     ]
 
-    def __init__(self, url='', loggingEnabled=True, requireAcknoledgement=True,
+    def __init__(self, url='', loggingEnabled=True, requireAcknowledgment=True,
                  useSoapInterface=False, soapNameSpace='',
                  includeCertificateWithSoap=False,
                  signMessageWithX509Cert=False, includeDocuments=False,
@@ -476,7 +476,7 @@ class EventNotification(DocuSignObject):
         #: The endpoint where envelope updates are sent.
         self.url = url
         self.loggingEnabled = loggingEnabled
-        self.requireAcknoledgement = requireAcknoledgement
+        self.requireAcknowledgment = requireAcknowledgment
         self.useSoapInterface = useSoapInterface
         self.soapNameSpace = soapNameSpace
         self.includeCertificateWithSoap = includeCertificateWithSoap
@@ -501,7 +501,7 @@ class EventNotification(DocuSignObject):
         >>> event_notification.to_dict() == {
         ...     'url': 'http://example.com',
         ...     'loggingEnabled': True,
-        ...     'requireAcknoledgement': True,
+        ...     'requireAcknowledgment': True,
         ...     'useSoapInterface': False,
         ...     'soapNameSpace': '',
         ...     'includeCertificateWithSoap': False,
