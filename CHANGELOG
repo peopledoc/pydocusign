@@ -8,13 +8,18 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 1.0 (unreleased)
 ----------------
 
-- Add support of python3.
+- Added support of python3.
+
+- Feature #76 - Added authentication via OAuth2 and acting on behalf of other
+  users.
+
+- Bug #67 - Fixed spelling of ``requireAcknowledgment`` attribute.
 
 
 0.13.2 (2015-09-10)
 -------------------
 
-- Nothing changed yet.
+- Added ``accessCode`` to signer model.
 
 
 0.13.1 (2015-03-16)
