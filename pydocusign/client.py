@@ -25,6 +25,7 @@ class DocuSignClient(object):
                  account_id='',
                  account_url='',
                  app_token=None,
+                 oauth2_token=None,
                  timeout=None):
         """Configure DocuSign client."""
         #: Root URL of DocuSign API.
@@ -76,6 +77,14 @@ class DocuSignClient(object):
         self.app_token = app_token
         if not self.app_token:
             self.app_token = os.environ.get('DOCUSIGN_APP_TOKEN', '')
+
+        #: OAuth2 Token.
+        #:
+        #: If not explicitely provided or empty, then ``DOCUSIGN_OAUTH2_TOKEN``
+        #: environment variable, if available, is used.
+        self.oauth2_token = oauth2_token
+        if not self.oauth2_token:
+            self.oauth2_token = os.environ.get('DOCUSIGN_OAUTH2_TOKEN', '')
 
         #: User's URL, i.e. the one mentioning :attr:`account_id`.
         #: This attribute can be guessed via :meth:`login_information`.
@@ -132,26 +141,46 @@ class DocuSignClient(object):
         """
     )
 
-    def base_headers(self):
-        """Return dictionary of base headers for all HTTP requests."""
-        return {
+    def base_headers(self, sobo_email=None):
+        """Return dictionary of base headers for all HTTP requests.
+
+        :param sobo_email: if specified, will set the appropriate header to act
+        on behalf of that user. The authenticated account must have the
+        appropriate permissions. See:
+        https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#SOBO/Send%20On%20Behalf%20Of%20Functionality%20in%20the%20DocuSign%20REST%20API.htm
+        """
+        headers = {
             'Accept': 'application/json',
-            'X-DocuSign-Authentication': json.dumps({
+            'Content-Type': 'application/json',
+        }
+        if self.oauth2_token:
+            headers['Authorization'] = 'Bearer ' + self.oauth2_token
+
+            if sobo_email:
+                headers['X-DocuSign-Act-As-User'] = sobo_email
+
+        else:
+            auth = {
                 'Username': self.username,
                 'Password': self.password,
                 'IntegratorKey': self.integrator_key,
-            }),
-            'Content-Type': 'application/json',
-        }
+            }
+
+            if sobo_email:
+                auth['SendOnBehalfOf'] = sobo_email
+
+            headers['X-DocuSign-Authentication'] = json.dumps(auth)
+
+        return headers
 
     def _request(self, url, method='GET', headers=None, data=None,
-                 json_data=None, expected_status_code=200):
+                 json_data=None, expected_status_code=200, sobo_email=None):
         """Shortcut to perform HTTP requests."""
         do_url = '{root}{path}'.format(root=self.root_url, path=url)
         do_request = getattr(requests, method.lower())
         if headers is None:
             headers = {}
-        do_headers = self.base_headers()
+        do_headers = self.base_headers(sobo_email)
         do_headers.update(headers)
         if data is not None:
             do_data = json.dumps(data)
@@ -213,6 +242,41 @@ class DocuSignClient(object):
             root=self.root_url,
             account=self.account_id)
         return data
+
+    @classmethod
+    def oauth2_token_request(cls, root_url, username, password,
+                             integrator_key):
+        url = root_url + '/oauth2/token'
+        data = {
+            'grant_type': 'password',
+            'client_id': integrator_key,
+            'username': username,
+            'password': password,
+            'scope': 'api',
+        }
+        headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
+        response = requests.post(url, headers=headers, data=data)
+        if response.status_code != 200:
+            raise exceptions.DocuSignOAuth2Exception(response.json())
+
+        return response.json()['access_token']
+
+    @classmethod
+    def oauth2_token_revoke(cls, root_url, token):
+        url = root_url + '/oauth2/revoke'
+        data = {
+            'token': token,
+        }
+        headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
+        response = requests.post(url, headers=headers, data=data)
+        if response.status_code != 200:
+            raise exceptions.DocuSignOAuth2Exception(response.json())
 
     def get_account_information(self, account_id=None):
         """Return dictionary of /accounts/:accountId.
