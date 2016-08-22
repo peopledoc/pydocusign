@@ -15,6 +15,9 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 
 - Feature #83 - Added ``DocuSignClient.get_connect_failures`` method.
 
+- Feature #85 - Added ``DocuSignClient.get_envelope`` method to get all
+  envelope details.
+
 - Bug #67 - Fixed spelling of ``requireAcknowledgment`` attribute.
 
 
