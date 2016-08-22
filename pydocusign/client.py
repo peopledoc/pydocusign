@@ -223,6 +223,10 @@ class DocuSignClient(object):
         """Shortcut to perform POST operations on DocuSign API."""
         return self._request(method='POST', *args, **kwargs)
 
+    def put(self, *args, **kwargs):
+        """Shortcut to perform PUT operations on DocuSign API."""
+        return self._request(method='PUT', *args, **kwargs)
+
     def delete(self, *args, **kwargs):
         """Shortcut to perform DELETE operations on DocuSign API."""
         return self._request(method='DELETE', *args, **kwargs)
@@ -391,6 +395,20 @@ class DocuSignClient(object):
               .format(accountId=self.account_id,
                       envelopeId=envelopeId)
         return self.get(url)
+
+    def void_envelope(self, envelopeId, voidedReason):
+        """PUT to /{account}/envelopes/{envelopeId} with 'voided' status and
+        voidedReason, and return JSON."""
+        if not self.account_url:
+            self.login_information()
+        url = '/accounts/{accountId}/envelopes/{envelopeId}' \
+              .format(accountId=self.account_id,
+                      envelopeId=envelopeId)
+        data = {
+            'status': 'voided',
+            'voidedReason': voidedReason
+        }
+        return self.put(url, data=data)
 
     def get_envelope_recipients(self, envelopeId):
         """GET {account}/envelopes/{envelopeId}/recipients and return JSON."""
