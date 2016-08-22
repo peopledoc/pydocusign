@@ -13,6 +13,8 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 - Feature #76 - Added authentication via OAuth2 and acting on behalf of other
   users.
 
+- Feature #83 - Added ``DocuSignClient.get_connect_failures`` method.
+
 - Bug #67 - Fixed spelling of ``requireAcknowledgment`` attribute.
 
 
