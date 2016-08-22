@@ -10,6 +10,9 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 
 - Added support of python3.
 
+- Feature #71 - Added ``DocuSignClient.void_envelope`` method to void an
+  envelope.
+
 - Feature #76 - Added authentication via OAuth2 and acting on behalf of other
   users.
 
