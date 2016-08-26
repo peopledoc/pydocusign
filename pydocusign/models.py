@@ -513,3 +513,13 @@ class Envelope(DocuSignObject):
     def get_certificate(self, client=None):
         """Use ``client`` to download special document: certificate."""
         return self.get_document(documentId='certificate', client=client)
+
+    def void(self, voidReason, client=None):
+        """Use ``client`` to fetch embedded signing URL for recipient.
+
+        If ``client`` is ``None``, :attr:`client` is tried.
+
+        """
+        if client is None:
+            client = self.client
+        return client.void_envelope(self.envelopeId, voidReason)

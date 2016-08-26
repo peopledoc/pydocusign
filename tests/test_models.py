@@ -1,7 +1,11 @@
 import unittest
+try:
+    from unittest import mock
+except ImportError:  # Python 2 fallback.
+    import mock
 
 from pydocusign import DocuSignObject, SignHereTab, ApproveTab, Signer, Role, \
-    Document, EventNotification, Envelope
+    Document, EventNotification, Envelope, DocuSignClient
 from pydocusign.models import ENVELOPE_STATUS_SENT, RECIPIENT_STATUS_SENT, \
     ENVELOPE_STATUS_DRAFT
 
@@ -299,3 +303,13 @@ class EnvelopeTest(unittest.TestCase):
         envelope.eventNotification = notification
         self.assertEqual(
             envelope.to_dict()['eventNotification'], notification.to_dict())
+
+    def test_void_method_calls_api(self):
+        client = DocuSignClient()
+        client.void_envelope = mock.Mock()
+
+        envelope = Envelope(envelopeId='fake-envelope-id')
+        envelope.client = client
+        envelope.void('reason')
+
+        client.void_envelope.assert_called_once_with('fake-envelope-id', 'reason')
