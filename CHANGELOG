@@ -12,6 +12,7 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 
 - Feature #71 - Added ``DocuSignClient.void_envelope`` method to void an
   envelope.
+  Feature #90 - Added ability to void envelope from ``Envelope`` object.
 
 - Feature #74 - Refactored ``DocuSignObject`` to simplify creation and
   extension of objects.
