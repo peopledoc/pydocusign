@@ -4,6 +4,7 @@ import base64
 import json
 import logging
 import os
+import warnings
 
 import requests
 
@@ -315,7 +316,7 @@ class DocuSignClient(object):
         data = self.delete(url)
         return data.strip() == ''
 
-    def _create_envelope_from_document_request(self, envelope):
+    def _create_envelope_from_documents_request(self, envelope):
         """Return parts of the POST request for /envelopes.
 
         .. warning::
@@ -325,13 +326,16 @@ class DocuSignClient(object):
 
         """
         data = envelope.to_dict()
-        document = envelope.documents[0].data
-        data['documents'] = [{
-            "documentId": "1",
-            "name": "document.pdf",
-            "fileExtension": "pdf",
-            "documentBase64": base64.b64encode(
-                document.read()).decode('utf-8')}]
+        documents = []
+        for document in envelope.documents:
+            documents.append({
+                "documentId": document.documentId,
+                "name": document.name,
+                "fileExtension": "pdf",
+                "documentBase64": base64.b64encode(
+                    document.data.read()).decode('utf-8')
+            })
+        data['documents'] = documents
         return data
 
     def _create_envelope_from_template_request(self, envelope):
@@ -361,7 +365,7 @@ class DocuSignClient(object):
             envelope.envelopeId = response_data['envelopeId']
         return response_data['envelopeId']
 
-    def create_envelope_from_document(self, envelope):
+    def create_envelope_from_documents(self, envelope):
         """POST to /envelopes and return created envelope ID.
 
         If ``envelope`` has no (or empty) ``envelopeId`` attribute, this
@@ -371,7 +375,14 @@ class DocuSignClient(object):
         sets the value.
 
         """
-        data = self._create_envelope_from_document_request(envelope)
+        data = self._create_envelope_from_documents_request(envelope)
+        return self._create_envelope(envelope, data)
+
+    def create_envelope_from_document(self, envelope):
+        warnings.warn("This method will be deprecated, use "
+                      "create_envelope_from_documents instead.",
+                      DeprecationWarning)
+        data = self._create_envelope_from_documents_request(envelope)
         return self._create_envelope(envelope, data)
 
     def create_envelope_from_template(self, envelope):
