@@ -10,6 +10,10 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 
 - Added support of python3.
 
+- Feature #66 - Addes support for creating envelope with multiple documents.
+  Method ``DocuSignClient.create_envelope_from_document`` is deprecated in favor
+  of ``DocuSignClient.create_envelope_from_documents``.
+
 - Feature #71 - Added ``DocuSignClient.void_envelope`` method to void an
   envelope.
   Feature #90 - Added ability to void envelope from ``Envelope`` object.
