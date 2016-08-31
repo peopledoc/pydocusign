@@ -31,6 +31,8 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 
 - Bug #67 - Fixed spelling of ``requireAcknowledgment`` attribute.
 
+- Bug #94 - ``requests>=2.9.0`` is now required.
+
 
 0.13.2 (2015-09-10)
 -------------------
