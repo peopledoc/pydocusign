@@ -55,7 +55,7 @@ REQUIREMENTS = [
     'certifi',
     'python-dateutil',
     'lxml',
-    'requests',
+    'requests>=2.9.0',
     'setuptools',
 ]
 ENTRY_POINTS = {}
