@@ -29,6 +29,8 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 - Feature #85 - Added ``DocuSignClient.get_envelope`` method to get all
   envelope details.
 
+- Feature #88 - Added ``TitleTab`` model.
+
 - Bug #67 - Fixed spelling of ``requireAcknowledgment`` attribute.
 
 - Bug #94 - ``requests>=2.9.0`` is now required.
