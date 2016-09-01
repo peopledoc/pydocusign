@@ -10,13 +10,20 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 
 - Added support of python3.
 
-- Feature #66 - Addes support for creating envelope with multiple documents.
+- Feature #66 - Added support for creating envelope with multiple documents.
   Method ``DocuSignClient.create_envelope_from_document`` is deprecated in favor
   of ``DocuSignClient.create_envelope_from_documents``.
 
+- Feature #70 - Added support of the add/update/delete recipient APIs.
+  Added methods: ``DocuSignClient.add_envelope_recipients``,
+  ``DocuSignClient.update_envelope_recipients``,
+  ``DocuSignClient.delete_envelope_recipient``,
+  ``DocuSignClient.delete_envelope_recipients``.
+
 - Feature #71 - Added ``DocuSignClient.void_envelope`` method to void an
   envelope.
-  Feature #90 - Added ability to void envelope from ``Envelope`` object.
+
+- Feature #90 - Added ability to void envelope from ``Envelope`` object.
 
 - Feature #74 - Refactored ``DocuSignObject`` to simplify creation and
   extension of objects.
@@ -47,8 +54,8 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 
 Bugfixes/refactoring related to release 0.13.
 
-- Refactoring #57 - Envelope.post_recipient_view() takes 'recipient' argument
-  instead of ambiguous 'routingOrder'.
+- Refactoring #57 - Envelope.post_recipient_view() takes ``recipient`` argument
+  instead of ambiguous ``routingOrder``.
 
 
 0.13 (2015-03-16)
