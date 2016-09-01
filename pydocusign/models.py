@@ -116,8 +116,8 @@ class Tab(DocuSignObject):
 
     A tab is a placeholder (signature) or data (form fields) container.
 
-    DocuSign reference lives at
-    https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Tab%20Parameters.htm
+    DocuSign reference for all tab types live in the EnvelopeTabs section on:
+    https://docs.docusign.com/esign/restapi/Envelopes/EnvelopeTabs/create/
 
     """
     _common_attributes = [
@@ -167,9 +167,6 @@ class Tab(DocuSignObject):
 
 class SignHereTab(Tab):
     """Tab to have a recipient place their signature in the document.
-
-    DocuSign reference lives at
-    https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Tabs/Sign%20Here%20Tab.htm
     """
     attributes = Tab._common_attributes + [
         'name',
@@ -181,9 +178,6 @@ class SignHereTab(Tab):
 
 class InitialHereTab(Tab):
     """Tab to have a recipient place their initials in the document.
-
-    DocuSign reference lives at
-    https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Tabs/Initial%20Here%20Tab.htm
     """
     attributes = Tab._common_attributes + [
         'name',
@@ -195,9 +189,6 @@ class InitialHereTab(Tab):
 
 class ApproveTab(Tab):
     """Tab to have a recipient approve the document.
-
-    DocuSign reference lives at
-    https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Tabs/Approve%20Tab.htm
     """
     attributes = Tab._common_attributes + Tab._formatting_attributes + [
         'buttonText',
@@ -209,9 +200,6 @@ class ApproveTab(Tab):
 
 class FullNameTab(Tab):
     """Tab to show the user's full name.
-
-    DocuSign reference lives at
-    https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Tabs/Full%20Name%20Tab.htm
     """
     attributes = Tab._common_attributes + Tab._formatting_attributes + [
         'name',
@@ -221,15 +209,23 @@ class FullNameTab(Tab):
 
 class DateSignedTab(Tab):
     """Tab to show the date the recipient signed the document.
-
-    DocuSign reference lives at
-    https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Tabs/Date%20Signed%20Tab.htm
     """
     attributes = Tab._common_attributes + Tab._formatting_attributes + [
         'name',
         'value'
     ]
     tabs_name = 'dateSignedTabs'
+
+
+class TitleTab(Tab):
+    """Tab to show the recipient's title on the document.
+    """
+    attributes = Tab._common_attributes + Tab._formatting_attributes + [
+        'name',
+        'value',
+        'width'
+    ]
+    tabs_name = 'titleTabs'
 
 
 class Recipient(DocuSignObject):
