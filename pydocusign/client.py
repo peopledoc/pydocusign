@@ -498,3 +498,66 @@ class DocuSignClient(object):
         url = '/accounts/{accountId}/connect/failures' \
               .format(accountId=self.account_id)
         return self.get(url)['failures']
+
+    def add_envelope_recipients(self, envelopeId, recipients,
+                                resend_envelope=False):
+        """Add one or more recipients to an envelope
+
+        DocuSign reference:
+        https://docs.docusign.com/esign/restapi/Envelopes/EnvelopeRecipients/create/
+        """
+        if not self.account_url:
+            self.login_information()
+        url = '/accounts/{accountId}/envelopes/{envelopeId}/recipients' \
+            .format(accountId=self.account_id,
+                    envelopeId=envelopeId)
+        if resend_envelope:
+            url += '?resend_envelope=true'
+        data = {'signers': [recipient.to_dict() for recipient in recipients]}
+        return self.post(url, data=data)
+
+    def update_envelope_recipients(self, envelopeId, recipients,
+                                   resend_envelope=False):
+        """Modify recipients in a draft envelope or correct recipient information
+        for an in process envelope
+
+        DocuSign reference:
+        https://docs.docusign.com/esign/restapi/Envelopes/EnvelopeRecipients/update/
+        """
+        if not self.account_url:
+            self.login_information()
+        url = '/accounts/{accountId}/envelopes/{envelopeId}/recipients' \
+              .format(accountId=self.account_id,
+                      envelopeId=envelopeId)
+        if resend_envelope:
+            url += '?resend_envelope=true'
+        data = {'signers': [recipient.to_dict() for recipient in recipients]}
+        return self.put(url, data=data)
+
+    def delete_envelope_recipient(self, envelopeId, recipientId):
+        """Deletes one or more recipients from a draft or sent envelope.
+
+        DocuSign reference:
+        https://docs.docusign.com/esign/restapi/Envelopes/EnvelopeRecipients/delete/
+        """
+        if not self.account_url:
+            self.login_information()
+        url = '/accounts/{accountId}/envelopes/{envelopeId}/recipients/' \
+              '{recipientId}'.format(accountId=self.account_id,
+                                     envelopeId=envelopeId,
+                                     recipientId=recipientId)
+        return self.delete(url)
+
+    def delete_envelope_recipients(self, envelopeId, recipientIds):
+        """Deletes one or more recipients from a draft or sent envelope.
+
+        DocuSign reference:
+        https://docs.docusign.com/esign/restapi/Envelopes/EnvelopeRecipients/deleteList/
+        """
+        if not self.account_url:
+            self.login_information()
+        url = '/accounts/{accountId}/envelopes/{envelopeId}/recipients' \
+            .format(accountId=self.account_id,
+                    envelopeId=envelopeId)
+        data = {'signers': [{'recipientId': id_} for id_ in recipientIds]}
+        return self.delete(url, data=data)
