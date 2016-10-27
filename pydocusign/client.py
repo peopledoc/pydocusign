@@ -514,7 +514,7 @@ class DocuSignClient(object):
         if resend_envelope:
             url += '?resend_envelope=true'
         data = {'signers': [recipient.to_dict() for recipient in recipients]}
-        return self.post(url, data=data)
+        return self.post(url, data=data, expected_status_code=201)
 
     def update_envelope_recipients(self, envelopeId, recipients,
                                    resend_envelope=False):
