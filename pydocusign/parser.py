@@ -15,7 +15,7 @@ class DocuSignCallbackParser(object):
         self.xml_source = xml_source
 
         #: BeautifulSoup XML tree.
-        self.xml_soup = BeautifulSoup(self.xml_source, ["lxml", "xml"])
+        self.xml_soup = BeautifulSoup(self.xml_source, "lxml-xml")
 
     @property
     def envelope_status(self):
