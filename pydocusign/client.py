@@ -504,7 +504,7 @@ class DocuSignClient(object):
         """Add one or more recipients to an envelope
 
         DocuSign reference:
-        https://docs.docusign.com/esign/restapi/Envelopes/EnvelopeRecipients/create/
+        https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Add%20Recipients%20to%20an%20Envelope.htm
         """
         if not self.account_url:
             self.login_information()
@@ -522,7 +522,7 @@ class DocuSignClient(object):
         for an in process envelope
 
         DocuSign reference:
-        https://docs.docusign.com/esign/restapi/Envelopes/EnvelopeRecipients/update/
+        https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Modify%20or%20Correct%20and%20Resend%20Recipient%20Information.htm
         """
         if not self.account_url:
             self.login_information()
@@ -538,7 +538,7 @@ class DocuSignClient(object):
         """Deletes one or more recipients from a draft or sent envelope.
 
         DocuSign reference:
-        https://docs.docusign.com/esign/restapi/Envelopes/EnvelopeRecipients/delete/
+        WARNING: seems to be not APIv1 compatible
         """
         if not self.account_url:
             self.login_information()
@@ -552,7 +552,7 @@ class DocuSignClient(object):
         """Deletes one or more recipients from a draft or sent envelope.
 
         DocuSign reference:
-        https://docs.docusign.com/esign/restapi/Envelopes/EnvelopeRecipients/deleteList/
+        https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Delete%20Recipients%20from%20an%20Envelope.htm
         """
         if not self.account_url:
             self.login_information()
