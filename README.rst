@@ -19,8 +19,6 @@ the changes.
 Also, help is welcome! Feel free to report issues, request features or
 refactoring!
 
-Note: `pydocusign` was designed for DocuSign's `API v1`_.
-
 
 *********
 Resources
@@ -34,8 +32,6 @@ Resources
 * Continuous integration: https://travis-ci.org/novafloss/pydocusign
 
 .. _`DocuSign`: https://www.docusign.com
-
-.. _`API v1`: https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm
 
 .. |Build Status| image:: https://travis-ci.org/novafloss/pydocusign.svg?branch=master
     :target: https://travis-ci.org/novafloss/pydocusign

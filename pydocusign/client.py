@@ -148,7 +148,7 @@ class DocuSignClient(object):
         :param sobo_email: if specified, will set the appropriate header to act
         on behalf of that user. The authenticated account must have the
         appropriate permissions. See:
-        https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#SOBO/Send%20On%20Behalf%20Of%20Functionality%20in%20the%20DocuSign%20REST%20API.htm
+        https://docs.docusign.com/esign/guide/authentication/sobo.html
         """
         headers = {
             'Accept': 'application/json',
@@ -504,7 +504,7 @@ class DocuSignClient(object):
         """Add one or more recipients to an envelope
 
         DocuSign reference:
-        https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Add%20Recipients%20to%20an%20Envelope.htm
+        https://docs.docusign.com/esign/restapi/Envelopes/EnvelopeRecipients/create/
         """
         if not self.account_url:
             self.login_information()
@@ -514,7 +514,7 @@ class DocuSignClient(object):
         if resend_envelope:
             url += '?resend_envelope=true'
         data = {'signers': [recipient.to_dict() for recipient in recipients]}
-        return self.post(url, data=data)
+        return self.post(url, data=data, expected_status_code=201)
 
     def update_envelope_recipients(self, envelopeId, recipients,
                                    resend_envelope=False):
@@ -522,7 +522,7 @@ class DocuSignClient(object):
         for an in process envelope
 
         DocuSign reference:
-        https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Modify%20or%20Correct%20and%20Resend%20Recipient%20Information.htm
+        https://docs.docusign.com/esign/restapi/Envelopes/EnvelopeRecipients/update/
         """
         if not self.account_url:
             self.login_information()
@@ -538,7 +538,7 @@ class DocuSignClient(object):
         """Deletes one or more recipients from a draft or sent envelope.
 
         DocuSign reference:
-        WARNING: seems to be not APIv1 compatible
+        https://docs.docusign.com/esign/restapi/Envelopes/EnvelopeRecipients/delete/
         """
         if not self.account_url:
             self.login_information()
@@ -552,7 +552,7 @@ class DocuSignClient(object):
         """Deletes one or more recipients from a draft or sent envelope.
 
         DocuSign reference:
-        https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Delete%20Recipients%20from%20an%20Envelope.htm
+        https://docs.docusign.com/esign/restapi/Envelopes/EnvelopeRecipients/deleteList/
         """
         if not self.account_url:
             self.login_information()

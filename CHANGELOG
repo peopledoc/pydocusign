@@ -8,7 +8,8 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 1.1 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Bug #96 - Fixed expected status_code for
+  ``DocuSignClient.add_envelope_recipients`` method.
 
 
 1.0 (2016-09-02)
