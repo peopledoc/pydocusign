@@ -232,7 +232,7 @@ class Recipient(DocuSignObject):
     """Base class for "recipient" objects.
 
     DocuSign reference lives at
-    https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Recipient%20Parameter.htm
+    https://docs.docusign.com/esign/restapi/Envelopes/EnvelopeRecipients/
 
     """
     # Pseudo-constants.
@@ -252,7 +252,7 @@ class Signer(Recipient):
     the documents in the envelope.
 
     DocuSign reference lives at
-    https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Recipients/Signers%20Recipient.htm
+    https://docs.docusign.com/esign/restapi/Envelopes/EnvelopeRecipients/#signers-recipient
 
     """
     attributes = ['clientUserId', 'email', 'emailBody', 'emailSubject', 'name',
@@ -298,8 +298,8 @@ class Role(Recipient):
     the documents in the envelope template.
 
     DocuSign reference lives at
-    https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#REST%20API%20References/Send%20an%20Envelope%20from%20a%20Template.htm%3FTocPath%3DREST%2520API%2520References|_____37
-    (templateRoles)
+    https://docs.docusign.com/esign/restapi/Envelopes/Envelopes/create/
+    (Definitions / templateRoles)
 
     """
     attributes = ['clientUserId', 'email', 'emailBody', 'emailSubject', 'name',

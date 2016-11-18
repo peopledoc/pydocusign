@@ -30,7 +30,9 @@ class ClientRequestTest(unittest.TestCase):
             account_id=client.account_id)
 
         post_mock.assert_called_once_with(
-            url, data={'signers': [signers[0].to_dict(), signers[1].to_dict()]}
+            url,
+            data={'signers': [signers[0].to_dict(), signers[1].to_dict()]},
+            expected_status_code=201
         )
 
         with mock.patch.object(client, 'post') as post_mock:
@@ -39,7 +41,8 @@ class ClientRequestTest(unittest.TestCase):
         post_mock.assert_called_once_with(
             '/accounts/{}/envelopes/ABC123/recipients'
             '?resend_envelope=true'.format(client.account_id),
-            data={'signers': []}
+            data={'signers': []},
+            expected_status_code=201
         )
 
     def test_update_envelope_recipients(self):
