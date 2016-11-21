@@ -421,15 +421,6 @@ class DocuSignClient(object):
                       envelopeId=envelopeId)
         return self.get(url)
 
-    def get_envelope_recipients(self, envelopeId):
-        """GET {account}/envelopes/{envelopeId}/recipients and return JSON."""
-        if not self.account_url:
-            self.login_information()
-        url = '/accounts/{accountId}/envelopes/{envelopeId}/recipients' \
-              .format(accountId=self.account_id,
-                      envelopeId=envelopeId)
-        return self.get(url)
-
     def post_recipient_view(self, authenticationMethod=None,
                             clientUserId='', email='', envelopeId='',
                             returnUrl='', userId='', userName=''):
@@ -478,8 +469,7 @@ class DocuSignClient(object):
                       accountId=self.account_id,
                       envelopeId=envelopeId,
                       documentId=documentId)
-        headers = self.base_headers()
-        response = requests.get(url, headers=headers, stream=True)
+        response = requests.get(url, stream=True)
         return response.raw
 
     def get_template(self, templateId):
@@ -498,6 +488,20 @@ class DocuSignClient(object):
         url = '/accounts/{accountId}/connect/failures' \
               .format(accountId=self.account_id)
         return self.get(url)['failures']
+
+    def get_envelope_recipients(self, envelopeId):
+        """Retrieves the status of all recipients in a single envelope
+        and identifies the current recipient in the routing list.
+
+        DocuSign reference:
+        https://docs.docusign.com/esign/restapi/Envelopes/EnvelopeRecipients/list/
+        """
+        if not self.account_url:
+            self.login_information()
+        url = '/accounts/{accountId}/envelopes/{envelopeId}/recipients' \
+              .format(accountId=self.account_id,
+                      envelopeId=envelopeId)
+        return self.get(url)
 
     def add_envelope_recipients(self, envelopeId, recipients,
                                 resend_envelope=False):
