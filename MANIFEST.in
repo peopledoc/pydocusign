@@ -1,5 +1,7 @@
 recursive-include pydocusign *
 global-exclude *.pyc
+global-exclude *.un~
+global-exclude *.swp
 include AUTHORS
 include CHANGELOG
 include CONTRIBUTING.rst
