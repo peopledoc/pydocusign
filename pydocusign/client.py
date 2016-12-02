@@ -469,7 +469,8 @@ class DocuSignClient(object):
                       accountId=self.account_id,
                       envelopeId=envelopeId,
                       documentId=documentId)
-        response = requests.get(url, stream=True)
+        headers = self.base_headers()
+        response = requests.get(url, headers=headers, stream=True)
         return response.raw
 
     def get_template(self, templateId):
