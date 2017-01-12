@@ -431,8 +431,8 @@ class DocuSignClient(object):
         return self.get(url)
 
     def post_recipient_view(self, authenticationMethod=None,
-                            clientUserId='', email='', envelopeId='',
-                            returnUrl='', userId='', userName=''):
+                            clientUserId=None, email=None, envelopeId='',
+                            returnUrl='', userId='', userName=None):
         """POST to {account}/envelopes/{envelopeId}/views/recipient.
 
         This is the method to start embedded signing for recipient.
@@ -449,13 +449,12 @@ class DocuSignClient(object):
             authenticationMethod = 'none'
         data = {
             'authenticationMethod': authenticationMethod,
-            'clientUserId': clientUserId,
-            'email': email,
-            'envelopeId': envelopeId,
             'returnUrl': returnUrl,
             'userId': userId,
-            'userName': userName,
         }
+        for key in ('email', 'userName', 'clientUserId'):
+            if locals()[key] is not None:
+                data[key] = locals()[key]
         return self.post(url, data=data, expected_status_code=201)
 
     def get_envelope_document_list(self, envelopeId):
