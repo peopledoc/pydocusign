@@ -450,9 +450,9 @@ class DocuSignClient(object):
         data = {
             'authenticationMethod': authenticationMethod,
             'returnUrl': returnUrl,
-            'userId': userId,
+            'clientUserId': clientUserId,
         }
-        for key in ('email', 'userName', 'clientUserId'):
+        for key in ('email', 'userName', 'userId'):
             if locals()[key] is not None:
                 data[key] = locals()[key]
         return self.post(url, data=data, expected_status_code=201)

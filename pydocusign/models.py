@@ -484,8 +484,8 @@ class Envelope(DocuSignObject):
         """
         if client is None:
             client = self.client
-        if recipient.clientUserId:
-            lookup_kwargs = {'clientUserId': recipient.clientUserId}
+        if recipient.userId:
+            lookup_kwargs = {'userId': recipient.userId}
         else:
             lookup_kwargs = {
                 'email': recipient.email,
@@ -493,7 +493,7 @@ class Envelope(DocuSignObject):
             }
         response_data = client.post_recipient_view(
             envelopeId=self.envelopeId,
-            userId=recipient.userId,
+            clientUserId=recipient.clientUserId,
             returnUrl=returnUrl,
             **lookup_kwargs
         )
