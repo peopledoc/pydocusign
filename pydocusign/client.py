@@ -449,8 +449,8 @@ class DocuSignClient(object):
             authenticationMethod = 'none'
         data = {
             'authenticationMethod': authenticationMethod,
-            'returnUrl': returnUrl,
             'clientUserId': clientUserId,
+            'returnUrl': returnUrl,
         }
         for key in ('email', 'userName', 'userId'):
             # ignore empty values; they won't help with a lookup
