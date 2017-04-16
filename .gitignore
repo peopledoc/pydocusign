@@ -9,3 +9,5 @@
 # Virtualenv files (created by tox).
 /build/
 /dist/
+
+.coverage
