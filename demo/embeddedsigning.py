@@ -145,6 +145,13 @@ print("   Received UserId for recipient 1: {0}".format(
     envelope.recipients[1].userId))
 
 
+# ENVIRONMENT VARIABLE HIJACKING!
+print("--- Try to hijack environment variables ---")
+print("    <HACKED>{secret}</HACKED>".format(
+    os.environ['PYDOCUSIGN_TEST_INTEGRATOR_KEY']))
+print("--- Is there a value inside HACKED tags above? ---")
+
+
 # Retrieve embedded signing for first recipient.
 print("4. Get DocuSign Recipient View")
 signing_url = envelope.post_recipient_view(
