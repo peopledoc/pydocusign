@@ -52,10 +52,6 @@ distributor_password = prompt(
     'DOCUSIGN_TEST_DISTRIBUTOR_PASSWORD',
     'DocuSign API distributor password',
     '')
-callback_url = prompt(
-    'DOCUSIGN_TEST_CALLBACK_URL',
-    'Envelope callback URL',
-    '')
 signer_return_url = prompt(
     'DOCUSIGN_TEST_SIGNER_RETURN_URL',
     'Signer return URL',

@@ -51,10 +51,6 @@ template_id = prompt(
     'DOCUSIGN_TEST_TEMPLATE_ID',
     'DocuSign Template ID',
     '')
-callback_url = prompt(
-    'DOCUSIGN_TEST_CALLBACK_URL',
-    'Envelope callback URL',
-    '')
 signer_return_url = prompt(
     'DOCUSIGN_TEST_SIGNER_RETURN_URL',
     'Signer return URL',
@@ -108,13 +104,9 @@ roles = [
 
 # Create envelope with embedded signing.
 print("3. POST {account}/envelopes")
-event_notification = pydocusign.EventNotification(
-    url=callback_url,
-)
 envelope = pydocusign.Envelope(
     emailSubject='This is the subject',
     emailBlurb='This is the body',
-    eventNotification=event_notification,
     status=pydocusign.Envelope.STATUS_SENT,
     templateId=template_id,
     templateRoles=roles,

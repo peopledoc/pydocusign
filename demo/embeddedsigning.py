@@ -48,10 +48,6 @@ integrator_key = prompt(
     'DOCUSIGN_INTEGRATOR_KEY',
     'DocuSign API integrator key',
     '')
-callback_url = prompt(
-    'DOCUSIGN_TEST_CALLBACK_URL',
-    'Envelope callback URL',
-    '')
 signer_return_url = prompt(
     'DOCUSIGN_TEST_SIGNER_RETURN_URL',
     'Signer return URL',
@@ -107,9 +103,6 @@ signers = [
 
 # Create envelope with embedded signing.
 print("2. POST {account}/envelopes")
-event_notification = pydocusign.EventNotification(
-    url=callback_url,
-)
 document_path = os.path.join(fixtures_dir(), 'test.pdf')
 document_2_path = os.path.join(fixtures_dir(), 'test2.pdf')
 with open(document_path, 'rb') as pdf, open(document_2_path, 'rb') as pdf_2:
@@ -128,7 +121,6 @@ with open(document_path, 'rb') as pdf, open(document_2_path, 'rb') as pdf_2:
         ],
         emailSubject='This is the subject',
         emailBlurb='This is the body',
-        eventNotification=event_notification,
         status=pydocusign.Envelope.STATUS_SENT,
         recipients=signers,
     )
