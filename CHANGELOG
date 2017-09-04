@@ -9,6 +9,7 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 ----------------
 
 - Remove callback support.
+- Remove python 3.3 support.
 
 
 1.2 (2016-12-04)
