@@ -214,41 +214,6 @@ class EnvelopetestCase(unittest.TestCase):
         self.assertEqual(envelope.recipients[1].name, 'Paul English')
 
 
-class DocuSignCallbackParserTestCase(unittest.TestCase):
-    """Tests around DocuSign callback content parsers.
-
-    At the same time, we use callback templates, so that they are checked too.
-
-    """
-    @classmethod
-    def setUpClass(cls):
-        """Let's generate some callbacks content, once."""
-        data_file = os.path.join(pydocusign.test.fixtures_dir(),
-                                 'callback-data.json')
-        with open(data_file) as data_file_obj:
-            data = json.load(data_file_obj)
-        cls.xml = pydocusign.test.generate_notification_callback_body(data)
-
-    def test_properties(self):
-        """Test parser properties."""
-        parser = pydocusign.DocuSignCallbackParser(self.xml)
-        self.assertEqual(parser.envelope_status, models.ENVELOPE_STATUS_SENT)
-        self.assertEqual(parser.timezone_offset, -7)
-        self.assertEqual(
-            parser.envelope_id,
-            "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee")
-        self.assertEqual(
-            parser.envelope_status_datetime(models.ENVELOPE_STATUS_SENT),
-            datetime(2014, 10, 6, 1, 10, 0, 12, tzinfo=tzoffset(None, -25200)),
-        )
-        self.assertEqual(
-            parser.recipient_status_datetime(
-                'id-jules-cesar',
-                models.RECIPIENT_STATUS_SENT),
-            datetime(2014, 10, 6, 1, 10, 1, 0, tzinfo=tzoffset(None, -25200)),
-        )
-
-
 class DocuSignOAuth2TestCase(unittest.TestCase):
     def _environ_to_self(self, name):
         """Remove the variable from environ and cache it on a local attribute."""
