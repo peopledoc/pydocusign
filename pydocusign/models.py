@@ -303,7 +303,7 @@ class Role(Recipient):
 
     """
     attributes = ['clientUserId', 'email', 'emailBody', 'emailSubject', 'name',
-                  'supportedLanguage', 'roleName']
+                  'supportedLanguage', 'roleName', 'tabs']
 
     def to_dict(self):
         """Return dict representation of model."""
@@ -320,6 +320,9 @@ class Role(Recipient):
                 'emailSubject': self.emailSubject,
                 'supportedLanguage': self.supportedLanguage,
             }
+        if self.tabs:
+            data['tabs'] = self.tabs
+
         return data
 
 
