@@ -8,13 +8,14 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 2.1 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Feature #105 - Added tabs support in ``Role`` model.
 
 
 2.0 (2017-09-05)
 ----------------
 
 - Remove callback support.
+
 - Remove python 3.3 support.
 
 
