@@ -31,4 +31,10 @@ from pydocusign.models import Signer  # NoQA
 from pydocusign.models import Role  # NoQA
 from pydocusign.models import SignHereTab  # NoQA
 from pydocusign.models import ApproveTab  # NoQA
+from pydocusign.models import InitialHereTab  # NoQA
+from pydocusign.models import FullNameTab  # NoQA
+from pydocusign.models import DateSignedTab  # NoQA
+from pydocusign.models import TitleTab  # NoQA
+from pydocusign.models import TextTab  # NoQA
+from pydocusign.models import NumberTab  # NoQA
 from pydocusign.models import Tab  # NoQA

@@ -228,6 +228,30 @@ class TitleTab(Tab):
     tabs_name = 'titleTabs'
 
 
+class TextTab(Tab):
+    """Tab to show a free-form text field on the document.
+    """
+    attributes = Tab._common_attributes + Tab._formatting_attributes + [
+        'name',
+        'value',
+        'height',
+        'width'
+    ]
+    tabs_name = 'textTabs'
+
+
+class NumberTab(Tab):
+    """Tab to show a number field on the document.
+    """
+    attributes = Tab._common_attributes + Tab._formatting_attributes + [
+        'name',
+        'value',
+        'height',
+        'width'
+    ]
+    tabs_name = 'numberTabs'
+
+
 class Recipient(DocuSignObject):
     """Base class for "recipient" objects.
 
