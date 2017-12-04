@@ -26,15 +26,15 @@ Resources
 
 * Documentation: https://pydocusign.readthedocs.org
 * PyPI page: https://pypi.python.org/pypi/pydocusign
-* Bugtracker: https://github.com/novafloss/pydocusign/issues
+* Bugtracker: https://github.com/peopledoc/pydocusign/issues
 * Changelog: https://pydocusign.readthedocs.org/en/latest/about/changelog.html
-* Code repository: https://github.com/novafloss/pydocusign
-* Continuous integration: https://travis-ci.org/novafloss/pydocusign
+* Code repository: https://github.com/peopledoc/pydocusign
+* Continuous integration: https://travis-ci.org/peopledoc/pydocusign
 
 .. _`DocuSign`: https://www.docusign.com
 
-.. |Build Status| image:: https://travis-ci.org/novafloss/pydocusign.svg?branch=master
-    :target: https://travis-ci.org/novafloss/pydocusign
+.. |Build Status| image:: https://travis-ci.org/peopledoc/pydocusign.svg?branch=master
+    :target: https://travis-ci.org/peopledoc/pydocusign
 
 .. |Documentation Status| image:: https://readthedocs.org/projects/pydocusign/badge/
     :target: http://pydocusign.readthedocs.io/en/latest/

@@ -46,7 +46,7 @@ Clone `pydocusign` repository (adapt to use your own fork):
 
 .. code:: sh
 
-   git clone git@github.com:novafloss/pydocusign.git
+   git clone git@github.com:peopledoc/pydocusign.git
    cd pydocusign/
 
 
@@ -114,7 +114,7 @@ get the setup. Here is an example to run the tests:
 
 .. target-notes::
 
-.. _`pydocusign bugtracker`: https://github.com/novafloss/pydocusign/issues
+.. _`pydocusign bugtracker`: https://github.com/peopledoc/pydocusign/issues
 .. _`rebase`: http://git-scm.com/book/en/Git-Branching-Rebasing
 .. _`merge-based rebase`: http://tech.novapost.fr/psycho-rebasing-en.html
 .. _`pip`: https://pypi.python.org/pypi/pip/
