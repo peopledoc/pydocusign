@@ -35,7 +35,7 @@ DESCRIPTION = 'Python client for DocuSign signature SAAS platform.'
 README = open(os.path.join(here, 'README.rst')).read()
 VERSION = open(os.path.join(here, 'VERSION')).read().strip()
 AUTHOR = u'Benoît Bryon'
-EMAIL = u'novafloss@people-doc.com'
+EMAIL = u'peopledoc@people-doc.com'
 LICENSE = 'BSD'
 URL = 'https://{name}.readthedocs.io/'.format(name=NAME)
 CLASSIFIERS = [

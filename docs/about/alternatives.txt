@@ -28,5 +28,5 @@ django-docusign
 .. target-notes::
 
 .. _`DocuSign`: https://www.docusign.com/
-.. _`django-anysign`: https://github.com/novafloss/django-anysign/
-.. _`django-docusign`: https://github.com/novafloss/django-docusign/
+.. _`django-anysign`: https://github.com/peopledoc/django-anysign/
+.. _`django-docusign`: https://github.com/peopledoc/django-docusign/
