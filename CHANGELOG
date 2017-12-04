@@ -10,6 +10,8 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 
 - Feature #105 - Added tabs support in ``Role`` model.
 
+- Added ``TextTab`` and ``NumberTab`` models.
+
 - Project's repository moved to https://github.com/peopledoc/pydocusign
 
 
