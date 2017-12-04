@@ -5,7 +5,7 @@ This document describes changes between each past release. For information
 about future releases, check `milestones`_ and :doc:`/about/vision`.
 
 
-2.1 (unreleased)
+2.1 (2017-12-04)
 ----------------
 
 - Feature #105 - Added tabs support in ``Role`` model.
