@@ -211,9 +211,11 @@ class DocuSignClient(object):
                   )
             logger.error(msg)
             raise exceptions.DocuSignException(msg)
-        if response.headers.get('Content-Type', '') \
-                           .startswith('application/json'):
+        content_type = response.headers.get('Content-Type', '')
+        if content_type.startswith('application/json'):
             return response.json()
+        elif content_type.startswith('image/'):
+            return response.content
         return response.text
 
     def get(self, *args, **kwargs):
@@ -566,3 +568,29 @@ class DocuSignClient(object):
                     envelopeId=envelopeId)
         data = {'signers': [{'recipientId': id_} for id_ in recipientIds]}
         return self.delete(url, data=data)
+
+    def get_page_image(self, envelopeId, documentId, pageId, dpi=None,
+                       max_width=None, max_height=None):
+        """Retrieve a PNG of a page of a document in an envelope.
+
+        DocuSign reference:
+        https://docs.docusign.com/esign/restapi/Envelopes/Envelopes/getPageImage/
+        """
+        if not self.account_url:
+            self.login_information()
+        url = '/accounts/{accountId}/envelopes/{envelopeId}/documents/' \
+              '{documentId}/pages/{pageId}/page_image'\
+            .format(accountId=self.account_id,
+                    envelopeId=envelopeId,
+                    documentId=documentId,
+                    pageId=pageId)
+        qs_params = []
+        if dpi is not None:
+            qs_params.append('dpi=' + str(dpi))
+        if max_width is not None:
+            qs_params.append('max_width=' + str(max_width))
+        if max_height is not None:
+            qs_params.append('max_height=' + str(max_height))
+        if qs_params:
+            url += '?{}'.format('&'.join(qs_params))
+        return self.get(url)

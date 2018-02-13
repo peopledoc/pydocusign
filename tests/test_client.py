@@ -96,3 +96,15 @@ class ClientRequestTest(unittest.TestCase):
         delete_mock.assert_called_once_with(
             url, data={'signers': [{'recipientId': '1'}, {'recipientId': '2'}]}
         )
+
+    def test_get_page_image(self):
+        client = DocuSignTestClient()
+
+        with mock.patch.object(client, 'get') as get_mock:
+            client.get_page_image('ABC123', 1, 1, 72, max_height=300)
+
+        url = '/accounts/{accountId}/envelopes/ABC123/documents/1/pages/1/' \
+              'page_image?dpi=72&max_height=300'\
+            .format(accountId=client.account_id)
+
+        get_mock.assert_called_once_with(url)
