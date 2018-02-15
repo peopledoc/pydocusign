@@ -8,7 +8,9 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 2.2 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Added support of python 3.6.
+
+- Feature #113 - Added Get Page Image functionality.
 
 
 2.1 (2017-12-04)
