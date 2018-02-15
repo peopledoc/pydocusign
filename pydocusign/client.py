@@ -443,12 +443,12 @@ class DocuSignClient(object):
         data = {
             'authenticationMethod': authenticationMethod,
             'clientUserId': clientUserId,
-            'email': email,
-            'envelopeId': envelopeId,
             'returnUrl': returnUrl,
-            'userId': userId,
-            'userName': userName,
         }
+        for key in ('email', 'userName', 'userId'):
+            # ignore empty values; they won't help with a lookup
+            if locals()[key]:
+                data[key] = locals()[key]
         return self.post(url, data=data, expected_status_code=201)
 
     def get_envelope_document_list(self, envelopeId):

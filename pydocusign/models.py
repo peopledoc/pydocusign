@@ -511,13 +511,18 @@ class Envelope(DocuSignObject):
         """
         if client is None:
             client = self.client
+        if recipient.userId:
+            lookup_kwargs = {'userId': recipient.userId}
+        else:
+            lookup_kwargs = {
+                'email': recipient.email,
+                'userName': recipient.name,
+            }
         response_data = client.post_recipient_view(
             envelopeId=self.envelopeId,
             clientUserId=recipient.clientUserId,
-            email=recipient.email,
-            userId=recipient.userId,
-            userName=recipient.name,
             returnUrl=returnUrl,
+            **lookup_kwargs
         )
         return response_data['url']
 
