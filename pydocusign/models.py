@@ -396,7 +396,7 @@ class Envelope(DocuSignObject):
     attributes = ['documents', 'emailBlurb', 'emailSubject',
                   'eventNotification', 'recipients', 'templateId',
                   'templateRoles', 'status', 'envelopeId', 'userId',
-                  'enableWetSign']
+                  'enableWetSign', 'notification']
     required_attributes = ['envelopeId', 'userId']
     attribute_defaults = {
         'emailBlurb': '',
@@ -437,6 +437,8 @@ class Envelope(DocuSignObject):
         }
         if self.eventNotification:
             data['eventNotification'] = self.eventNotification.to_dict()
+        if self.notification:
+            data['notification'] = self.notification
         if self.templateId:
             data.update({
                 'templateId': self.templateId,

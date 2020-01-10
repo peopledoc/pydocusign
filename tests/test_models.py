@@ -313,3 +313,31 @@ class EnvelopeTest(unittest.TestCase):
         envelope.void('reason')
 
         client.void_envelope.assert_called_once_with('fake-envelope-id', 'reason')
+
+
+    def test_serialize_envelope_with_notification(self):
+        document = Document(
+            documentId=2,
+            name='document.pdf')
+        envelope = Envelope(
+            documents=[document],
+            emailBlurb='This is the email body',
+            emailSubject='This is the email subject',
+            status=ENVELOPE_STATUS_DRAFT,
+            notification={
+                'expirations': {
+                    'expireEnabled': True,
+                    'expireAfter': 365,
+                    'expireWarn': 5,
+                },
+            },
+        )
+        self.assertDictContainsSubset({
+            'notification': {
+                'expirations': {
+                    'expireEnabled': True,
+                    'expireAfter': 365,
+                    'expireWarn': 5,
+                },
+            },
+        }, envelope.to_dict())
