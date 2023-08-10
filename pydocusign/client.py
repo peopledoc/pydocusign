@@ -1,15 +1,17 @@
 """DocuSign client."""
-from collections import namedtuple
 import base64
 import json
 import logging
 import os
+import time
 import warnings
+from collections import namedtuple
 
+import jwt
 import requests
+from cryptography.hazmat.primitives.serialization import load_pem_private_key
 
 from pydocusign import exceptions
-
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +29,13 @@ class DocuSignClient(object):
                  account_url='',
                  app_token=None,
                  oauth2_token=None,
-                 timeout=None):
+                 timeout=None,
+                 private_key=None,
+                 user_id=None,
+                 integration_key=None,
+                 audience=None,
+                 base_url=None,
+    ):
         """Configure DocuSign client."""
         #: Root URL of DocuSign API.
         #:
@@ -99,6 +107,16 @@ class DocuSignClient(object):
         if timeout is None:
             timeout = float(os.environ.get('DOCUSIGN_TIMEOUT', 30))
         self.timeout = timeout
+
+        # Docusign JWT settings
+        self.private_key = private_key
+        self.user_id = user_id
+        self.integration_key = integration_key
+        self.audience = audience
+        self.base_url = base_url
+
+        # Hidden vars
+        self._access_token = None
 
     def get_timeout(self):
         """Return connection timeout."""
@@ -174,10 +192,57 @@ class DocuSignClient(object):
 
         return headers
 
+    def _get_access_token(self, scopes=['signature', 'impersonation', 'extended']):
+        """
+        Get an OAuth access token using the JWT grant OAuth flow.
+        Store in self._access_token (and return it)
+
+        For documentation on the JWT grant flow, see:
+        https://developers.docusign.com/platform/auth/jwt/jwt-get-token/
+        """
+        if not(private_key := getattr(self, 'private_key', None)):
+            raise ValueError("private_key must be set to use JWT grant flow")
+        current_time = int(time.time())
+        claim = {
+            "iss": self.integration_key,  # Integration key / client_id
+            "sub": self.user_id,  # User ID
+            "aud": self.audience,  # OAuth "audience" - ends up being URL of the API
+            "iat": current_time,  # current time
+            "exp": current_time + 3600,  # expiration time (but Docusign will return 3600 expiration regardless)
+            "scope": " ".join(scopes)
+        }
+        token = jwt.encode(
+            claim,
+            load_pem_private_key(private_key.encode('utf8'), password=None),
+            algorithm='RS256'
+        )
+        logger.debug("Requesting new Docusign access token")
+        response = requests.post(
+            # The base url for OAuth2 is different than the base url for the REST API
+            f"{self.base_url}/oauth/token",
+            data={
+                "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+                "assertion": token
+            },
+        )
+        j = response.json()
+        if 'error' in j:
+            raise exceptions.DocuSignOAuth2Exception(j)
+
+        # Ensure we got a bearer token
+        assert j['token_type'] == 'Bearer'
+        logger.debug("Got new Docusign access token, expiration seconds: %s", j['expires_in'])
+
+        self._access_token = j['access_token']
+        return self._access_token
+
     def _request(self, url, method='GET', headers=None, data=None,
                  json_data=None, expected_status_code=200, sobo_email=None):
         """Shortcut to perform HTTP requests."""
         do_url = '{root}{path}'.format(root=self.root_url, path=url)
+        # If we have a JWT auth private key defined, use it to get an access token
+        if getattr(self, 'private_key', None):
+            self._get_access_token()
         do_request = getattr(requests, method.lower())
         if headers is None:
             headers = {}
