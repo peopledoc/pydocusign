@@ -172,8 +172,13 @@ class DocuSignClient(object):
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         }
-        if self.oauth2_token:
-            headers['Authorization'] = 'Bearer ' + self.oauth2_token
+        # Use in order of preference:
+        # - OAuth jwt access token (from self._access_token)
+        # - Oauth2 password grant token (from self.oauth2_token)
+        # - Username password auth (from self.username, self.password)
+        bearer_token = self._access_token or self.oauth2_token
+        if bearer_token:
+            headers['Authorization'] = 'Bearer ' + bearer_token
 
             if sobo_email:
                 headers['X-DocuSign-Act-As-User'] = sobo_email
