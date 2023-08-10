@@ -58,6 +58,8 @@ REQUIREMENTS = [
     'lxml',
     'requests>=2.9.0',
     'setuptools',
+    'cryptography==41.0.3',
+    'PyJWT==2.8.0',
 ]
 ENTRY_POINTS = {}
 TEST_REQUIREMENTS = [
